@@ -1,0 +1,14 @@
+This is a complex mining script meant to be run on the RuneMate client.
+I excluded the actual mining logic from this repository since that is 
+proprietary and I do plan to sell it in the future.
+
+There are some great examples of locations and the way their data is formatted
+in the locations directory. So long as the proper heirarchy is observed, any 
+location can be used with the script mining logic.
+
+With this in mind, feel free to fork and add your own locations and I'll 
+pull them into the main branch and put them on BotStore for you to use.
+
+Addtionally, if you don't like the way that my logic works, feel free
+to implement your own version of the PowerMiner or StandardMiner class and
+insert them to take advantage of the data that I've collected.
