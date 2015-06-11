@@ -1,0 +1,32 @@
+<manifest>
+	<main-class>scripts.BatMinerAIO</main-class>
+	<name>Bat Miner AIO</name>
+	<description>Mine things all over Runescape.</description>
+	<version>1.4.0</version>
+	<compatibility>
+		<game-type>RS3</game-type>
+		<game-type>OSRS</game-type>
+	</compatibility>
+	<categories>
+		<category>MINING</category>
+	</categories>
+	<tags>
+        <tag>Mining</tag>
+        <tag>Iron</tag>
+        <tag>Coal</tag>
+        <tag>Runite</tag>
+        <tag>Rune</tag>
+        <tag>Mine</tag>
+        <tag>Ore</tag>
+        <tag>Power</tag>
+        <tag>Gold</tag>
+        <tag>Living</tag>
+        <tag>Rock</tag>
+        <tag>Cavern</tag>
+        <tag>Gem</tag>
+        <tag>Shilo</tag>
+    </tags>
+	<internal-id>minerAIO</internal-id>
+	<hidden>false</hidden>
+	<access>public</access>
+</manifest>
