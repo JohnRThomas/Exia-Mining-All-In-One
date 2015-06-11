@@ -31,8 +31,7 @@ public class RockWatcher extends Thread{
 							//Match the rocks based on location
 							if(rock.pos.equals(pos)){
 								//If the rock has ore, then update it's last seen time
-								String name = o.getDefinition().getName();
-								if(validater.validate(name)){
+								if(validater.validate(o)){
 									rock.time = System.currentTimeMillis();
 									rock.object = null;
 									return true;
@@ -74,6 +73,6 @@ public class RockWatcher extends Thread{
 	}
 	
 	public interface Validater{
-		public boolean validate(String s);
+		public boolean validate(GameObject o);
 	}
 }

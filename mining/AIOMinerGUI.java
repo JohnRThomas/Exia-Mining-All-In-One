@@ -38,9 +38,9 @@ import javax.swing.JFrame;
 import scripts.mining.locations.Location;
 
 import com.runemate.game.api.client.ClientUI;
+import com.runemate.game.api.client.palette.Palettes;
 import com.runemate.game.api.hybrid.Environment;
 import com.runemate.game.api.hybrid.util.calculations.Random;
-import com.runemate.game.api.hybrid.util.javafx.Themes;
 import com.runemate.game.api.script.framework.AbstractScript;
 
 public class AIOMinerGUI extends Stage{
@@ -89,7 +89,7 @@ public class AIOMinerGUI extends Stage{
 	private Scene createScene(){
 		Scene scene = new Scene(root);
 		scene.setFill(null);
-		scene.getStylesheets().add(Themes.getCurrentStylesheet());
+		scene.getStylesheets().add(Palettes.getCurrentStylesheet());
 		root.setMinWidth(580);
 		root.setMinHeight(349);
 		root.setStyle("-fx-background-color: -fx-background-dark");
@@ -234,19 +234,27 @@ public class AIOMinerGUI extends Stage{
 				new Button("Special Mining")
 		};
 
-		final AIOMinerGUI THIS = this;
 		localButtons[0].setOnAction(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle(ActionEvent event) {
 				miner = new StandardMiner();
 				setSelected(1);
 				buttons[1].setDisable(false);
-				locationContent = miner.getContentPane(THIS);
+				locationContent = miner.getContentPane(buttons[2]);
 				root.setCenter(locationContent);
 			}
 		});
-
-		localButtons[1].setDisable(true);
+		
+		localButtons[1].setOnAction(new EventHandler<ActionEvent>(){
+			@Override
+			public void handle(ActionEvent event) {
+				miner = new PowerMiner();
+				setSelected(1);
+				buttons[1].setDisable(false);
+				locationContent = miner.getContentPane(buttons[2]);
+				root.setCenter(locationContent);
+			}
+		});
 		localButtons[2].setDisable(true);
 		localButtons[3].setDisable(true);
 
