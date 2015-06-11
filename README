@@ -1,6 +1,6 @@
 This is a relatively complex mining script meant to be run on the RuneMate client.
-I excluded the actual mining logic from this repository since that is 
-proprietary and I do plan to sell it in the future.
+
+I've now included my mining logic since I no longer have plans to sell it at the moment. Fork and change away!
 
 There are some great examples of locations and the way their data is formatted
 in the locations directory. So long as the proper heirarchy is observed, any 
