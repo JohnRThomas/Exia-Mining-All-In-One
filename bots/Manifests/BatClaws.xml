@@ -1,0 +1,14 @@
+<manifest>
+<main-class>BatClaws</main-class>
+<name>BatClaws</name>
+<description>Makes Bronze Claws.</description>
+<version>1.0</version>
+<compatibility>
+<game-type>RS3</game-type>
+</compatibility>
+<categories>
+<category>SMITHING</category>
+</categories>
+<internal-id>batclaws</internal-id>
+<hidden>true</hidden>
+</manifest>
