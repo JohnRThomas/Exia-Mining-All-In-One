@@ -34,7 +34,6 @@ public class GenericPathBuilder {
 		if(path != null && Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.VIEW_PORT_WALKING.playerSenseKey))
 			path = ViewportPath.convert(path);
 		
-		
 		return path;
 	}
 	
@@ -47,7 +46,6 @@ public class GenericPathBuilder {
 			path = BresenhamPath.buildTo(dest);
 		if(path != null && Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.VIEW_PORT_WALKING.playerSenseKey))
 			path = ViewportPath.convert(path);
-		
 		
 		return path;
 	}
