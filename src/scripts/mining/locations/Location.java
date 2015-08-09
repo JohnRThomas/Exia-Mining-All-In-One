@@ -1,18 +1,9 @@
 package scripts.mining.locations;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import scripts.mining.CustomPlayerSense;
-import scripts.mining.ReflexAgent;
-import scripts.mining.Rock;
-
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
 import com.runemate.game.api.hybrid.entities.Npc;
 import com.runemate.game.api.hybrid.entities.details.Interactable;
-import com.runemate.game.api.hybrid.entities.details.Locatable;
 import com.runemate.game.api.hybrid.local.Camera;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
@@ -33,6 +24,14 @@ import com.runemate.game.api.hybrid.util.Filter;
 import com.runemate.game.api.hybrid.util.Timer;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.Execution;
+
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import scripts.mining.CustomPlayerSense;
+import scripts.mining.ReflexAgent;
+import scripts.mining.Rock;
 
 public abstract class Location {
 
@@ -181,13 +180,9 @@ public abstract class Location {
 	}
 
 	public void walkToBank() {
-		fsPath = null;
-		if(bankPath == null) bankPath = pathBuilder.buildTo(bank.getArea());
+		if(bankPath == null)
+			bankPath = pathBuilder.buildTo(bank.getArea());		
 		else if(!bank.contains(Traversal.getDestination())){
-			/*Path tempPath = bankPath;
-			if(Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.VIEW_PORT_WALKING.playerSenseKey)){
-				tempPath = ViewportPath.convert(tempPath);
-			}*/
 
 			System.out.println(bankPath.getNext() + ": " + bankPath.step());
 			
@@ -203,10 +198,9 @@ public abstract class Location {
 	public void walkToMine() {
 		if(minePath == null)minePath = pathBuilder.buildTo(mine.getArea());
 		else if(!mine.contains(Traversal.getDestination())){
-			/*Path tempPath = minePath;
 			if(Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.VIEW_PORT_WALKING.playerSenseKey)){
-				tempPath = ViewportPath.convert(tempPath);
-			}*/
+				minePath = ViewportPath.convert(minePath);
+			}
 
 			System.out.println(minePath.getNext() + ": " + minePath.step());
 

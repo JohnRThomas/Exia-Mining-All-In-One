@@ -55,7 +55,7 @@ public class CustomPlayerSense{
 			PlayerSense.put(Key.DOUBLE_CLICK.playerSenseKey, random.nextInt(15) + 5);
 			System.out.println(Key.DOUBLE_CLICK.playerSenseKey + ": " + PlayerSense.getAsInteger(Key.DOUBLE_CLICK.playerSenseKey));
 			
-			PlayerSense.put(Key.VIEW_PORT_WALKING.playerSenseKey, random.nextInt(20));
+			PlayerSense.put(Key.VIEW_PORT_WALKING.playerSenseKey, random.nextInt(100));
 			System.out.println(Key.VIEW_PORT_WALKING.playerSenseKey + ": " + PlayerSense.getAsInteger(Key.VIEW_PORT_WALKING.playerSenseKey));
 		}
 	}
