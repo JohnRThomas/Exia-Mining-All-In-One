@@ -8,7 +8,6 @@ import java.util.Set;
 
 import com.runemate.game.api.hybrid.entities.details.Locatable;
 import com.runemate.game.api.hybrid.local.Skill;
-import com.runemate.game.api.hybrid.local.Skills;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Equipment;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.location.Coordinate;
@@ -22,6 +21,15 @@ public class WebPath extends Path{
 	PathError lastError = PathError.NONE;
 	LinkedList<Edge> steps = new LinkedList<Edge>();
 	
+	public WebPath(){}
+	
+	public WebPath(WebPath path, Edge addition) {
+		for(Edge e : path.steps){
+			steps.add(e);
+		}
+		steps.add(addition);
+	}
+
 	//Functions
 	public PathError error(){
 		return lastError;
@@ -88,6 +96,7 @@ public class WebPath extends Path{
 		private boolean teleCheck = false;
 		
 		public Graph(){
+			//TODO populate the graph
 			this.addEdge(new Point3D(0, 0, 0), new Point3D(1, 0, 0), false);
 			this.addEdge(new Point3D(1, 0, 0), new Point3D(2, 0, 0), false);
 			this.addEdge(new Point3D(2, 0, 0), new Point3D(2, 1, 0), false);
@@ -103,6 +112,7 @@ public class WebPath extends Path{
 
 				@Override
 				public boolean step() {
+					//TODO this is just a sample, fill it in
 					//This should be clicking the obstacle
 					return true;
 				}
@@ -119,6 +129,7 @@ public class WebPath extends Path{
 
 				@Override
 				public boolean step() {
+					//TODO this is just a sample, fill it in
 					//This should be clicking the obstacle
 					return true;
 				}
@@ -201,7 +212,7 @@ public class WebPath extends Path{
 				if(!closedList.contains(current)){
 					//Loop through all of the outgoing edges
 					for(Edge e : current.adjacentcies){
-						Vertex sucessor = e.destination;
+						Vertex successor = e.destination;
 						int stepCost = e.getWeight();
 						
 						//Make sure the other end of this edge is not in the closed list
@@ -209,12 +220,18 @@ public class WebPath extends Path{
 						//an infinite weight, or unreachable via this edge.
 						//This will be useful for things like shortcuts that depend on the
 						//current player who is traversing the graph.
-						if(!closedList.contains(sucessor) && stepCost >= 0){
+						if(!closedList.contains(successor) && stepCost >= 0){
 							int newCost = cost + stepCost; 
+							
 							//if the successor is not in the open list, or
 							//the new value is lower than it's current value
-							if(!openList.containsKey(sucessor) || newCost < openList.get(sucessor)){
+							if(!openList.containsKey(successor) || newCost < openList.get(successor)){
 								
+								//Add this new vertex to the open list to be expanded later
+								openList.put(successor, newCost);
+								
+								//update the path to the successor
+								paths.put(successor, new WebPath(currentPath, e));
 							}
 						}
 					}
