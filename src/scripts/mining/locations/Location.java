@@ -51,34 +51,37 @@ public abstract class Location {
 	public abstract String[] getOres();
 
 	public abstract Coordinate[] getRocks();
-	
+
 	public Rock getOre(){
 		return ore;
 	}
-	
+
 	public LocatableEntity getBestRock(int index){
-		LocatableEntityQueryResults<GameObject> rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
-			@Override
-			public boolean accepts(GameObject o) {
-				if(o != null && validate(o)){
-					Coordinate pos = o.getPosition();
-					for (Coordinate rock : getRocks()) {
-						if(pos.equals(rock)) return true;
+		LocatableEntityQueryResults<GameObject> rocksObjs = null;
+		try{
+			rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
+				@Override
+				public boolean accepts(GameObject o) {
+					if(o != null && validate(o)){
+						Coordinate pos = o.getPosition();
+						for (Coordinate rock : getRocks()) {
+							if(pos.equals(rock)) return true;
+						}
 					}
+
+					return false;
 				}
+			}).sortByDistance();
+		}catch(Exception e){}
 
-				return false;
-			}
-		}).sortByDistance();
-
-		if(rocksObjs.size() > index) return rocksObjs.get(index);
+		if(rocksObjs != null && rocksObjs.size() > index) return rocksObjs.get(index);
 		else return null;
 	}
-	
+
 	public boolean shouldBank() {
 		return Inventory.isFull();
 	}
-	
+
 	public void openBank(){
 		ReflexAgent.delay();
 		LocatableEntityQueryResults<? extends LocatableEntity> banks = getBanker();
@@ -185,7 +188,7 @@ public abstract class Location {
 		else if(!bank.contains(Traversal.getDestination())){
 
 			System.out.println(bankPath.getNext() + ": " + bankPath.step());
-			
+
 			if(bankPath instanceof BresenhamPath){
 				bankPath = pathBuilder.buildTo(bank.getArea());
 			}

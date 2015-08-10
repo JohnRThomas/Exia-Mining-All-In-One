@@ -48,6 +48,7 @@ public class AIOMinerGUI extends Stage{
 	private final String STANDARD_BUTTON_STYLE = "-fx-background-color: transparent; -fx-text-fill: -fx-flair-text;";
 	private final String HOVERED_BUTTON_STYLE = "-fx-background-radius: 0px; -fx-background-color: -fx-master-selected; -fx-text-fill: -fx-flair-text;";
 
+	private String name;
 	private String version;
 	String style;
 	Location location;
@@ -55,10 +56,11 @@ public class AIOMinerGUI extends Stage{
 	public int dispose = 0;
 
 
-	public AIOMinerGUI(String version, final AbstractScript script){
+	public AIOMinerGUI(String name, String version, final AbstractScript script){
 		super(StageStyle.UNDECORATED);
+		this.name = name;
 		this.version = version;
-		this.setTitle("BatMiner AIO v" + version);
+		this.setTitle(name + " v" + version);
 		JFrame frame = ClientUI.getFrame();
 		initStyle(StageStyle.TRANSPARENT);
 
@@ -223,7 +225,7 @@ public class AIOMinerGUI extends Stage{
 		content.setVgap(3.0);
 		content.setPadding(new Insets(3,3,3,3));
 
-		Label title = new Label("BatMiner AIO v" + version);
+		Label title = new Label(name + " v" + version);
 		title.setStyle("-fx-text-fill: -fx-text-input-text; -fx-font-size: 40px;");
 		content.add(title, 0, 0, 3 , 1);
 

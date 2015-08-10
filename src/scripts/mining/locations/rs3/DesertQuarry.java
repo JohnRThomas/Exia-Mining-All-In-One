@@ -1,20 +1,26 @@
 package scripts.mining.locations.rs3;
 
-import scripts.mining.Rock;
-import scripts.mining.locations.Location;
-
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 
-public class LumbridgeEast extends Location {
+import scripts.mining.Rock;
+import scripts.mining.locations.Location;
+
+public class DesertQuarry extends Location{
 
 	@Override
 	public void intialize(String ore) {
 		switch(ore){
-		case "Tin":
+		case "Clay":
 			rocks = new Coordinate[]{new Coordinate(3231,3147),new Coordinate(3225,3146),new Coordinate(3225,3150),new Coordinate(3224,3146),new Coordinate(3223,3148)};
 			break;
-		case "Copper":
+		case "Sandstone":
+			rocks = new Coordinate[]{new Coordinate(3229,3146),new Coordinate(3230,3147),new Coordinate(3227,3145),new Coordinate(3228,3151),new Coordinate(3223,3150)};
+			break;
+		case "Granite":
+			rocks = new Coordinate[]{new Coordinate(3229,3146),new Coordinate(3230,3147),new Coordinate(3227,3145),new Coordinate(3228,3151),new Coordinate(3223,3150)};
+			break;
+		case "Coal":
 			rocks = new Coordinate[]{new Coordinate(3229,3146),new Coordinate(3230,3147),new Coordinate(3227,3145),new Coordinate(3228,3151),new Coordinate(3223,3150)};
 			break;
 		default:
@@ -27,12 +33,12 @@ public class LumbridgeEast extends Location {
 
 	@Override
 	public String getName() {
-		return "Lumbridge East";
+		return "Desert Quarry";
 	}
 
 	@Override
 	public String[] getOres() {
-		return new String[]{"Copper", "Tin"};
+		return new String[]{"Clay", "Sandstone", "Granite", "Coal"};
 	}
 
 	@Override

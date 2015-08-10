@@ -1,5 +1,8 @@
 package scripts.mining;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.region.GameObjects;
@@ -7,18 +10,30 @@ import com.runemate.game.api.hybrid.util.Filter;
 
 public class RockWatcher extends Thread{
 
-	private Pair<Coordinate, Long, GameObject>[] locations;
+	private Set<Pair<Coordinate, Long, GameObject>> locations;
 	private Validater validater;
 	
-	@SuppressWarnings("unchecked")
-	public RockWatcher(Validater validater, Coordinate ... locations){
+	public RockWatcher(Validater validater, Coordinate... locations){
 		this.validater = validater;
-		this.locations = (Pair<Coordinate, Long, GameObject>[])new Pair[locations.length];
+		this.locations = new HashSet<Pair<Coordinate, Long, GameObject>>();
 		for (int i = 0; i < locations.length; i++) {
-			this.locations[i] = new Pair<Coordinate, Long, GameObject>(locations[i], 0L);
+			this.locations.add(new Pair<Coordinate, Long, GameObject>(locations[i], 0L));
 		}
 	}
 
+	public void addLocation(Coordinate location){
+		this.locations.add(new Pair<Coordinate, Long, GameObject>(location, 0L));
+	}
+	
+	public Coordinate[] getLocations(){
+		Coordinate[] out = new Coordinate[locations.size()];
+		int i = 0;
+		for(Pair<Coordinate, Long, GameObject> p : locations){
+			out[i++] = p.pos;
+		}
+		return out;
+	}
+	
 	@Override
 	public void run() {
 		try{

@@ -1,6 +1,9 @@
 package scripts;
 
-import java.awt.Graphics2D;
+import com.runemate.game.api.hybrid.Environment;
+import com.runemate.game.api.hybrid.local.Skill;
+import com.runemate.game.api.script.Execution;
+import com.runemate.game.api.script.framework.LoopingScript;
 
 import javafx.application.Platform;
 import scripts.mining.AIOMinerGUI;
@@ -9,27 +12,22 @@ import scripts.mining.MiningStyle;
 import scripts.mining.Paint;
 import scripts.mining.ReflexAgent;
 
-import com.runemate.game.api.client.paint.PaintListener;
-import com.runemate.game.api.hybrid.Environment;
-import com.runemate.game.api.hybrid.local.Skill;
-import com.runemate.game.api.script.Execution;
-import com.runemate.game.api.script.framework.LoopingScript;
-
-public class BatMinerAIO extends LoopingScript implements PaintListener {
+public class ExiaMinerAIO extends LoopingScript {
 	public static MiningStyle miner;
 	public static String version = "";
 	private AIOMinerGUI gui;
-	private Paint paint = Paint.create(Environment.isRS3());
+	private Paint paint = new Paint(Environment.isRS3());
 
 	@Override
 	public void onStart(String... args){
 		setLoopDelay(0);
 		version = getMetaData().getVersion();
-		BatMinerAIO THIS = this;
+		String name = getMetaData().getName();
+		ExiaMinerAIO THIS = this;
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				gui = new AIOMinerGUI(version, THIS);
+				gui = new AIOMinerGUI(name, version, THIS);
 				gui.show();
 			}
 		});
@@ -50,7 +48,7 @@ public class BatMinerAIO extends LoopingScript implements PaintListener {
 		Paint.startTime = System.currentTimeMillis();
 		miner = gui.miner;
 		gui = null;
-		getEventDispatcher().addListener(this);
+		getEventDispatcher().addListener(paint);
 		getEventDispatcher().addListener(Paint.profitCounter);
 		Paint.startEXP = Skill.MINING.getExperience();
 		Paint.exp = miner.getOre().exp;
@@ -67,10 +65,6 @@ public class BatMinerAIO extends LoopingScript implements PaintListener {
 			Paint.status = "Regenerating reflex delay";
 			ReflexAgent.reinitialize(ReflexAgent.getReactionTime());
 		}
-	}
-	@Override
-	public void onPaint(Graphics2D g) {
-		paint .draw(g);
 	}
 
 	@Override

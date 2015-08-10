@@ -3,6 +3,20 @@ package scripts.mining;
 import java.awt.Point;
 import java.util.ArrayList;
 
+import com.runemate.game.api.hybrid.Environment;
+import com.runemate.game.api.hybrid.entities.GameObject;
+import com.runemate.game.api.hybrid.entities.LocatableEntity;
+import com.runemate.game.api.hybrid.entities.Player;
+import com.runemate.game.api.hybrid.entities.details.Interactable;
+import com.runemate.game.api.hybrid.input.Mouse;
+import com.runemate.game.api.hybrid.local.Camera;
+import com.runemate.game.api.hybrid.local.hud.InteractablePoint;
+import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
+import com.runemate.game.api.hybrid.location.Coordinate;
+import com.runemate.game.api.hybrid.location.navigation.basic.BresenhamPath;
+import com.runemate.game.api.hybrid.region.Players;
+import com.runemate.game.api.hybrid.util.calculations.Random;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -17,30 +31,8 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import scripts.mining.locations.Location;
 
-import com.runemate.game.api.hybrid.Environment;
-import com.runemate.game.api.hybrid.entities.GameObject;
-import com.runemate.game.api.hybrid.entities.LocatableEntity;
-import com.runemate.game.api.hybrid.entities.Player;
-import com.runemate.game.api.hybrid.entities.details.Interactable;
-import com.runemate.game.api.hybrid.input.Mouse;
-import com.runemate.game.api.hybrid.local.Camera;
-import com.runemate.game.api.hybrid.local.hud.InteractablePoint;
-import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
-import com.runemate.game.api.hybrid.location.Coordinate;
-import com.runemate.game.api.hybrid.location.navigation.Path;
-import com.runemate.game.api.hybrid.location.navigation.Traversal;
-import com.runemate.game.api.hybrid.location.navigation.basic.BresenhamPath;
-import com.runemate.game.api.hybrid.player_sense.PlayerSense;
-import com.runemate.game.api.hybrid.region.Players;
-import com.runemate.game.api.hybrid.region.Region;
-import com.runemate.game.api.hybrid.util.Timer;
-import com.runemate.game.api.hybrid.util.calculations.Random;
-import com.runemate.game.api.script.Execution;
-
 public class StandardMiner extends MiningStyle{	
-	LocatableEntity currentRock = null;
 	int notMiningCount = 0;
-	RockWatcher rockWatcher;
 	Location location;
 	
 	@Override
@@ -48,6 +40,11 @@ public class StandardMiner extends MiningStyle{
 		return location == null ? "Unknown" : location.getName();
 	}
 	
+	@Override
+	public Coordinate[] getRockLocations(){
+		return location.getRocks();
+	}
+
 	@Override
 	public Rock getOre() {
 		return location == null || location.getOre() == null ? Rock.UNKNOWN : location.getOre();
@@ -63,7 +60,9 @@ public class StandardMiner extends MiningStyle{
 	@Override
 	public void onStop() {
 		if(rockWatcher != null){
-			rockWatcher.interrupt();
+			try{
+				rockWatcher.interrupt();
+			}catch(NullPointerException e){}
 		}
 	}
 
@@ -114,10 +113,9 @@ public class StandardMiner extends MiningStyle{
 				Player me = Players.getLocal();
 				if(rock.distanceTo(me) > 16){
 					Paint.status = "Walking to rock";
-					walkToNextRock(rock);
+					walkTo(rock);
 				}else{
-					//rockPath = null;
-					if(!clickNext(rock))return;
+					if(!turnAndClick(rock))return;
 				}
 			}else{
 				if(outOfRegion()){
@@ -137,83 +135,6 @@ public class StandardMiner extends MiningStyle{
 		}
 
 		hoverNext();
-	}
-
-	private boolean outOfRegion() {
-		Region baseRegion = Region.getLoaded();
-		for (Coordinate rock : location.getRocks()) {
-			if(baseRegion.getArea().contains(rock)) return false;
-		}
-		return true;
-	}
-
-	Path rockPath = null;
-	protected void walkToNextRock(LocatableEntity rock) {
-		if(rockPath == null && rock != null){
-			try{
-				rockPath = BresenhamPath.buildTo(rock);
-			}catch(Exception e){}
-		}else if((Traversal.getDestination() == null || Traversal.getDestination().distanceTo(rock) > 14)){
-			ReflexAgent.delay();
-			rockPath.step();
-		}
-	}
-
-	private boolean clickNext(LocatableEntity rock){
-		if(rock.getVisibility() <= 20){
-			//if only part of the rock is visible, turn to it
-			Camera.turnTo(rock);
-			return false;
-		}else{
-			//The rock is visible enough, so we click it
-			ReflexAgent.delay();
-			boolean clicked = rock.interact("Mine");
-			if(Camera.getPitch() <= 0.3){
-				Camera.concurrentlyTurnTo(Random.nextDouble(0.5, 0.9));
-			}
-			
-			//Decide if we should double click or not based on player sense
-			boolean doubleClick = Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.DOUBLE_CLICK.playerSenseKey);
-					
-			//Make sure that we actually clicked the rock 
-			currentRock = rock;
-			Player me = Players.getLocal();
-			Timer timer = new Timer((int)(rock.distanceTo(me) * ReflexAgent.getReactionTime() * 2));
-			timer.start();
-			while(timer.getRemainingTime() > 0 && !doubleClick && clicked && me.getAnimationId() == -1 && rock.isValid() && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
-				Execution.delay(100);
-			}
-			return clicked;
-		}
-	}
-
-	private void walkToNextEmpty(){
-		RockWatcher.Pair<Coordinate, Long, GameObject> rockPair = rockWatcher.nextRock();
-		GameObject next = rockPair == null ? null : rockWatcher.nextRock().object;
-		Player me = Players.getLocal();
-		if(next != null && next.distanceTo(me) > 1.0 && !me.isMoving()){
-			if(next.distanceTo(me) > 16){
-				Paint.status = "Walking to rock";
-				walkToNextRock(next);
-			}else if(next.getVisibility() <= 20 && next.isValid()){
-				Camera.turnTo(next);
-			}else{
-				if(next.isValid()){
-					ReflexAgent.delay();
-					boolean clicked = next.interact("Mine");
-					if(Camera.getPitch() <= 0.3){
-						Camera.concurrentlyTurnTo(Random.nextDouble(0.5, 0.9));
-					}
-
-					Timer timer = new Timer(ReflexAgent.getReactionTime() * 5);
-					timer.start();
-					while(timer.getRemainingTime() > 0 && next.distanceTo(me) > 1.0 && next.isValid() && clicked){
-						next.hover();
-						Execution.delay(10,25);
-					}
-				}
-			}
-		}
 	}
 	
 	public static Interactable next;

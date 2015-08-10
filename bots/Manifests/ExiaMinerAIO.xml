@@ -1,6 +1,6 @@
 <manifest>
-	<main-class>scripts.BatMinerAIO</main-class>
-	<name>Bat Miner AIO</name>
+	<main-class>scripts.ExiaMinerAIO</main-class>
+	<name>Exia Miner AIO</name>
 	<description>Mine things all over Runescape.</description>
 	<version>1.4.0</version>
 	<compatibility>
