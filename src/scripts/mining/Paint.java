@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.text.NumberFormat;
+import java.util.HashMap;
 
 import scripts.ExiaMinerAIO;
 
@@ -21,7 +22,7 @@ public class Paint implements PaintListener{
 	public static boolean showGraph = true;
 	public static MoneyCounter profitCounter = new MoneyCounter();
 	public static int startEXP = 0;
-	public static double exp = 5.0;
+	public static HashMap<String, Double> exp;
 	public static long startTime = 0;
 	public static String status = "";
 	
@@ -42,7 +43,7 @@ public class Paint implements PaintListener{
 			int totalEXP = Skill.MINING.getExperience() - startEXP;
 			long expPhr = ((long)totalEXP*3600000)/(time - startTime);
 			long profPhr = ((long)profitCounter.getProfit()*3600000)/(time - startTime);
-			long orePhr = (long)((double)expPhr / exp);
+			long orePhr = 0;//(long)((double)expPhr / exp);
 			int nextLevelEXP = Skill.MINING.getExperienceToNextLevel();
 			int currentLevel = Skill.MINING.getCurrentLevel();
 			int percentage = 100-Skill.MINING.getExperienceAsPercent();

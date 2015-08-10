@@ -20,7 +20,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 
 public abstract class MiningStyle {
-	public String status = "";	
 	RockWatcher rockWatcher;
 
 	public abstract void onStart(String... args);

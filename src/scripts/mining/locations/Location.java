@@ -30,6 +30,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import scripts.mining.CustomPlayerSense;
+import scripts.mining.GenericPathBuilder;
 import scripts.mining.ReflexAgent;
 import scripts.mining.Rock;
 

@@ -1,4 +1,4 @@
-package scripts.mining.locations;
+package scripts.mining;
 
 import com.runemate.game.api.hybrid.entities.details.Locatable;
 import com.runemate.game.api.hybrid.location.navigation.Path;
@@ -9,8 +9,6 @@ import com.runemate.game.api.hybrid.location.navigation.cognizant.RegionPath;
 import com.runemate.game.api.hybrid.location.navigation.web.Web;
 import com.runemate.game.api.hybrid.player_sense.PlayerSense;
 import com.runemate.game.api.hybrid.util.calculations.Random;
-
-import scripts.mining.CustomPlayerSense;
 
 public class GenericPathBuilder {
 	
