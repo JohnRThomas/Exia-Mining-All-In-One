@@ -40,6 +40,7 @@ public abstract class MiningStyle {
 
 	Path rockPath = null;
 	protected void walkTo(LocatableEntity rock) {
+		Paint.status = "Walking to rock";
 		if(rockPath == null && rock != null){
 			try{
 				rockPath = BresenhamPath.buildTo(rock);
@@ -52,10 +53,12 @@ public abstract class MiningStyle {
 	
 	protected boolean turnAndClick(LocatableEntity rock){
 		if(rock.getVisibility() <= 20){
+			Paint.status = "Turning to rock";
 			//if only part of the rock is visible, turn to it
 			Camera.turnTo(rock);
 			return false;
 		}else{
+			Paint.status = "Clicking rock";
 			//The rock is visible enough, so we click it
 			ReflexAgent.delay();
 			boolean clicked = rock.interact("Mine");
@@ -69,7 +72,7 @@ public abstract class MiningStyle {
 			//Make sure that we actually clicked the rock 
 			currentRock = rock;
 			Player me = Players.getLocal();
-			Timer timer = new Timer((int)(rock.distanceTo(me) * ReflexAgent.getReactionTime() * 2));
+			Timer timer = new Timer((int)(rock.distanceTo(me) * ReflexAgent.getReactionTime() * 4));
 			timer.start();
 			while(timer.getRemainingTime() > 0 && !doubleClick && clicked && me.getAnimationId() == -1 && rock.isValid() && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
 				Execution.delay(100);
@@ -95,9 +98,11 @@ public abstract class MiningStyle {
 				Paint.status = "Walking to rock";
 				walkTo(next);
 			}else if(next.getVisibility() <= 20 && next.isValid()){
+				Paint.status = "Turning to rock";
 				Camera.turnTo(next);
 			}else{
 				if(next.isValid()){
+					Paint.status = "Clicking rock";
 					ReflexAgent.delay();
 					boolean clicked = next.interact("Mine");
 					if(Camera.getPitch() <= 0.3){

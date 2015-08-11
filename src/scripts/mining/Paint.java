@@ -22,7 +22,8 @@ public class Paint implements PaintListener{
 	public static boolean showGraph = true;
 	public static MoneyCounter profitCounter = new MoneyCounter();
 	public static int startEXP = 0;
-	public static HashMap<String, Double> exp;
+	public static HashMap<String, Double> exps;
+	public static double exp = 5.0;
 	public static long startTime = 0;
 	public static String status = "";
 	
@@ -37,13 +38,18 @@ public class Paint implements PaintListener{
 		try{
 			if(first){
 				tempLevel = Skill.MINING.getCurrentLevel();
+				if(exps.size() == 1){
+					for(String k : exps.keySet())exp = exps.get(k);
+				}else{
+					exp = 1.0;
+				}
 				first = false;
 			}
 			long time = System.currentTimeMillis();
 			int totalEXP = Skill.MINING.getExperience() - startEXP;
 			long expPhr = ((long)totalEXP*3600000)/(time - startTime);
 			long profPhr = ((long)profitCounter.getProfit()*3600000)/(time - startTime);
-			long orePhr = 0;//(long)((double)expPhr / exp);
+			long orePhr = (long)((double)expPhr / exp);
 			int nextLevelEXP = Skill.MINING.getExperienceToNextLevel();
 			int currentLevel = Skill.MINING.getCurrentLevel();
 			int percentage = 100-Skill.MINING.getExperienceAsPercent();

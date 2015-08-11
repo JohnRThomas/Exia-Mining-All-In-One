@@ -11,7 +11,7 @@ import com.runemate.game.api.hybrid.util.Filter;
 public class RockWatcher extends Thread{
 
 	private Set<Pair<Coordinate, Long, GameObject>> locations;
-	private Validater validater;
+	public Validater validater;
 	
 	public RockWatcher(Validater validater, Coordinate... locations){
 		this.validater = validater;

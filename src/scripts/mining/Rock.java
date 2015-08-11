@@ -16,7 +16,7 @@ public enum Rock {
 	IRON("Iron", new String[]{"Iron ore"}, new double[]{35.0}, true, true, new int[]{7487, 7488, 7489, 13444, 13445, 13446, 13710, 13711}),
 	ELEMENTAL("Elemental", new String[]{"Elemental ore"}, new double[]{0.0}, true, true),
 	DAEYALT("Daeyalt", new String[]{"Daeyalt ore"}, new double[]{17.5}, true, false),
-	SILVER("Silver", new String[]{"Sliver ore"}, new double[]{40.0}, true, true, new int[]{13716, 13717, 13438, 13439, 13440}),
+	SILVER("Silver", new String[]{"Silver ore"}, new double[]{40.0}, true, true, new int[]{13716, 13717, 13438, 13439, 13440}),
 	ESSENCE("Essence", new String[]{"Rune essence", "Pure essence"}, new double[]{5.0, 5.0}, true, true),
 	COAL("Coal", new String[]{"Coal"}, new double[]{50.0}, true, true, new int[]{13706, 13714, 14860, 14861, 14862}),
 	PAY_DIRT("Pay-Dirt", new String[]{"Pay-dirt"}, new double[]{60.0}, false, true),
@@ -26,7 +26,7 @@ public enum Rock {
 	GRANITE("Granite", new String[]{"Granite (500g)", "Granite (2kg)", "Granite (5kg)"}, new double[]{50.0, 60.0, 75.0}, true, true),
 	MITHRIL("Mithril", new String[]{}, new double[]{80.0}, true, true, new int[]{13718, 13719, 14890, 14948, 14949}),
 	ADAMANTITE("Adamantite", new String[]{"Adamantite ore"}, new double[]{95.0}, true, true, new int[]{14168, 13720, 14887, 14889}),
-	BANE("Bane", new String[]{"Bane ore "}, new double[]{90.0}, true, false),
+	BANE("Bane", new String[]{"Bane ore"}, new double[]{90.0}, true, false),
 	LIVING_MINERALS("Living rock remains", new String[]{"Living minerals"}, new double[]{25.0}, true, false),
 	CONCENTRATED_COAL("Concentrated Coal", new String[]{"Coal"}, new double[]{50.0}, true, false),
 	CONCENTRATED_GOLD("Concentrated Gold", new String[]{"Gold ore"}, new double[]{65.0}, true, false),
@@ -48,6 +48,7 @@ public enum Rock {
 		this.rs3 = rs3;
 		this.osrs = osrs;
 		ids = new int[0];
+		System.out.println(name);
 	}
 	
 	Rock(String name, String[] oreNames, double[] exp, boolean rs3, boolean osrs, int[] ids){
@@ -58,6 +59,7 @@ public enum Rock {
 		this.rs3 = rs3;
 		this.osrs = osrs;
 		this.ids = ids;
+		System.out.println(name);
 	}
 	
 	public static ObservableList<String> getOres(boolean isRS3){

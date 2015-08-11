@@ -52,7 +52,7 @@ public class ExiaMinerAIO extends LoopingScript {
 		gui = null;
 		getEventDispatcher().addListener(paint);
 		Paint.startEXP = Skill.MINING.getExperience();
-		Paint.exp = miner.getOre().exps;
+		Paint.exps = miner.getOre().exps;
 		miner.onStart(args);
 	}
 		

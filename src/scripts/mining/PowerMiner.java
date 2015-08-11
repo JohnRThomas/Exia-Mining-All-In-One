@@ -13,7 +13,6 @@ import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceWindows;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.local.hud.interfaces.SpriteItem;
 import com.runemate.game.api.hybrid.location.Coordinate;
-import com.runemate.game.api.hybrid.location.navigation.basic.BresenhamPath;
 import com.runemate.game.api.hybrid.player_sense.PlayerSense;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
@@ -26,9 +25,9 @@ import com.runemate.game.api.rs3.local.InterfaceMode;
 import com.runemate.game.api.rs3.local.hud.interfaces.eoc.ActionBar;
 import com.runemate.game.api.rs3.local.hud.interfaces.eoc.ActionBar.Slot;
 import com.runemate.game.api.rs3.local.hud.interfaces.eoc.ActionWindow;
-import com.runemate.game.api.script.Execution;
 import com.runemate.game.api.rs3.local.hud.interfaces.eoc.SlotAction;
 import com.runemate.game.api.rs3.local.hud.interfaces.legacy.LegacyTab;
+import com.runemate.game.api.script.Execution;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -43,6 +42,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import scripts.mining.RockWatcher.Pair;
+import scripts.mining.RockWatcher.Validater;
 
 public class PowerMiner extends MiningStyle{
 
@@ -58,7 +58,28 @@ public class PowerMiner extends MiningStyle{
 	@Override
 	public void onStart(String... args) {
 		if(Environment.isRS3()){
-			rockWatcher = new RockWatcher((GameObject rock) -> validateRS3(rock), new Coordinate[]{});
+			if(ore.name.equals("Granite")){
+				rockWatcher = new RockWatcher(new Validater(){
+
+					@Override
+					public boolean validate(GameObject o) {
+						return o != null && o.getDefinition() != null && o.getDefinition().getName() != null &&
+								o.getId() != 2560 && o.getDefinition().getName().contains("rocks");
+					}
+					
+					}, new Coordinate[]{});
+			}else if(ore.name.equals("SandStone")){
+				rockWatcher = new RockWatcher(new Validater(){
+
+					@Override
+					public boolean validate(GameObject o) {
+						return o != null && o.getDefinition() != null && o.getDefinition().getName() != null &&
+								o.getId() != 2551 && o.getDefinition().getName().contains("rocks");
+					}
+					
+					}, new Coordinate[]{});			}else{
+				rockWatcher = new RockWatcher((GameObject rock) -> validateRS3(rock), new Coordinate[]{});
+			}
 		}else{
 			rockWatcher = new RockWatcher((GameObject rock) -> validateOSRS(rock), new Coordinate[]{});
 		}
@@ -91,16 +112,14 @@ public class PowerMiner extends MiningStyle{
 	@Override
 	public void loop() {
 		if(shouldDrop()){
-			Paint.status = "Dropping";
 			dropping = true;
 			drop();
 		}else{
-			Paint.status = "Mining";
 			mine();
 			if(Players.getLocal().getAnimationId() == -1)notMiningCount++;
 			else notMiningCount = 0;
 
-			if(notMiningCount >= 15){
+			if(notMiningCount >= 30){
 				notMiningCount = 0;
 				currentRock = null;
 			}
@@ -109,7 +128,7 @@ public class PowerMiner extends MiningStyle{
 
 	private void mine() {
 		//If the inventory was not initially open, close it
-		if(closeInv && InterfaceWindows.getInventory().isOpen()){
+		if(actionBar && closeInv && InterfaceWindows.getInventory().isOpen()){
 			if(Environment.isRS3()){
 				if(InterfaceMode.getCurrent() == InterfaceMode.LEGACY){
 					LegacyTab.BACKPACK.close();
@@ -125,28 +144,24 @@ public class PowerMiner extends MiningStyle{
 			currentRock = null;
 
 			//Get a new rock
-			LocatableEntity rock = getNextRock();
+			GameObject rock = getNextRock();
 			if(rock != null){
+				rockWatcher.addLocation(rock.getPosition());
 				Player me = Players.getLocal();
 				if(rock.distanceTo(me) > 16){
-					Paint.status = "Walking to rock";
 					walkTo(rock);
 				}else{
-					if(!turnAndClick(rock))return;
+					turnAndClick(rock);
 				}
 			}else{
-				if(outOfRegion()){
-					BresenhamPath.buildTo(center).step();
-				}else{
-					Paint.status = "Preparing for respawn";
-					//if there are no new rocks to get, walk to the next spawning rock
-					walkToNextEmpty();
-					Paint.status = "Waiting for respawn";
-				}
+				Paint.status = "Preparing for respawn";
+				//if there are no new rocks to get, walk to the next spawning rock
+				walkToNextEmpty();
+				Paint.status = "Waiting for respawn";
 			}
 		}else{
 			Paint.status = "Mining";
-			if(currentRock != null && currentRock.getVisibility() < 80){
+			if(!Players.getLocal().isMoving() && currentRock != null && currentRock.getVisibility() < 80){
 				Camera.concurrentlyTurnTo((Camera.getYaw() + Random.nextInt(0, 360)) % 360);
 			}
 			hoverNext();
@@ -154,6 +169,31 @@ public class PowerMiner extends MiningStyle{
 	}
 
 	private void hoverNext(){
+		if(!actionBar && mine1drop1){
+			SpriteItemQueryResults items = Inventory.getItems();
+			boolean[] open = new boolean[28];
+			for(SpriteItem i : items){
+				open[i.getIndex()] = true;
+			}
+			int i = 0;
+			for(; i < 28; i++){
+				if(!open[i]){
+					break;
+				}
+			}
+			InteractablePoint pt = Inventory.getBoundsOf(i).getInteractionPoint(new Point(Random.nextInt(-1,1), Random.nextInt(-1,1)));
+			if(pt != null){
+				ReflexAgent.delay();
+				ReflexAgent.delay();
+				ReflexAgent.delay();
+				Mouse.move(pt);
+			}else{
+				Inventory.getBoundsOf(i).hover();
+			}
+			ReflexAgent.delay();
+			return;
+		}
+		
 		LocatableEntity rock = getNextRock();
 		if(rock == null){
 			Pair<Coordinate, Long, GameObject> pair = rockWatcher.nextRock();
@@ -186,7 +226,7 @@ public class PowerMiner extends MiningStyle{
 		}
 	}
 
-	private LocatableEntity getNextRock() {
+	private GameObject getNextRock() {
 		LocatableEntityQueryResults<GameObject> rocksObjs = null;
 		try{
 			rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
@@ -195,7 +235,7 @@ public class PowerMiner extends MiningStyle{
 					if(o.equals(currentRock))
 						return false;
 					else
-						return o.getDefinition().getName().contains(ore.name);
+						return o.getDefinition().getName().contains(ore.name) && o.distanceTo(center) <= radius && rockWatcher.validater.validate(o);
 				}
 			}).sortByDistance();
 		}catch(Exception e){}
@@ -229,6 +269,8 @@ public class PowerMiner extends MiningStyle{
 			dropping = false;
 			return;
 		}
+		
+		Paint.status = "Dropping";
 
 		if(actionBar){
 			//check if the action bar contains the ore we need to drop
@@ -240,23 +282,22 @@ public class PowerMiner extends MiningStyle{
 						if(action.isActivatable()){
 							if(forceKeys) 
 								action.activate(false);
-							else
+							else{
 								action.activate();
+							}
 
 							//If this player spams, then make them click twice
 							if(Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.ACTION_BAR_SPAM.playerSenseKey))
 								if(forceKeys) 
 									action.activate(false);
-								else
-									action.activate();
-
+								
 							ReflexAgent.delay();
 							return;
 						}
 					}
 				}
 			}
-
+			Paint.status = "Setting up action bar";
 			//at this point, we didn't find it, so drag it over
 			if(InterfaceWindows.getInventory().isOpen()){
 				//find the first open action slot
@@ -283,7 +324,7 @@ public class PowerMiner extends MiningStyle{
 			//Find ore in inventory
 			if(InterfaceWindows.getInventory().isOpen()){
 				items.get(0).interact("Drop");
-				ReflexAgent.delay();
+				Execution.delay(ReflexAgent.getReactionTime()*4);
 			}else{
 				InterfaceWindows.getInventory().open();
 				closeInv = true;
@@ -309,15 +350,17 @@ public class PowerMiner extends MiningStyle{
 	CheckBox mineOne = new CheckBox("Mine one drop one");
 	CheckBox hotkeys = new CheckBox("Use Action Bar");
 	CheckBox forceNoClick = new CheckBox("Force keyboard for action bar");
+	CheckBox radLabel = new CheckBox("Radius:");
 	TextField radText = new TextField("10");
 
 	@Override
 	public void loadSettings() {
 		mine1drop1 = mineOne.isSelected();
 		actionBar  = hotkeys.isSelected();
-		forceKeys  = forceNoClick.isSelected();
+		if(!ore.name.contains("Sandstone") && !ore.name.contains("Granite"))
+			forceKeys  = forceNoClick.isSelected();
 		try{
-			radius = Integer.parseInt(radText.getText());
+			radius = radLabel.isSelected() ? Integer.parseInt(radText.getText()) : 1000;
 		}catch(NumberFormatException e){}
 		center = Players.getLocal().getPosition();
 	}
@@ -373,14 +416,20 @@ public class PowerMiner extends MiningStyle{
 		forceNoClick.setPadding(new Insets(10,100,0,5));
 		settings.getChildren().add(forceNoClick);
 
-		Label radLabel = new Label("Radius:");
+		radLabel.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				radText.setDisable(!newValue);
+			}
+		});
 		radLabel.setStyle("-fx-text-fill: -fx-text-input-text");
 		radLabel.setPadding(new Insets(0,5,0,5));
 		settings.getChildren().add(radLabel);
-
+		
+		radText.setDisable(!radLabel.isSelected());
 		radText.setStyle("-fx-text-fill: -fx-text-input-text");
 		radText.setMaxWidth(35.0f);
-		radText.setPadding(new Insets(1,1,1,5));
+		radText.setPadding(new Insets(3,5,2,5));
 		settings.getChildren().add(radText);
 
 		final String LABEL_STYLE = "-fx-text-fill: -fx-flair-text; -fx-font-size: 15px; -fx-background-color: -fx-flair;";

@@ -117,7 +117,7 @@ public class StandardMiner extends MiningStyle{
 					Paint.status = "Walking to rock";
 					walkTo(rock);
 				}else{
-					if(!turnAndClick(rock))return;
+					turnAndClick(rock);
 				}
 			}else{
 				if(outOfRegion()){
