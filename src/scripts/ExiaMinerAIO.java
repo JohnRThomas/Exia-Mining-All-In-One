@@ -15,6 +15,7 @@ import scripts.mining.ReflexAgent;
 public class ExiaMinerAIO extends LoopingScript {
 	public static MiningStyle miner;
 	public static String version = "";
+	public static ExiaMinerAIO instance;
 	private AIOMinerGUI gui;
 	private Paint paint = new Paint(Environment.isRS3());
 
@@ -23,11 +24,11 @@ public class ExiaMinerAIO extends LoopingScript {
 		setLoopDelay(0);
 		version = getMetaData().getVersion();
 		String name = getMetaData().getName();
-		ExiaMinerAIO THIS = this;
+		instance = this;
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				gui = new AIOMinerGUI(name, version, THIS);
+				gui = new AIOMinerGUI(name, version, instance);
 				gui.show();
 			}
 		});
@@ -44,12 +45,12 @@ public class ExiaMinerAIO extends LoopingScript {
 		}
 		
 		ReflexAgent.initialize(reflexSeed);
+		CustomPlayerSense.intialize();
 
 		Paint.startTime = System.currentTimeMillis();
 		miner = gui.miner;
 		gui = null;
 		getEventDispatcher().addListener(paint);
-		getEventDispatcher().addListener(Paint.profitCounter);
 		Paint.startEXP = Skill.MINING.getExperience();
 		Paint.exp = miner.getOre().exps;
 		miner.onStart(args);
@@ -57,7 +58,6 @@ public class ExiaMinerAIO extends LoopingScript {
 		
 	@Override
 	public void onLoop() {
-		if(!CustomPlayerSense.playerSenseIntited)CustomPlayerSense.intialize();
 		miner.loop();
 		
 		//At ~8 hours we need to generate a new line

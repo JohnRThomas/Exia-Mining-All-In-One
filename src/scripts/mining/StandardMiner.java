@@ -29,6 +29,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import scripts.ExiaMinerAIO;
 import scripts.mining.locations.Location;
 
 public class StandardMiner extends MiningStyle{	
@@ -52,6 +53,7 @@ public class StandardMiner extends MiningStyle{
 	
 	@Override
 	public void onStart(String... args) {
+		ExiaMinerAIO.instance.getEventDispatcher().addListener(Paint.profitCounter);
 		rockWatcher = new RockWatcher((GameObject rock) -> location.validate(rock), location.getRocks());
 		rockWatcher.start();
 		content = null;
@@ -132,9 +134,9 @@ public class StandardMiner extends MiningStyle{
 			if(currentRock != null && currentRock.getVisibility() < 80){
 				Camera.concurrentlyTurnTo((Camera.getYaw() + Random.nextInt(0, 360)) % 360);
 			}
+			hoverNext();
 		}
 
-		hoverNext();
 	}
 	
 	public static Interactable next;

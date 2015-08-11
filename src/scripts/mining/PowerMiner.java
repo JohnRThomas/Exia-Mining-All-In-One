@@ -1,18 +1,23 @@
 package scripts.mining;
 
+import java.awt.Point;
+
 import com.runemate.game.api.hybrid.Environment;
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
 import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.hybrid.input.Mouse;
 import com.runemate.game.api.hybrid.local.Camera;
+import com.runemate.game.api.hybrid.local.hud.InteractablePoint;
 import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceWindows;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.local.hud.interfaces.SpriteItem;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.location.navigation.basic.BresenhamPath;
 import com.runemate.game.api.hybrid.player_sense.PlayerSense;
+import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
+import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.hybrid.util.Filter;
 import com.runemate.game.api.hybrid.util.Timer;
@@ -37,11 +42,13 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import scripts.mining.RockWatcher.Pair;
 
 public class PowerMiner extends MiningStyle{
 
 	private boolean dropping;
 	private boolean mine1drop1 = false;
+	private boolean forceKeys = false;
 	private boolean actionBar = false;
 	int radius = 10;
 	Coordinate center = null;
@@ -113,7 +120,7 @@ public class PowerMiner extends MiningStyle{
 				return;
 			}
 		}
-		
+
 		if(currentRock == null || !currentRock.isValid()){
 			currentRock = null;
 
@@ -142,11 +149,58 @@ public class PowerMiner extends MiningStyle{
 			if(currentRock != null && currentRock.getVisibility() < 80){
 				Camera.concurrentlyTurnTo((Camera.getYaw() + Random.nextInt(0, 360)) % 360);
 			}
+			hoverNext();
+		}
+	}
+
+	private void hoverNext(){
+		LocatableEntity rock = getNextRock();
+		if(rock == null){
+			Pair<Coordinate, Long, GameObject> pair = rockWatcher.nextRock();
+			rock = pair == null ? null : pair.object;
+		}
+
+		if(rock != null){
+			if(!rock.contains(Mouse.getPosition())){
+				ReflexAgent.delay();
+				InteractablePoint pt = rock.getInteractionPoint(new Point(Random.nextInt(-2,3), Random.nextInt(-2,3)));
+				if(pt != null){
+					Mouse.move(pt);
+				}else{
+					rock.hover();
+				}
+			}else{
+				if(rock instanceof GameObject && ((GameObject) rock).getVisibility() < 80){
+					Camera.concurrentlyTurnTo((Camera.getYaw() + Random.nextInt(0, 360)) % 360);
+				}
+				if(Random.nextInt(0,100) < 5){
+					InteractablePoint pt = rock.getInteractionPoint(new Point(Random.nextInt(-2,3), Random.nextInt(-2,3)));
+					if(pt != null){
+						Mouse.move(pt);
+					}else{
+						rock.hover();
+					}
+				}
+				ReflexAgent.delay();
+			}
 		}
 	}
 
 	private LocatableEntity getNextRock() {
-		//TODO figure out which rock to go to next
+		LocatableEntityQueryResults<GameObject> rocksObjs = null;
+		try{
+			rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
+				@Override
+				public boolean accepts(GameObject o) {
+					if(o.equals(currentRock))
+						return false;
+					else
+						return o.getDefinition().getName().contains(ore.name);
+				}
+			}).sortByDistance();
+		}catch(Exception e){}
+
+		if(rocksObjs != null && rocksObjs.size() > 0) return rocksObjs.get(0);
 		return null;
 	}
 
@@ -157,10 +211,10 @@ public class PowerMiner extends MiningStyle{
 				return ore.exps.containsKey(i.getDefinition().getName());
 			}
 		});
-		
+
 		return !items.isEmpty() && (mine1drop1 || (Inventory.isFull() || dropping));
 	}
-	
+
 	private boolean closeInv = false;
 	private void drop() {
 		SpriteItemQueryResults items = Inventory.getItems(new Filter<SpriteItem>(){
@@ -184,19 +238,25 @@ public class PowerMiner extends MiningStyle{
 					if(action.getItem() != null && ore.exps.containsKey(action.getItem().getName())){
 						//drop each of that item
 						if(action.isActivatable()){
-							action.activate();
-							
+							if(forceKeys) 
+								action.activate(false);
+							else
+								action.activate();
+
 							//If this player spams, then make them click twice
 							if(Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.ACTION_BAR_SPAM.playerSenseKey))
-								action.activate();
-							
+								if(forceKeys) 
+									action.activate(false);
+								else
+									action.activate();
+
 							ReflexAgent.delay();
 							return;
 						}
 					}
 				}
 			}
-			
+
 			//at this point, we didn't find it, so drag it over
 			if(InterfaceWindows.getInventory().isOpen()){
 				//find the first open action slot
@@ -248,12 +308,14 @@ public class PowerMiner extends MiningStyle{
 
 	CheckBox mineOne = new CheckBox("Mine one drop one");
 	CheckBox hotkeys = new CheckBox("Use Action Bar");
+	CheckBox forceNoClick = new CheckBox("Force keyboard for action bar");
 	TextField radText = new TextField("10");
 
 	@Override
 	public void loadSettings() {
-		mine1drop1  = mineOne.isSelected();
+		mine1drop1 = mineOne.isSelected();
 		actionBar  = hotkeys.isSelected();
+		forceKeys  = forceNoClick.isSelected();
 		try{
 			radius = Integer.parseInt(radText.getText());
 		}catch(NumberFormatException e){}
@@ -292,11 +354,24 @@ public class PowerMiner extends MiningStyle{
 		mineOne.setStyle("-fx-text-fill: -fx-text-input-text");
 		mineOne.setPadding(new Insets(10,160,0,5));
 		settings.getChildren().add(mineOne);
-		
+
+		hotkeys.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				forceNoClick.setDisable(!newValue);
+			}
+		});
+
 		hotkeys.setSelected(true);
 		hotkeys.setStyle("-fx-text-fill: -fx-text-input-text");
 		hotkeys.setPadding(new Insets(10,160,0,5));
 		settings.getChildren().add(hotkeys);
+
+		forceNoClick.setDisable(!hotkeys.isSelected());
+		forceNoClick.setSelected(true);
+		forceNoClick.setStyle("-fx-text-fill: -fx-text-input-text");
+		forceNoClick.setPadding(new Insets(10,100,0,5));
+		settings.getChildren().add(forceNoClick);
 
 		Label radLabel = new Label("Radius:");
 		radLabel.setStyle("-fx-text-fill: -fx-text-input-text");

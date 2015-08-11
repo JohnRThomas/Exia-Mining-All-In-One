@@ -1,7 +1,7 @@
 <manifest>
 	<main-class>scripts.ExiaMinerAIO</main-class>
 	<name>Exia Miner AIO</name>
-	<description>Mine things all over Runescape.</description>
+	<description>Mine or power mine things all over Runescape.</description>
 	<version>1.4.0</version>
 	<compatibility>
 		<game-type>RS3</game-type>
@@ -25,6 +25,10 @@
         <tag>Cavern</tag>
         <tag>Gem</tag>
         <tag>Shilo</tag>
+        <tag>Bane</tag>
+        <tag>Seren</tag>
+        <tag>Corrupted</tag>
+        <tag>Concentrated</tag>
     </tags>
 	<internal-id>minerAIO</internal-id>
 	<hidden>false</hidden>
