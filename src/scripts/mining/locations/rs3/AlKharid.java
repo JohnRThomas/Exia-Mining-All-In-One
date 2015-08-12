@@ -11,6 +11,7 @@ public class AlKharid extends Location{
 	@Override
 	public void intialize(String ore) {
 		switch(ore){
+		//TODO
 		case "Tin":
 			rocks = new Coordinate[]{new Coordinate(3295,3311)};
 			break;
