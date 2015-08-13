@@ -33,9 +33,4 @@ public class DwarvenResourceMine extends DepositLocation{
 	public String[] getOres() {
 		return new String[]{"Coal"};
 	}
-
-	@Override
-	public Coordinate[] getRocks() {
-		return rocks;
-	}
 }

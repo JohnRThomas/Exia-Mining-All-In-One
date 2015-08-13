@@ -47,11 +47,6 @@ public class VarrockWest extends OSRSLocation{
 	public String[] getOres() {
 		return new String[]{"Clay", "Tin", "Iron", "Silver"};
 	}
-
-	@Override
-	public Coordinate[] getRocks() {
-		return rocks;
-	}
 	
 	CheckBox box = new CheckBox("Use distant Rocks");
 	@Override

@@ -1,26 +1,15 @@
 package scripts.mining.locations.rs3;
 
-import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.control.CheckBox;
-import scripts.mining.Paint;
-import scripts.mining.Rock;
-import scripts.mining.locations.DepositLocation;
-
 import com.runemate.game.api.hybrid.entities.GameObject;
-import com.runemate.game.api.hybrid.entities.LocatableEntity;
-import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
-import com.runemate.game.api.hybrid.location.navigation.Traversal;
-import com.runemate.game.api.hybrid.location.navigation.basic.BresenhamPath;
-import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
-import com.runemate.game.api.hybrid.region.GameObjects;
-import com.runemate.game.api.hybrid.region.Npcs;
-import com.runemate.game.api.hybrid.region.Players;
-import com.runemate.game.api.hybrid.util.Filter;
-import com.runemate.game.api.script.Execution;
+
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
+import scripts.mining.Rock;
+import scripts.mining.locations.DepositLocation;
 
 public class LivingRockCavern extends DepositLocation{
 	private boolean idleAtBank = false;
@@ -55,21 +44,18 @@ public class LivingRockCavern extends DepositLocation{
 	}
 
 	@Override
-	public Coordinate[] getRocks() {
-		return rocks;
-	}
-
-	@Override
 	public boolean validate(GameObject rock) {
 		return rock.getDefinition().getName().equals("Mineral deposit");
 	}
 
 	@Override
 	public boolean shouldBank() {
-		return Inventory.isFull() || (getBestRock(0) == null && idleAtBank && !inBank());
+		return Inventory.isFull();// || (getNextRock() == null && idleAtBank && !inBank());
 	}
-
-	public LocatableEntity getBestRock(int index){
+	
+	/*
+	 * TODO All of this needs redoing
+	 * public LocatableEntity getBestRock(){
 		LocatableEntityQueryResults<? extends LocatableEntity> rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
 			@Override
 			public boolean accepts(GameObject o) {
@@ -126,7 +112,7 @@ public class LivingRockCavern extends DepositLocation{
 
 	@Override
 	public void walkToMine() {
-		LocatableEntity rock = getBestRock(0);
+		LocatableEntity rock = getRock(0);
 		if(minePath == null){
 			if(rock != null){
 				minePath = BresenhamPath.buildTo(rock);
@@ -142,7 +128,7 @@ public class LivingRockCavern extends DepositLocation{
 		}else if((Traversal.getDestination() == null || Traversal.getDestination().distanceTo(rock) > 14)){
 			minePath.step();
 		}
-	}
+	}*/
 
 	CheckBox box = new CheckBox("Idle at bank");
 	@Override

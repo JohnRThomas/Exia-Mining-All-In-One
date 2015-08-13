@@ -1,18 +1,18 @@
 package scripts.mining.locations.rs3;
 
-import scripts.mining.Rock;
-import scripts.mining.locations.DepositLocation;
-
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.details.Interactable;
 import com.runemate.game.api.hybrid.local.Camera;
+import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.region.GameObjects;
-import com.runemate.game.api.hybrid.region.Region;
 import com.runemate.game.api.hybrid.util.Timer;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.Execution;
+
+import scripts.mining.Rock;
+import scripts.mining.locations.DepositLocation;
 
 public class DwarvenMine extends DepositLocation{
 	
@@ -32,6 +32,9 @@ public class DwarvenMine extends DepositLocation{
 			throw new RuntimeException(ore + " is not supported in " + getName());
 		}
 		this.ore = Rock.getByName(ore);
+		bank = new Area.Rectangular(new Coordinate(1049,4580, 0), new Coordinate(1040,4571, 0));
+		mine = new Area.Rectangular(new Coordinate(3048,9780, 0), new Coordinate(3034,9759, 0));
+
 	}
 	
 	@Override
@@ -43,25 +46,7 @@ public class DwarvenMine extends DepositLocation{
 	public String[] getOres() {
 		return new String[]{"Iron", "Coal"};
 	}
-	
-	@Override
-	public Coordinate[] getRocks() {
-		return rocks;
-	}
 
-	@Override
-	public boolean inBank() {
-		return Region.getLoaded().getBase().equals(new Coordinate(992,4520,0));
-	}
-
-	@Override
-	public boolean inMine() {
-		//TODO Change this ugly shit
-		return Region.getLoaded().getBase().equals(new Coordinate(2984,9720,0)) || Region.getLoaded().getBase().equals(new Coordinate(2984,9728,0)) || 
-				Region.getLoaded().getBase().equals(new Coordinate(3008,9728,0)) || Region.getLoaded().getBase().equals(new Coordinate(2992,9728,0));
-	}
-
-	
 	@Override
 	public Interactable firstStepToBank() {
 		LocatableEntityQueryResults<GameObject> doors = GameObjects.getLoaded(entrance);

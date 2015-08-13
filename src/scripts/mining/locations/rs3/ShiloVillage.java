@@ -34,11 +34,6 @@ public class ShiloVillage extends Location{
 	public String[] getOres() {
 		return new String[]{"Gems"};
 	}
-
-	@Override
-	public Coordinate[] getRocks() {
-		return rocks;
-	}
 	
 	@Override
 	protected LocatableEntityQueryResults<? extends LocatableEntity> getBanker(){

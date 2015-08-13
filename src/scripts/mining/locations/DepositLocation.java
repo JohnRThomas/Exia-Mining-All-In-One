@@ -1,6 +1,7 @@
 package scripts.mining.locations;
 
 import java.awt.event.KeyEvent;
+import java.util.regex.Pattern;
 
 import scripts.mining.ReflexAgent;
 
@@ -23,8 +24,8 @@ public abstract class DepositLocation extends Location {
 	final int CLOSE_BUTTON = Environment.isRS3() ? 41 : 0;
 	
 	@Override
-	public String getBankInteract() {
-		return "Deposit";
+	public Pattern getBankInteract() {
+		return Pattern.compile("Deposit");
 	}
 	
 	@Override

@@ -20,21 +20,8 @@ public class CoalTrucks extends Location {
 	}
 
 	@Override
-	public Rock getOre() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String[] getOres() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public Coordinate[] getRocks() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

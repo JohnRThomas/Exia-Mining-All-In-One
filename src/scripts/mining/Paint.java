@@ -132,6 +132,12 @@ public class Paint implements PaintListener{
 					InteractablePoint pt = StandardMiner.next.getInteractionPoint();
 					g.drawRect(pt.x-2, pt.y-2, 4, 4);
 				}
+				
+				if(StandardMiner.currentRock != null){
+					g.setColor(Color.green);
+					InteractablePoint pt = StandardMiner.currentRock.getInteractionPoint();
+					g.drawRect(pt.x-2, pt.y-2, 4, 4);
+				}
 			}
 		}catch(Exception e){}		
 	}

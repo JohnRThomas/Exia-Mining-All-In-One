@@ -11,6 +11,8 @@ import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.hybrid.input.Mouse;
 import com.runemate.game.api.hybrid.local.Camera;
 import com.runemate.game.api.hybrid.local.hud.InteractablePoint;
+import com.runemate.game.api.hybrid.local.hud.Menu;
+import com.runemate.game.api.hybrid.local.hud.MenuItem;
 import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceWindows;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.local.hud.interfaces.SpriteItem;
@@ -47,7 +49,8 @@ import scripts.mining.RockWatcher.Validater;
 
 public class PowerMiner extends MiningStyle{
 
-	private boolean dropping;
+	private boolean dropping = false;
+	private boolean powerDrop = false;
 	private boolean mine1drop1 = false;
 	private boolean forceKeys = false;
 	private boolean actionBar = false;
@@ -327,9 +330,23 @@ public class PowerMiner extends MiningStyle{
 		}else{
 			//Find ore in inventory
 			if(InterfaceWindows.getInventory().isOpen()){
-				ReflexAgent.delay();
-				items.get(0).interact("Drop");
-				ReflexAgent.delay();
+				if(powerDrop){
+					ReflexAgent.delay();
+					for(SpriteItem item : items){
+						try{
+							Mouse.getPathGenerator().hop(item.getInteractionPoint());
+							Mouse.click(Mouse.Button.RIGHT);
+							Execution.delay(50,100);
+							MenuItem mItem = Menu.getItem("Drop");
+							Mouse.getPathGenerator().hop(mItem.getInteractionPoint());
+							Mouse.click(Mouse.Button.LEFT);
+						}catch(Exception e){}
+					}
+				}else{
+					ReflexAgent.delay();
+					items.get(0).interact("Drop");
+					ReflexAgent.delay();
+				}
 			}else{
 				InterfaceWindows.getInventory().open();
 				closeInv = true;
@@ -353,8 +370,9 @@ public class PowerMiner extends MiningStyle{
 	private GridPane content = null;
 
 	CheckBox mineOne = new CheckBox("Mine one drop one");
-	CheckBox hotkeys = new CheckBox("Use Action Bar");
+	CheckBox hotkeys = new CheckBox("Use action bar");
 	CheckBox forceNoClick = new CheckBox("Force keyboard for action bar");
+	CheckBox power = new CheckBox("Power drop (disable antiban for dropping)");
 	CheckBox radLabel = new CheckBox("Radius:");
 	TextField radText = new TextField("10");
 
@@ -362,6 +380,7 @@ public class PowerMiner extends MiningStyle{
 	public void loadSettings() {
 		mine1drop1 = mineOne.isSelected();
 		actionBar  = hotkeys.isSelected();
+		powerDrop  = power.isSelected();
 		if(!ore.name.contains("Sandstone") && !ore.name.contains("Granite"))
 			forceKeys  = forceNoClick.isSelected();
 		try{
@@ -406,7 +425,6 @@ public class PowerMiner extends MiningStyle{
 				}
 			}
 		});
-		mineOne.setSelected(true);
 		mineOne.setStyle("-fx-text-fill: -fx-text-input-text");
 		mineOne.setPadding(new Insets(10,160,0,5));
 		settings.getChildren().add(mineOne);
@@ -419,24 +437,27 @@ public class PowerMiner extends MiningStyle{
 				}
 			});
 
-			hotkeys.setSelected(true);
 			hotkeys.setStyle("-fx-text-fill: -fx-text-input-text");
 			hotkeys.setPadding(new Insets(10,160,0,5));
 			settings.getChildren().add(hotkeys);
 
 			forceNoClick.setDisable(!hotkeys.isSelected());
-			forceNoClick.setSelected(true);
 			forceNoClick.setStyle("-fx-text-fill: -fx-text-input-text");
 			forceNoClick.setPadding(new Insets(10,100,0,5));
 			settings.getChildren().add(forceNoClick);
 		}
-		
+
+		power.setStyle("-fx-text-fill: -fx-text-input-text");
+		power.setPadding(new Insets(10,20,0,5));
+		settings.getChildren().add(power);
+
 		radLabel.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				radText.setDisable(!newValue);
 			}
 		});
+		
 		radLabel.setStyle("-fx-text-fill: -fx-text-input-text");
 		radLabel.setPadding(new Insets(0,5,0,5));
 		settings.getChildren().add(radLabel);

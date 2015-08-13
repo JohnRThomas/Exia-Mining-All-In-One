@@ -34,9 +34,4 @@ public class LumbridgeEast extends Location {
 	public String[] getOres() {
 		return new String[]{"Copper", "Tin"};
 	}
-
-	@Override
-	public Coordinate[] getRocks() {
-		return rocks;
-	}
 }

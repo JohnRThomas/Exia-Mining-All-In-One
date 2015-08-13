@@ -1,7 +1,13 @@
 package scripts.mining.locations.rs3;
 
+import com.runemate.game.api.hybrid.entities.GameObject;
+import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
 import scripts.mining.Rock;
 import scripts.mining.locations.Location;
 
@@ -9,32 +15,63 @@ public class LumbridgeWest extends Location{
 
 	@Override
 	public void intialize(String ore) {
-		// TODO Auto-generated method stub
-		
+		switch(ore){
+		case "Coal":
+			rocks = new Coordinate[]{new Coordinate(3146,3151),new Coordinate(3147,3150),new Coordinate(3145,3149),new Coordinate(3144,3148),new Coordinate(3145,3147),new Coordinate(3143,3147),new Coordinate(3148,3144)};
+			break;
+		case "Mithril":
+			rocks = new Coordinate[]{new Coordinate(3229,3146),new Coordinate(3230,3147),new Coordinate(3227,3145),new Coordinate(3228,3151),new Coordinate(3223,3150)};
+			break;
+		case "Adamantite":
+			rocks = new Coordinate[]{new Coordinate(3149,3145),new Coordinate(3149,3147)};
+			break;
+		default:
+			throw new RuntimeException(ore + " is not supported in " + getName());
+		}
+		this.ore = Rock.getByName(ore);
+		bank = new Area.Rectangular(new Coordinate(3155,3234), new Coordinate(3150,3229));
+		mine = new Area.Rectangular(new Coordinate(3150,3149), new Coordinate(3142,3142));
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return "Lumbridge West";
 	}
 
 	@Override
-	public Rock getOre() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String[] getOres() {
-		// TODO Auto-generated method stub
-		return null;
+		return new String[]{"Coal", "Mithril", "Adamantite"};
 	}
 
 	@Override
-	public Coordinate[] getRocks() {
-		// TODO Auto-generated method stub
-		return null;
+	public Node[] getSettingsNodes(){
+		Label labela = new Label("WARNING!");
+		labela.setStyle("-fx-text-fill: -fx-text-input-text");
+		labela.setAlignment(Pos.CENTER);
+		labela.setPadding(new Insets(3,3,3,3));
+		labela.setPrefWidth(165);
+		
+		Label labelb = new Label("This area may be");
+		labelb.setStyle("-fx-text-fill: -fx-text-input-text");
+		labelb.setPadding(new Insets(3,3,3,3));
+		labelb.setPrefWidth(165);
+		
+		Label labelc = new Label("buggy due to counter");
+		labelc.setStyle("-fx-text-fill: -fx-text-input-text");
+		labelc.setPadding(new Insets(3,3,3,3));
+		labelc.setPrefWidth(165);	
+		
+		Label labeld = new Label("measures by Jagex.");
+		labeld.setStyle("-fx-text-fill: -fx-text-input-text");
+		labeld.setPadding(new Insets(3,3,3,3));
+		labeld.setPrefWidth(165);
+		
+		return new Node[]{labela, labelb, labelc, labeld};
 	}
-
+	
+	public boolean validate(GameObject rock) {
+		return rock != null && rock.getDefinition() != null && rock.getDefinition().getName() != null &&
+				!rock.getDefinition().getName().equals("Rocks") && rock.getDefinition().getName().contains("rocks") && 
+				(rock.getDefinition().getName().contains("ore") || rock.getAnimationId() > 0);
+	}
 }

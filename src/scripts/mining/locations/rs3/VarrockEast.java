@@ -11,7 +11,9 @@ public class VarrockEast extends Location{
 	@Override
 	public void intialize(String ore){
 		switch(ore){
-		//TODO tin
+		case "Tin":
+			rocks = new Coordinate[] {new Coordinate(3281,3363),new Coordinate(3282,3364)};
+			break;
 		case "Copper":
 			rocks = new Coordinate[] {new Coordinate(3282,3368),new Coordinate(3282,3369)};
 			break;
@@ -34,10 +36,5 @@ public class VarrockEast extends Location{
 	@Override
 	public String[] getOres() {
 		return new String[]{"Copper", "Iron"};
-	}
-	
-	@Override
-	public Coordinate[] getRocks() {
-		return rocks;
 	}
 }

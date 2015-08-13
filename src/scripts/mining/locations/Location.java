@@ -1,9 +1,12 @@
 package scripts.mining.locations;
 
+import java.util.regex.Pattern;
+
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
 import com.runemate.game.api.hybrid.entities.Npc;
 import com.runemate.game.api.hybrid.entities.details.Interactable;
+import com.runemate.game.api.hybrid.entities.details.Locatable;
 import com.runemate.game.api.hybrid.local.Camera;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
@@ -18,7 +21,6 @@ import com.runemate.game.api.hybrid.location.navigation.web.WebPath;
 import com.runemate.game.api.hybrid.player_sense.PlayerSense;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.region.Banks;
-import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.hybrid.util.Filter;
 import com.runemate.game.api.hybrid.util.Timer;
@@ -51,32 +53,12 @@ public abstract class Location {
 
 	public abstract String[] getOres();
 
-	public abstract Coordinate[] getRocks();
+	public Coordinate[] getRocks(){
+		return rocks;
+	}
 
 	public Rock getOre(){
 		return ore;
-	}
-
-	public LocatableEntity getBestRock(int index){
-		LocatableEntityQueryResults<GameObject> rocksObjs = null;
-		try{
-			rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
-				@Override
-				public boolean accepts(GameObject o) {
-					if(o != null && validate(o)){
-						Coordinate pos = o.getPosition();
-						for (Coordinate rock : getRocks()) {
-							if(pos.equals(rock)) return true;
-						}
-					}
-
-					return false;
-				}
-			}).sortByDistance();
-		}catch(Exception e){}
-
-		if(rocksObjs != null && rocksObjs.size() > index) return rocksObjs.get(index);
-		else return null;
 	}
 
 	public boolean shouldBank() {
@@ -85,8 +67,8 @@ public abstract class Location {
 
 	public void openBank(){
 		ReflexAgent.delay();
-		LocatableEntityQueryResults<? extends LocatableEntity> banks = getBanker();
-
+		LocatableEntityQueryResults<? extends LocatableEntity> banks = Banks.getLoaded();//getBanker();
+		
 		if(banks.size() > 0){
 			LocatableEntity bank = banks.nearest();
 			if(bank.getVisibility() <= 10){
@@ -106,8 +88,8 @@ public abstract class Location {
 		}
 	}
 
-	public String getBankInteract() {
-		return "Bank";
+	public Pattern getBankInteract() {
+		return Pattern.compile("Bank|Use");
 	}
 
 	protected LocatableEntityQueryResults<? extends LocatableEntity> getBanker(){
@@ -182,17 +164,29 @@ public abstract class Location {
 			return true;
 		}else return false;
 	}
+	
+	int tryCount = 0;
+	private Locatable lastStep = null;
 
 	public void walkToBank() {
 		if(bankPath == null)
 			bankPath = pathBuilder.buildTo(bank.getArea());		
 		else if(!bank.contains(Traversal.getDestination())){
 
-			System.out.println(bankPath.getNext() + ": " + bankPath.step());
-
 			if(bankPath instanceof BresenhamPath){
 				bankPath = pathBuilder.buildTo(bank.getArea());
+			}else if(bankPath instanceof ViewportPath){
+				Camera.concurrentlyTurnTo(bankPath.getNext());
+
+				//Sometimes viewport paths get stuck trying to click through walls
+				if(lastStep == bankPath.getNext())tryCount++;
+				else tryCount = 0;
+				if(tryCount >= 3)bankPath = pathBuilder.buildTo(bank.getArea());
 			}
+			lastStep = bankPath.getNext();
+			
+			bankPath.step();
+
 			Execution.delay(400,600);
 		}else{
 			Execution.delay(400,600);
@@ -202,15 +196,21 @@ public abstract class Location {
 	public void walkToMine() {
 		if(minePath == null)minePath = pathBuilder.buildTo(mine.getArea());
 		else if(!mine.contains(Traversal.getDestination())){
-			if(Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.VIEW_PORT_WALKING.playerSenseKey)){
-				minePath = ViewportPath.convert(minePath);
-			}
-
-			System.out.println(minePath.getNext() + ": " + minePath.step());
 
 			if(minePath instanceof BresenhamPath){
 				minePath = pathBuilder.buildTo(mine.getArea());
+			}else if(minePath instanceof ViewportPath){
+				Camera.concurrentlyTurnTo(minePath.getNext());
+
+				//Sometimes viewport paths get stuck trying to click through walls
+				if(lastStep == minePath.getNext())tryCount++;
+				else tryCount = 0;
+				if(tryCount >= 3)minePath = pathBuilder.buildTo(mine.getArea());
 			}
+			lastStep = minePath.getNext();
+			
+			minePath.step();
+
 			Execution.delay(400,600);
 		}else{
 			Execution.delay(400,600);

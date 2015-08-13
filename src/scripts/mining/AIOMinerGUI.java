@@ -159,7 +159,7 @@ public class AIOMinerGUI extends Stage{
 				saveAs = new Image(new URL("http://i.imgur.com/ws9xyTd.png").openStream());
 				ImageIO.write(SwingFXUtils.fromFXImage(saveAs, null), "png", new File(Environment.getStorageDirectory() + "/location.png"));
 				locationImage = new ImageView(saveAs);
-
+				
 				saveAs = new Image(new URL("http://i.imgur.com/wdFM8s2.png").openStream());
 				ImageIO.write(SwingFXUtils.fromFXImage(saveAs, null), "png", new File(Environment.getStorageDirectory() + "/start.png"));
 				startImage = new ImageView(saveAs);
@@ -167,6 +167,9 @@ public class AIOMinerGUI extends Stage{
 				saveAs = new Image(new URL("http://i.imgur.com/60mcBHM.png").openStream());
 				ImageIO.write(SwingFXUtils.fromFXImage(saveAs, null), "png", new File(Environment.getStorageDirectory() + "/close.png"));
 				closeImage = new ImageView(saveAs);
+				
+				saveAs = new Image(new URL("http://i.imgur.com/4bOrdWf.png").openStream());
+				ImageIO.write(SwingFXUtils.fromFXImage(saveAs, null), "png", new File(Environment.getStorageDirectory() + "/warn.png"));
 			} catch (IOException ex) {
 				System.out.println("Failed to Read Files from web!");
 				ex.printStackTrace();

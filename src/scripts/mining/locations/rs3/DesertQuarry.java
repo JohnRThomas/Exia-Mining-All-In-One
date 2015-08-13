@@ -44,11 +44,6 @@ public class DesertQuarry extends Location{
 	}
 
 	@Override
-	public Coordinate[] getRocks() {
-		return rocks;
-	}
-
-	@Override
 	public boolean validate(GameObject rock) {
 		if(ore.name.equals("Granite")){
 			return rock != null && rock.getDefinition() != null && rock.getDefinition().getName() != null && rock.getId() != 2560 && rock.getDefinition().getName().contains("rocks");

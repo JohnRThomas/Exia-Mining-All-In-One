@@ -14,7 +14,10 @@ import com.runemate.game.api.hybrid.local.hud.InteractablePoint;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.location.navigation.basic.BresenhamPath;
+import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
+import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Players;
+import com.runemate.game.api.hybrid.util.Filter;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 
 import javafx.beans.value.ChangeListener;
@@ -35,12 +38,12 @@ import scripts.mining.locations.Location;
 public class StandardMiner extends MiningStyle{	
 	int notMiningCount = 0;
 	Location location;
-	
+
 	@Override
 	public String getLocationName() {
 		return location == null ? "Unknown" : location.getName();
 	}
-	
+
 	@Override
 	public Coordinate[] getRockLocations(){
 		return location.getRocks();
@@ -50,7 +53,7 @@ public class StandardMiner extends MiningStyle{
 	public Rock getOre() {
 		return location == null || location.getOre() == null ? Rock.UNKNOWN : location.getOre();
 	}
-	
+
 	@Override
 	public void onStart(String... args) {
 		ExiaMinerAIO.instance.getEventDispatcher().addListener(Paint.profitCounter);
@@ -108,12 +111,12 @@ public class StandardMiner extends MiningStyle{
 	protected void mine() {
 		if(currentRock == null || !currentRock.isValid()){
 			currentRock = null;
-			
+
 			//Get a new rock
-			LocatableEntity rock = location.getBestRock(0);
+			LocatableEntity rock = getNextRock();
 			if(rock != null){
 				Player me = Players.getLocal();
-				if(rock.distanceTo(me) > 16){
+				if(rock.distanceTo(me) > 8){
 					Paint.status = "Walking to rock";
 					walkTo(rock);
 				}else{
@@ -138,13 +141,13 @@ public class StandardMiner extends MiningStyle{
 		}
 
 	}
-	
+
 	public static Interactable next;
 	private void hoverNext(){
 		if(Inventory.getUsedSlots() == 27 && currentRock != null){
 			next = location.firstStepToBank();
 		}else{
-			next = location.getBestRock(1);
+			next = getNextRock();
 		}
 
 		if(next == null){
@@ -178,6 +181,27 @@ public class StandardMiner extends MiningStyle{
 				ReflexAgent.delay();
 			}
 		}
+	}
+
+	private GameObject getNextRock() {
+		LocatableEntityQueryResults<GameObject> rocksObjs = null;
+		try{
+			rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
+				@Override
+				public boolean accepts(GameObject o) {
+					if(o != null && location.validate(o)){
+						Coordinate pos = o.getPosition();
+						for (Coordinate rock : location.getRocks()) {
+							if(pos.equals(rock)) return !o.equals(currentRock);
+						}
+					}
+					return false;
+				}
+			}).sortByDistance();
+		}catch(Exception e){}
+
+		if(rocksObjs != null && rocksObjs.size() > 0) return rocksObjs.get(0);
+		return null;
 	}
 
 	private GridPane content = null;
@@ -222,6 +246,12 @@ public class StandardMiner extends MiningStyle{
 				oreList.getSelectionModel().clearSelection();
 
 				settings.getChildren().clear();
+				
+				Node[] nodes = location.getSettingsNodes();
+				for (int i = 0; i < nodes.length; i++) {
+					settings.getChildren().add(nodes[i]);
+				}
+
 			}
 		});
 
@@ -290,12 +320,13 @@ public class StandardMiner extends MiningStyle{
 		if(Environment.isRS3()){
 			locations.add(new scripts.mining.locations.rs3.AlKharid());
 			locations.add(new scripts.mining.locations.rs3.CoalTrucks());
+			//locations.add(new scripts.mining.locations.rs3.DesertQuarry());
 			locations.add(new scripts.mining.locations.rs3.DwarvenMine());
 			locations.add(new scripts.mining.locations.rs3.DwarvenResourceMine());
-			locations.add(new scripts.mining.locations.rs3.LivingRockCavern());
+			//locations.add(new scripts.mining.locations.rs3.LivingRockCavern());
 			locations.add(new scripts.mining.locations.rs3.LumbridgeEast());
 			locations.add(new scripts.mining.locations.rs3.LumbridgeWest());
-			locations.add(new scripts.mining.locations.rs3.PiratesHideout());
+			//locations.add(new scripts.mining.locations.rs3.PiratesHideout());
 			locations.add(new scripts.mining.locations.rs3.Rimmington());
 			locations.add(new scripts.mining.locations.rs3.ShiloVillage());
 			locations.add(new scripts.mining.locations.rs3.VarrockEast());

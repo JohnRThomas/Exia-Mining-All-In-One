@@ -36,9 +36,4 @@ public class VarrockEast extends OSRSLocation{
 	public String[] getOres() {
 		return new String[]{"Copper", "Tin", "Iron"};
 	}
-	
-	@Override
-	public Coordinate[] getRocks() {
-		return rocks;
-	}
 }
