@@ -319,7 +319,7 @@ public class StandardMiner extends MiningStyle{
 		ArrayList<Location> locations = new ArrayList<Location>();
 		if(Environment.isRS3()){
 			locations.add(new scripts.mining.locations.rs3.AlKharid());
-			locations.add(new scripts.mining.locations.rs3.CoalTrucks());
+			//locations.add(new scripts.mining.locations.rs3.CoalTrucks());
 			//locations.add(new scripts.mining.locations.rs3.DesertQuarry());
 			locations.add(new scripts.mining.locations.rs3.DwarvenMine());
 			locations.add(new scripts.mining.locations.rs3.DwarvenResourceMine());

@@ -81,9 +81,30 @@ public class PowerMiner extends MiningStyle{
 								o.getId() != 2551 && o.getDefinition().getName().contains("rocks");
 					}
 
-				}, new Coordinate[]{});			}else{
-					rockWatcher = new RockWatcher((GameObject rock) -> validateRS3(rock), new Coordinate[]{});
-				}
+				}, new Coordinate[]{});
+			}else if(ore.name.equals("Concentrated Coal")){
+				rockWatcher = new RockWatcher(new Validater(){
+
+					@Override
+					public boolean validate(GameObject o) {
+						return o != null && o.getDefinition() != null && o.getDefinition().getName() != null && o.getDefinition().getName().contains("Mineral") &&
+								o.getDefinition().getColorSubstitutions().containsValue(new Color(5,6,5));
+					}
+
+				}, new Coordinate[]{});
+			}else if(ore.name.equals("Concentrated Gold")){
+				rockWatcher = new RockWatcher(new Validater(){
+
+					@Override
+					public boolean validate(GameObject o) {
+						return o != null && o.getDefinition() != null && o.getDefinition().getName() != null && o.getDefinition().getName().contains("Mineral") &&
+								o.getDefinition().getColorSubstitutions().size() == 0;
+					}
+
+				}, new Coordinate[]{});
+			}else{
+				rockWatcher = new RockWatcher((GameObject rock) -> validateRS3(rock), new Coordinate[]{});
+			}
 		}else{
 			rockWatcher = new RockWatcher((GameObject rock) -> validateOSRS(rock), new Coordinate[]{});
 		}
@@ -457,7 +478,7 @@ public class PowerMiner extends MiningStyle{
 				radText.setDisable(!newValue);
 			}
 		});
-		
+
 		radLabel.setStyle("-fx-text-fill: -fx-text-input-text");
 		radLabel.setPadding(new Insets(0,5,0,5));
 		settings.getChildren().add(radLabel);
