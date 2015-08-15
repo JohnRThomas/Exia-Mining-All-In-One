@@ -51,17 +51,17 @@ public abstract class MiningStyle {
 		}
 	}
 	
-	protected boolean turnAndClick(LocatableEntity rock){
+	protected void turnAndClick(LocatableEntity rock){
 		if(rock.getVisibility() <= 20){
 			Paint.status = "Turning to rock";
 			//if only part of the rock is visible, turn to it
 			Camera.turnTo(rock);
-			return false;
 		}else{
 			Paint.status = "Clicking rock";
 			//The rock is visible enough, so we click it
 			ReflexAgent.delay();
-			boolean clicked = rock.interact("Mine");
+			rock.interact("Mine");
+			
 			if(Camera.getPitch() <= 0.3){
 				Camera.concurrentlyTurnTo(Random.nextDouble(0.5, 0.9));
 			}
@@ -74,10 +74,9 @@ public abstract class MiningStyle {
 			Player me = Players.getLocal();
 			Timer timer = new Timer((int)(rock.distanceTo(me) * ReflexAgent.getReactionTime() * 4));
 			timer.start();
-			while(timer.getRemainingTime() > 0 && !doubleClick && clicked && me.getAnimationId() == -1 && rock.isValid() && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
+			while(timer.getRemainingTime() > 0 && !doubleClick && me.getAnimationId() == -1 && rock.isValid() && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
 				Execution.delay(100);
 			}
-			return clicked;
 		}
 	}
 	

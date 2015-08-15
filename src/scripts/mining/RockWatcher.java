@@ -12,7 +12,7 @@ public class RockWatcher extends Thread{
 
 	private Set<Pair<Coordinate, Long, GameObject>> locations;
 	public Validater validater;
-	
+
 	public RockWatcher(Validater validater, Coordinate... locations){
 		this.validater = validater;
 		this.locations = new HashSet<Pair<Coordinate, Long, GameObject>>();
@@ -22,9 +22,11 @@ public class RockWatcher extends Thread{
 	}
 
 	public void addLocation(Coordinate location){
-		this.locations.add(new Pair<Coordinate, Long, GameObject>(location, 0L));
+		synchronized(locations){
+			this.locations.add(new Pair<Coordinate, Long, GameObject>(location, 0L));
+		}
 	}
-	
+
 	public Coordinate[] getLocations(){
 		Coordinate[] out = new Coordinate[locations.size()];
 		int i = 0;
@@ -33,7 +35,7 @@ public class RockWatcher extends Thread{
 		}
 		return out;
 	}
-	
+
 	@Override
 	public void run() {
 		try{
@@ -42,16 +44,18 @@ public class RockWatcher extends Thread{
 					@Override
 					public boolean accepts(GameObject o) {
 						Coordinate pos = o.getPosition();
-						for (Pair<Coordinate, Long, GameObject> rock : locations) {
-							//Match the rocks based on location
-							if(rock.pos.equals(pos)){
-								//If the rock has ore, then update it's last seen time
-								if(validater.validate(o)){
-									rock.time = System.currentTimeMillis();
-									rock.object = null;
-									return true;
-								}else{
-									rock.object = o;
+						synchronized(locations){
+							for (Pair<Coordinate, Long, GameObject> rock : locations) {
+								//Match the rocks based on location
+								if(rock.pos.equals(pos)){
+									//If the rock has ore, then update it's last seen time
+									if(validater.validate(o)){
+										rock.time = System.currentTimeMillis();
+										rock.object = null;
+										return true;
+									}else{
+										rock.object = o;
+									}
 								}
 							}
 						}
@@ -74,7 +78,7 @@ public class RockWatcher extends Thread{
 		}			
 		return bestRock;
 	}
-	
+
 	class Pair<X, Y, Z> { 
 		public X pos; 
 		public Y time; 
@@ -86,7 +90,7 @@ public class RockWatcher extends Thread{
 			object = null;
 		} 
 	}
-	
+
 	public interface Validater{
 		public boolean validate(GameObject o);
 	}

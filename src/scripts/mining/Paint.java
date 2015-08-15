@@ -84,15 +84,15 @@ public class Paint implements PaintListener{
 			g.drawString("Exp/Hour: " + formatBigNumber(expPhr), x+6, y+=17);
 
 			g.setColor(new Color(0, 0, 0, 180));
-			g.fill3DRect(x+5, y+=10, 202, 17, true);
+			g.fill3DRect(x+5, y+=10, 210, 17, true);
 			g.setColor(new Color(255,215,0, 175));
-			g.fillRect(x+6, y+1, (int) (200 * (double)(percentage/100.0)), 15);
+			g.fillRect(x+6, y+1, (int) (208 * (double)(percentage/100.0)), 15);
 			g.setColor(Color.WHITE);
 			if(totalEXP > 0){
 				long ttl = (long) ((time - startTime) * ((long)nextLevelEXP)/ totalEXP);
-				g.drawString(currentLevel + "(+" + levelsGained + ") | " + (int)(percentage) +"% to " + (currentLevel+1) + " | TTL: " + Time.format(ttl),x+8,y+=13);
+				g.drawString(currentLevel + "(+" + levelsGained + ")|" + (int)(percentage) +"% to " + (currentLevel+1) + "|TTL: " + Time.format(ttl),x+8,y+=13);
 			}else{
-				g.drawString(currentLevel + "(+" + levelsGained + ") | " + (int)(percentage) +"% to " + (currentLevel+1) + " | TTL: " + Time.format(0L),x+8,y+=13);
+				g.drawString(currentLevel + "(+" + levelsGained + ")|" + (int)(percentage) +"% to " + (currentLevel+1) + "|TTL: " + Time.format(0L),x+8,y+=13);
 			}
 			if(showGraph){
 				y -= 10;

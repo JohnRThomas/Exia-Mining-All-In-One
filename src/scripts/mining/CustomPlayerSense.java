@@ -28,26 +28,18 @@ public class CustomPlayerSense{
 		if(RuneScape.isLoggedIn()){
 			seed = (sumBytes(Environment.getForumName()) | sumBytes(Players.getLocal().getName())) * sumBytes(Players.getLocal().getName());
 			Random random = new Random(seed);
-			PlayerSense.clear(Key.ACTION_BAR_SPAM.playerSenseKey);
 			PlayerSense.put(Key.ACTION_BAR_SPAM.playerSenseKey, random.nextInt(100));
-			PlayerSense.clear(Key.BANKER_PREFERENCE.playerSenseKey);
 			PlayerSense.put(Key.BANKER_PREFERENCE.playerSenseKey, random.nextInt(100));
-			PlayerSense.clear(Key.DOUBLE_CLICK.playerSenseKey);
-			PlayerSense.put(Key.DOUBLE_CLICK.playerSenseKey, random.nextInt(25) + 5);
-			PlayerSense.clear(Key.VIEW_PORT_WALKING.playerSenseKey);
+			PlayerSense.put(Key.DOUBLE_CLICK.playerSenseKey, random.nextInt(35) + 10);
 			PlayerSense.put(Key.VIEW_PORT_WALKING.playerSenseKey, random.nextInt(15));
 			
 			playerSenseIntited = true;
 		}else{
 			seed = sumBytes(Environment.getForumName());
 			Random random = new Random(seed);
-			PlayerSense.clear(Key.ACTION_BAR_SPAM.playerSenseKey);
 			PlayerSense.put(Key.ACTION_BAR_SPAM.playerSenseKey, random.nextInt(100));
-			PlayerSense.clear(Key.BANKER_PREFERENCE.playerSenseKey);
 			PlayerSense.put(Key.BANKER_PREFERENCE.playerSenseKey, random.nextInt(100));
-			PlayerSense.clear(Key.DOUBLE_CLICK.playerSenseKey);
-			PlayerSense.put(Key.DOUBLE_CLICK.playerSenseKey, random.nextInt(25) + 5);
-			PlayerSense.clear(Key.VIEW_PORT_WALKING.playerSenseKey);
+			PlayerSense.put(Key.DOUBLE_CLICK.playerSenseKey, random.nextInt(35) + 10);
 			PlayerSense.put(Key.VIEW_PORT_WALKING.playerSenseKey, random.nextInt(15));
 		}
 	}

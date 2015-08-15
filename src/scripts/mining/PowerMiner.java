@@ -54,10 +54,14 @@ public class PowerMiner extends MiningStyle{
 	private boolean mine1drop1 = false;
 	private boolean forceKeys = false;
 	private boolean actionBar = false;
+	private boolean closeInv = false;
+	private boolean ignoreItems = false;
+	int dropOffset = 0;
 	int radius = 10;
 	Coordinate center = null;
 	int notMiningCount = 0;
 	private Rock ore;
+	boolean[] dropped = new boolean[28];
 
 	@Override
 	public void onStart(String... args) {
@@ -140,11 +144,12 @@ public class PowerMiner extends MiningStyle{
 			dropping = true;
 			drop();
 		}else{
+			dropOffset = 0;
 			mine();
 			if(Players.getLocal().getAnimationId() == -1)notMiningCount++;
 			else notMiningCount = 0;
 
-			if(notMiningCount >= 30){
+			if(notMiningCount >= 9){
 				notMiningCount = 0;
 				currentRock = null;
 			}
@@ -152,6 +157,10 @@ public class PowerMiner extends MiningStyle{
 	}
 
 	private void mine() {
+		//reset some of the dropping variables
+		dropped = new boolean[28];
+		ignoreItems = false;
+
 		//If the inventory was not initially open, close it
 		if(actionBar && closeInv && InterfaceWindows.getInventory().isOpen()){
 			if(Environment.isRS3()){
@@ -195,6 +204,7 @@ public class PowerMiner extends MiningStyle{
 
 	private void hoverNext(){
 		if(!actionBar && mine1drop1){
+			Execution.delay(ReflexAgent.getReactionTime()/2);
 			SpriteItemQueryResults items = Inventory.getItems();
 			boolean[] open = new boolean[28];
 			for(SpriteItem i : items){
@@ -229,6 +239,7 @@ public class PowerMiner extends MiningStyle{
 			if(!rock.contains(Mouse.getPosition())){
 				ReflexAgent.delay();
 				InteractablePoint pt = rock.getInteractionPoint(new Point(Random.nextInt(-2,3), Random.nextInt(-2,3)));
+				ReflexAgent.delay();
 				if(pt != null){
 					Mouse.move(pt);
 				}else{
@@ -240,13 +251,13 @@ public class PowerMiner extends MiningStyle{
 				}
 				if(Random.nextInt(0,100) < 5){
 					InteractablePoint pt = rock.getInteractionPoint(new Point(Random.nextInt(-2,3), Random.nextInt(-2,3)));
+					ReflexAgent.delay();
 					if(pt != null){
 						Mouse.move(pt);
 					}else{
 						rock.hover();
 					}
 				}
-				ReflexAgent.delay();
 			}
 		}
 	}
@@ -278,10 +289,9 @@ public class PowerMiner extends MiningStyle{
 			}
 		});
 
-		return !items.isEmpty() && (mine1drop1 || (Inventory.isFull() || dropping));
+		return !items.isEmpty() && (mine1drop1 || (Inventory.isFull() || dropping)) && !ignoreItems;
 	}
 
-	private boolean closeInv = false;
 	private void drop() {
 		currentRock = null;
 
@@ -364,9 +374,19 @@ public class PowerMiner extends MiningStyle{
 						}catch(Exception e){}
 					}
 				}else{
+					int offset = 0;
+					for(int i = items.get(0).getIndex(); i < 28; i++)if(dropped[i])offset++;
+					if(offset >= items.size()){
+						dropping = false;
+						dropped = new boolean[28];
+						return;
+					}
+					
 					ReflexAgent.delay();
-					items.get(0).interact("Drop");
-					ReflexAgent.delay();
+					if(items.get(offset).interact("Drop")){
+						dropped[items.get(offset).getIndex()] = true;
+						ignoreItems = mine1drop1 && items.size() == 1;
+					}
 				}
 			}else{
 				InterfaceWindows.getInventory().open();
