@@ -67,7 +67,7 @@ public abstract class Location {
 
 	public void openBank(){
 		ReflexAgent.delay();
-		LocatableEntityQueryResults<? extends LocatableEntity> banks = Banks.getLoaded();//getBanker();
+		LocatableEntityQueryResults<? extends LocatableEntity> banks = getBanker();
 		
 		if(banks.size() > 0){
 			LocatableEntity bank = banks.nearest();
