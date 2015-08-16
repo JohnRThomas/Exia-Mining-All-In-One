@@ -5,9 +5,10 @@ import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import scripts.mining.AIOMinerGUI;
 import scripts.mining.Rock;
 import scripts.mining.locations.Location;
 
@@ -45,25 +46,26 @@ public class LumbridgeWest extends Location{
 
 	@Override
 	public Node[] getSettingsNodes(){
+		ImageView warnImage = AIOMinerGUI.warnImage;
 		Label labela = new Label("WARNING!");
 		labela.setStyle("-fx-text-fill: -fx-text-input-text");
-		labela.setAlignment(Pos.CENTER);
-		labela.setPadding(new Insets(3,3,3,3));
+		labela.setPadding(new Insets(0,0,3,5));
 		labela.setPrefWidth(165);
-		
+		labela.setGraphic(warnImage);
+
 		Label labelb = new Label("This area may be");
 		labelb.setStyle("-fx-text-fill: -fx-text-input-text");
-		labelb.setPadding(new Insets(3,3,3,3));
+		labelb.setPadding(new Insets(0,0,3,5));
 		labelb.setPrefWidth(165);
 		
 		Label labelc = new Label("buggy due to counter");
 		labelc.setStyle("-fx-text-fill: -fx-text-input-text");
-		labelc.setPadding(new Insets(3,3,3,3));
+		labelc.setPadding(new Insets(0,0,3,5));
 		labelc.setPrefWidth(165);	
 		
 		Label labeld = new Label("measures by Jagex.");
 		labeld.setStyle("-fx-text-fill: -fx-text-input-text");
-		labeld.setPadding(new Insets(3,3,3,3));
+		labeld.setPadding(new Insets(0,0,3,5));
 		labeld.setPrefWidth(165);
 		
 		return new Node[]{labela, labelb, labelc, labeld};

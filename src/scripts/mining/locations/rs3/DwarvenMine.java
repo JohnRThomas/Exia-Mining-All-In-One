@@ -34,7 +34,6 @@ public class DwarvenMine extends DepositLocation{
 		this.ore = Rock.getByName(ore);
 		bank = new Area.Rectangular(new Coordinate(1049,4580, 0), new Coordinate(1040,4571, 0));
 		mine = new Area.Rectangular(new Coordinate(3048,9780, 0), new Coordinate(3034,9759, 0));
-
 	}
 	
 	@Override

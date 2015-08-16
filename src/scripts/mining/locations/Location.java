@@ -21,6 +21,7 @@ import com.runemate.game.api.hybrid.location.navigation.web.WebPath;
 import com.runemate.game.api.hybrid.player_sense.PlayerSense;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.region.Banks;
+import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.hybrid.util.Filter;
 import com.runemate.game.api.hybrid.util.Timer;
@@ -92,6 +93,27 @@ public abstract class Location {
 		return Pattern.compile("Bank|Use");
 	}
 
+	public LocatableEntity getNextRock(LocatableEntity currentRock) {
+		LocatableEntityQueryResults<GameObject> rocksObjs = null;
+		try{
+			rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
+				@Override
+				public boolean accepts(GameObject o) {
+					if(o != null && validate(o)){
+						Coordinate pos = o.getPosition();
+						for (Coordinate rock : getRocks()) {
+							if(pos.equals(rock)) return !o.equals(currentRock);
+						}
+					}
+					return false;
+				}
+			}).sortByDistance();
+		}catch(Exception e){}
+
+		if(rocksObjs != null && rocksObjs.size() > 0) return rocksObjs.get(0);
+		return null;
+	}
+	
 	protected LocatableEntityQueryResults<? extends LocatableEntity> getBanker(){
 		int banktype = PlayerSense.getAsInteger(CustomPlayerSense.Key.BANKER_PREFERENCE.playerSenseKey);
 		if(banktype <= 33){

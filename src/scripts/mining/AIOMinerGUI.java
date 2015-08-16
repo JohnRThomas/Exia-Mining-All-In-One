@@ -54,7 +54,7 @@ public class AIOMinerGUI extends Stage{
 	Location location;
 	public MiningStyle miner;
 	public int dispose = 0;
-
+	public static ImageView warnImage = null;
 
 	public AIOMinerGUI(String name, String version, final AbstractScript script){
 		super(StageStyle.UNDECORATED);
@@ -150,6 +150,7 @@ public class AIOMinerGUI extends Stage{
 			locationImage = new ImageView(new Image(new FileInputStream(new File(Environment.getStorageDirectory() + "/location.png"))));
 			startImage = new ImageView(new Image(new FileInputStream(new File(Environment.getStorageDirectory() + "/start.png"))));
 			closeImage = new ImageView(new Image(new FileInputStream(new File(Environment.getStorageDirectory() + "/close.png"))));
+			warnImage = new ImageView(new Image(new FileInputStream(new File(Environment.getStorageDirectory() + "/warning.png"))));
 		}catch(FileNotFoundException e){
 			try {
 				Image saveAs = new Image(new URL("http://i.imgur.com/WmZ6KYL.png").openStream());
@@ -169,7 +170,9 @@ public class AIOMinerGUI extends Stage{
 				closeImage = new ImageView(saveAs);
 				
 				saveAs = new Image(new URL("http://i.imgur.com/4bOrdWf.png").openStream());
-				ImageIO.write(SwingFXUtils.fromFXImage(saveAs, null), "png", new File(Environment.getStorageDirectory() + "/warn.png"));
+				ImageIO.write(SwingFXUtils.fromFXImage(saveAs, null), "png", new File(Environment.getStorageDirectory() + "/warning.png"));
+				warnImage = new ImageView(saveAs);
+
 			} catch (IOException ex) {
 				System.out.println("Failed to Read Files from web!");
 				ex.printStackTrace();

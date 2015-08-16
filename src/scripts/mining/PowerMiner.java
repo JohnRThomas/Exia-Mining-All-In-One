@@ -178,7 +178,7 @@ public class PowerMiner extends MiningStyle{
 			currentRock = null;
 
 			//Get a new rock
-			GameObject rock = getNextRock();
+			LocatableEntity rock = getNextRock();
 			if(rock != null){
 				rockWatcher.addLocation(rock.getPosition());
 				Player me = Players.getLocal();
@@ -261,8 +261,8 @@ public class PowerMiner extends MiningStyle{
 			}
 		}
 	}
-
-	private GameObject getNextRock() {
+	
+	private LocatableEntity getNextRock() {
 		LocatableEntityQueryResults<GameObject> rocksObjs = null;
 		try{
 			rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
@@ -271,8 +271,8 @@ public class PowerMiner extends MiningStyle{
 					if(o.equals(currentRock))
 						return false;
 					else
-						if(Environment.isRS3()) return o.getDefinition().getName().contains(ore.name) && o.distanceTo(center) <= radius && rockWatcher.validater.validate(o);
-						else return o.distanceTo(center) <= radius && rockWatcher.validater.validate(o);
+						if(Environment.isRS3()) return o.getDefinition().getName().contains(ore.name) && o.distanceTo(center) <= radius && RockWatcher.validater.validate(o);
+						else return o.distanceTo(center) <= radius && RockWatcher.validater.validate(o);
 				}
 			}).sortByDistance();
 		}catch(Exception e){}

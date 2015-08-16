@@ -11,10 +11,10 @@ import com.runemate.game.api.hybrid.util.Filter;
 public class RockWatcher extends Thread{
 
 	private Set<Pair<Coordinate, Long, GameObject>> locations;
-	public Validater validater;
+	public static Validater validater;
 
 	public RockWatcher(Validater validater, Coordinate... locations){
-		this.validater = validater;
+		RockWatcher.validater = validater;
 		this.locations = new HashSet<Pair<Coordinate, Long, GameObject>>();
 		for (int i = 0; i < locations.length; i++) {
 			this.locations.add(new Pair<Coordinate, Long, GameObject>(locations[i], 0L));

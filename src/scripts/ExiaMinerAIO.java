@@ -39,7 +39,7 @@ public class ExiaMinerAIO extends LoopingScript {
 			return;
 		}
 		int reflexSeed = gui.getReflexSeed();
-		
+			
 		if(reflexSeed == -1){
 			Paint.showGraph = false;
 		}

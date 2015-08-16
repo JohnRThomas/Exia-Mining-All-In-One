@@ -35,8 +35,8 @@ public abstract class MiningStyle {
 	public abstract String getLocationName();
 
 	public abstract Coordinate[] getRockLocations();
-	
-	public static LocatableEntity currentRock = null;
+		
+	public LocatableEntity currentRock = null;
 
 	Path rockPath = null;
 	protected void walkTo(LocatableEntity rock) {

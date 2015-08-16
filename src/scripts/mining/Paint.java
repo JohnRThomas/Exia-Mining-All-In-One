@@ -4,16 +4,24 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.util.HashMap;
 
-import scripts.ExiaMinerAIO;
+import javax.imageio.ImageIO;
 
 import com.runemate.game.api.client.ClientUI;
 import com.runemate.game.api.client.paint.PaintListener;
+import com.runemate.game.api.hybrid.Environment;
+import com.runemate.game.api.hybrid.input.Mouse;
 import com.runemate.game.api.hybrid.local.Skill;
-import com.runemate.game.api.hybrid.local.hud.InteractablePoint;
 import com.runemate.game.api.hybrid.util.Time;
+
+import scripts.ExiaMinerAIO;
 
 public class Paint implements PaintListener{
 	public static int tempLevel = 0;
@@ -26,15 +34,35 @@ public class Paint implements PaintListener{
 	public static double exp = 5.0;
 	public static long startTime = 0;
 	public static String status = "";
+	public static BufferedImage mouseImage;
 	
+	@SuppressWarnings("unused")
 	private boolean RS3;
 	
 	public Paint(boolean RS3){
 		this.RS3 = RS3;
+		try{
+			mouseImage = ImageIO.read(new File(Environment.getStorageDirectory() + "/mouse.png"));
+		}catch(IOException e){
+			try {
+				BufferedImage saveAs = ImageIO.read(new URL("http://i.imgur.com/LOPBaa0.png").openStream());
+				ImageIO.write(saveAs, "png", new File(Environment.getStorageDirectory() + "/mouse.png"));
+				mouseImage = saveAs;
+			} catch (IOException ex) {
+				System.out.println("Failed to Read Files from web!");
+				ex.printStackTrace();
+			}
+		}
+
 	}
 	
 	@Override
 	public void onPaint(Graphics2D g) {
+		if(mouseImage != null){
+			Point mspt = Mouse.getPosition();
+			g.drawImage(mouseImage, mspt.x, mspt.y-mouseImage.getHeight(), null);
+		}
+		
 		try{
 			if(first){
 				tempLevel = Skill.MINING.getCurrentLevel();
@@ -124,19 +152,6 @@ public class Paint implements PaintListener{
 					g.drawLine((int)(lastX*23) + x+225, y - (lastY / 2) + 50, (int)(newX * 23) + x+225, y - (newY / 2) + 50);
 					lastX = newX;
 					lastY = newY;
-				}
-			}
-			
-			if(!RS3){
-				if(StandardMiner.next != null){
-					InteractablePoint pt = StandardMiner.next.getInteractionPoint();
-					g.drawRect(pt.x-2, pt.y-2, 4, 4);
-				}
-				
-				if(StandardMiner.currentRock != null){
-					g.setColor(Color.green);
-					InteractablePoint pt = StandardMiner.currentRock.getInteractionPoint();
-					g.drawRect(pt.x-2, pt.y-2, 4, 4);
 				}
 			}
 		}catch(Exception e){}		

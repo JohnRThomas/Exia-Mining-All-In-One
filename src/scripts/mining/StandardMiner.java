@@ -14,10 +14,7 @@ import com.runemate.game.api.hybrid.local.hud.InteractablePoint;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.location.navigation.basic.BresenhamPath;
-import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
-import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Players;
-import com.runemate.game.api.hybrid.util.Filter;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 
 import javafx.beans.value.ChangeListener;
@@ -113,7 +110,7 @@ public class StandardMiner extends MiningStyle{
 			currentRock = null;
 
 			//Get a new rock
-			LocatableEntity rock = getNextRock();
+			LocatableEntity rock = location.getNextRock(currentRock);
 			if(rock != null){
 				Player me = Players.getLocal();
 				if(rock.distanceTo(me) > 8){
@@ -147,7 +144,7 @@ public class StandardMiner extends MiningStyle{
 		if(Inventory.getUsedSlots() == 27 && currentRock != null){
 			next = location.firstStepToBank();
 		}else{
-			next = getNextRock();
+			next = location.getNextRock(currentRock);
 		}
 
 		if(next == null){
@@ -181,27 +178,6 @@ public class StandardMiner extends MiningStyle{
 				ReflexAgent.delay();
 			}
 		}
-	}
-
-	private GameObject getNextRock() {
-		LocatableEntityQueryResults<GameObject> rocksObjs = null;
-		try{
-			rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
-				@Override
-				public boolean accepts(GameObject o) {
-					if(o != null && location.validate(o)){
-						Coordinate pos = o.getPosition();
-						for (Coordinate rock : location.getRocks()) {
-							if(pos.equals(rock)) return !o.equals(currentRock);
-						}
-					}
-					return false;
-				}
-			}).sortByDistance();
-		}catch(Exception e){}
-
-		if(rocksObjs != null && rocksObjs.size() > 0) return rocksObjs.get(0);
-		return null;
 	}
 
 	private GridPane content = null;
@@ -319,14 +295,14 @@ public class StandardMiner extends MiningStyle{
 		ArrayList<Location> locations = new ArrayList<Location>();
 		if(Environment.isRS3()){
 			locations.add(new scripts.mining.locations.rs3.AlKharid());
-			//locations.add(new scripts.mining.locations.rs3.CoalTrucks());
-			//locations.add(new scripts.mining.locations.rs3.DesertQuarry());
+			if(Environment.isSDK())locations.add(new scripts.mining.locations.rs3.CoalTrucks());
+			if(Environment.isSDK())locations.add(new scripts.mining.locations.rs3.DesertQuarry());
 			locations.add(new scripts.mining.locations.rs3.DwarvenMine());
 			locations.add(new scripts.mining.locations.rs3.DwarvenResourceMine());
-			//locations.add(new scripts.mining.locations.rs3.LivingRockCavern());
+			locations.add(new scripts.mining.locations.rs3.LivingRockCavern(this));
 			locations.add(new scripts.mining.locations.rs3.LumbridgeEast());
 			locations.add(new scripts.mining.locations.rs3.LumbridgeWest());
-			//locations.add(new scripts.mining.locations.rs3.PiratesHideout());
+			if(Environment.isSDK())locations.add(new scripts.mining.locations.rs3.PiratesHideout());
 			locations.add(new scripts.mining.locations.rs3.Rimmington());
 			locations.add(new scripts.mining.locations.rs3.ShiloVillage());
 			locations.add(new scripts.mining.locations.rs3.VarrockEast());
