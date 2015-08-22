@@ -1,5 +1,6 @@
 package scripts.mining.locations;
 
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import com.runemate.game.api.hybrid.entities.GameObject;
@@ -10,6 +11,7 @@ import com.runemate.game.api.hybrid.entities.details.Locatable;
 import com.runemate.game.api.hybrid.local.Camera;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
+import com.runemate.game.api.hybrid.local.hud.interfaces.SpriteItem;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.location.navigation.Path;
@@ -41,6 +43,7 @@ public abstract class Location {
 
 	protected Area mine;
 	protected Area bank;
+	public ArrayList<String> depositBlackList = new ArrayList<String>();
 
 	protected GenericPathBuilder pathBuilder = new GenericPathBuilder();
 	protected Path minePath = null;
@@ -69,7 +72,7 @@ public abstract class Location {
 	public void openBank(){
 		ReflexAgent.delay();
 		LocatableEntityQueryResults<? extends LocatableEntity> banks = getBanker();
-		
+
 		if(banks.size() > 0){
 			LocatableEntity bank = banks.nearest();
 			if(bank.getVisibility() <= 10){
@@ -113,7 +116,7 @@ public abstract class Location {
 		if(rocksObjs != null && rocksObjs.size() > 0) return rocksObjs.get(0);
 		return null;
 	}
-	
+
 	protected LocatableEntityQueryResults<? extends LocatableEntity> getBanker(){
 		int banktype = PlayerSense.getAsInteger(CustomPlayerSense.Key.BANKER_PREFERENCE.playerSenseKey);
 		if(banktype <= 33){
@@ -154,7 +157,21 @@ public abstract class Location {
 
 	public void deposit(){
 		ReflexAgent.delay();
-		Bank.depositInventory();
+		try{
+			Bank.depositAllExcept(new Filter<SpriteItem>(){
+				@Override
+				public boolean accepts(SpriteItem i) {
+					if(i.getDefinition() != null && i.getDefinition().getName() != null){
+						String name = i.getDefinition().getName();
+						for(String s : depositBlackList){
+							if(name.toLowerCase().contains(s))return true;
+						}
+						return false;
+					}
+					return true;
+				}
+			});
+		}catch(Exception e){}
 	}
 
 	public void closeBank() {
@@ -164,7 +181,7 @@ public abstract class Location {
 	public void loadSettings() {}
 
 	public Node[] getSettingsNodes(){
-		Label label = new Label("No custom settings");
+		Label label = new Label("No location settings");
 		label.setStyle("-fx-text-fill: -fx-text-input-text");
 		label.setAlignment(Pos.CENTER);
 		label.setPadding(new Insets(3,3,3,3));
@@ -186,9 +203,9 @@ public abstract class Location {
 			return true;
 		}else return false;
 	}
-	
+
 	int tryCount = 0;
-	private Locatable lastStep = null;
+	protected Locatable lastStep = null;
 
 	public void walkToBank() {
 		if(bankPath == null)
@@ -197,6 +214,7 @@ public abstract class Location {
 
 			if(bankPath instanceof BresenhamPath){
 				bankPath = pathBuilder.buildTo(bank.getArea());
+				lastStep = null;
 			}else if(bankPath instanceof ViewportPath){
 				Camera.concurrentlyTurnTo(bankPath.getNext());
 
@@ -205,8 +223,9 @@ public abstract class Location {
 				else tryCount = 0;
 				if(tryCount >= 3)bankPath = pathBuilder.buildTo(bank.getArea());
 			}
+
 			lastStep = bankPath.getNext();
-			
+
 			bankPath.step();
 
 			Execution.delay(400,600);
@@ -221,6 +240,7 @@ public abstract class Location {
 
 			if(minePath instanceof BresenhamPath){
 				minePath = pathBuilder.buildTo(mine.getArea());
+				lastStep = null;
 			}else if(minePath instanceof ViewportPath){
 				Camera.concurrentlyTurnTo(minePath.getNext());
 
@@ -229,8 +249,9 @@ public abstract class Location {
 				else tryCount = 0;
 				if(tryCount >= 3)minePath = pathBuilder.buildTo(mine.getArea());
 			}
+
 			lastStep = minePath.getNext();
-			
+
 			minePath.step();
 
 			Execution.delay(400,600);
