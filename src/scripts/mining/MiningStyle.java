@@ -53,37 +53,19 @@ public abstract class MiningStyle {
 			Camera.turnTo(rock);
 		}else{
 			Paint.status = "Clicking rock";
-			//The rock is visible enough, so we click it
-			ReflexAgent.delay();
-			rock.interact("Mine");
-
-			if(Camera.getPitch() <= 0.3){
-				Camera.concurrentlyTurnTo(Random.nextDouble(0.5, 0.9));
-			}
-
-			//Decide if we should double click or not based on player sense
-			boolean doubleClick = Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.DOUBLE_CLICK.playerSenseKey);
-
-			//Make sure that we actually clicked the rock 
-			currentRock = rock;
-			Player me = Players.getLocal();
-			Timer timer = new Timer((int)(rock.distanceTo(me) * ReflexAgent.getReactionTime() * 4));
-			timer.start();
-			while(timer.getRemainingTime() > 0 && !doubleClick && me.getAnimationId() == -1 && rock.isValid() && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
-				Execution.delay(100);
-			}
+			turnAndClick(rock, "Mine");
 		}
 	}
 
 
-	public void turnAndClick(LocatableEntity obj, String interact){
-		if(obj.getVisibility() <= 20){
+	public void turnAndClick(LocatableEntity object, String interact){
+		if(object.getVisibility() <= 20){
 			//if only part of the rock is visible, turn to it
-			Camera.turnTo(obj);
+			Camera.turnTo(object);
 		}else{
 			//The rock is visible enough, so we click it
 			ReflexAgent.delay();
-			obj.interact(interact);
+			object.interact(interact);
 
 			if(Camera.getPitch() <= 0.3){
 				Camera.concurrentlyTurnTo(Random.nextDouble(0.5, 0.9));
@@ -93,11 +75,11 @@ public abstract class MiningStyle {
 			boolean doubleClick = Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.DOUBLE_CLICK.playerSenseKey);
 
 			//Make sure that we actually clicked the rock 
-			currentRock = obj;
+			currentRock = object;
 			Player me = Players.getLocal();
-			Timer timer = new Timer((int)(obj.distanceTo(me) * ReflexAgent.getReactionTime() * 4));
+			Timer timer = new Timer((int)(object.distanceTo(me) * ReflexAgent.getReactionTime() * 4));
 			timer.start();
-			while(timer.getRemainingTime() > 0 && !doubleClick && me.getAnimationId() == -1 && obj.isValid() && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
+			while(timer.getRemainingTime() > 0 && !doubleClick && me.getAnimationId() == -1 && object.isValid() && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
 				Execution.delay(100);
 			}
 		}
