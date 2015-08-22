@@ -99,7 +99,7 @@ public class AlKharid extends OSRSLocation{
 	public Node[] getSettingsNodes(){
 		if(ore == Rock.IRON){
 			ironArea.setStyle("-fx-text-fill: -fx-text-input-text");
-			ironArea.setPadding(new Insets(0,0,0,5));
+			ironArea.setPadding(new Insets(10,160,0,5));
 			ironArea.setPrefWidth(165);
 			return new Node[]{ironArea};
 		}else{
