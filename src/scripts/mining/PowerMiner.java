@@ -56,6 +56,9 @@ public class PowerMiner extends MiningStyle{
 	private boolean actionBar = false;
 	private boolean closeInv = false;
 	private boolean ignoreItems = false;
+	private boolean usePorters = false;
+	private boolean useUrns = false;
+
 	int dropOffset = 0;
 	double radius = 10;
 	Coordinate center = null;
@@ -140,6 +143,14 @@ public class PowerMiner extends MiningStyle{
 
 	@Override
 	public void loop() {
+		if(useUrns){
+			ItemHandlers.manageUrns();
+		}
+		
+		if(usePorters){
+			ItemHandlers.managePorters();
+		}	
+		
 		if(shouldDrop()){
 			dropping = true;
 			drop();
@@ -183,6 +194,7 @@ public class PowerMiner extends MiningStyle{
 				rockWatcher.addLocation(rock.getPosition());
 				Player me = Players.getLocal();
 				if(rock.distanceTo(me) > 16){
+					Paint.status = "Walking to rock";
 					walkTo(rock);
 				}else{
 					turnAndClick(rock);
@@ -414,6 +426,8 @@ public class PowerMiner extends MiningStyle{
 	CheckBox hotkeys = new CheckBox("Use action bar");
 	CheckBox forceNoClick = new CheckBox("Force keyboard for action bar");
 	CheckBox power = new CheckBox("Power drop (disable antiban for dropping)");
+	CheckBox urnBox = new CheckBox("Use urns");
+	CheckBox porterBox= new CheckBox("Use porters");
 	CheckBox radLabel = new CheckBox("Radius:");
 	TextField radText = new TextField("10");
 
@@ -422,6 +436,8 @@ public class PowerMiner extends MiningStyle{
 		mine1drop1 = mineOne.isSelected();
 		actionBar  = hotkeys.isSelected();
 		powerDrop  = power.isSelected();
+		useUrns = urnBox.isSelected();
+		usePorters = porterBox.isSelected();
 		if(!ore.name.contains("Sandstone") && !ore.name.contains("Granite"))
 			forceKeys  = forceNoClick.isSelected();
 		try{
@@ -466,6 +482,7 @@ public class PowerMiner extends MiningStyle{
 				}
 			}
 		});
+		
 		mineOne.setStyle("-fx-text-fill: -fx-text-input-text");
 		mineOne.setPadding(new Insets(10,160,0,5));
 		settings.getChildren().add(mineOne);
@@ -486,6 +503,14 @@ public class PowerMiner extends MiningStyle{
 			forceNoClick.setStyle("-fx-text-fill: -fx-text-input-text");
 			forceNoClick.setPadding(new Insets(10,100,0,5));
 			settings.getChildren().add(forceNoClick);
+			
+			porterBox.setStyle("-fx-text-fill: -fx-text-input-text");
+			porterBox.setPadding(new Insets(10,160,0,5));
+			settings.getChildren().add(porterBox);
+
+			urnBox.setStyle("-fx-text-fill: -fx-text-input-text");
+			urnBox.setPadding(new Insets(10,160,0,5));
+			settings.getChildren().add(urnBox);
 		}
 
 		power.setStyle("-fx-text-fill: -fx-text-input-text");
@@ -508,7 +533,7 @@ public class PowerMiner extends MiningStyle{
 		radText.setMaxWidth(35.0f);
 		radText.setPadding(new Insets(3,5,2,5));
 		settings.getChildren().add(radText);
-
+		
 		final String LABEL_STYLE = "-fx-text-fill: -fx-flair-text; -fx-font-size: 15px; -fx-background-color: -fx-flair;";
 
 		Label oreLabel = new Label("Ores");

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import com.runemate.game.api.hybrid.Environment;
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
-import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.hybrid.entities.details.Interactable;
 import com.runemate.game.api.hybrid.input.Mouse;
 import com.runemate.game.api.hybrid.local.Camera;
@@ -37,8 +36,11 @@ import scripts.mining.locations.Location;
 public class StandardMiner extends MiningStyle{	
 	int notMiningCount = 0;
 	Location location;
-	private boolean walkToBank = false;
 
+	private boolean usePorters = false;
+	private boolean useUrns = false;
+	private boolean walkToBank = false;
+	
 	@Override
 	public String getLocationName() {
 		return location == null ? "Unknown" : location.getName();
@@ -73,6 +75,14 @@ public class StandardMiner extends MiningStyle{
 
 	@Override
 	public void loop() {
+		if(useUrns){
+			ItemHandlers.manageUrns();
+		}
+		
+		if(usePorters){
+			ItemHandlers.managePorters();
+		}	
+
 		if(location.shouldBank()){
 			if(location.inBank()){
 				if(location.isBankOpen()){
@@ -125,8 +135,7 @@ public class StandardMiner extends MiningStyle{
 			//Get a new rock
 			LocatableEntity rock = location.getNextRock(currentRock);
 			if(rock != null){
-				Player me = Players.getLocal();
-				if(rock.distanceTo(me) > 8){
+				if(rock.distanceTo(Players.getLocal()) > 8){
 					Paint.status = "Walking to rock";
 					walkTo(rock);
 				}else{
@@ -194,6 +203,9 @@ public class StandardMiner extends MiningStyle{
 	}
 
 	private GridPane content = null;
+	CheckBox urnBox = new CheckBox("Use urns");
+	CheckBox porterBox= new CheckBox("Use porters");
+	CheckBox walkBox= new CheckBox("Walk when heavy");
 
 	@Override 
 	public GridPane getContentPane(final Button startButton) {
@@ -233,7 +245,7 @@ public class StandardMiner extends MiningStyle{
 				}
 				oreList.setItems(items);
 				oreList.getSelectionModel().clearSelection();
-
+				
 				populateOptions(settings);
 			}
 		});
@@ -277,24 +289,49 @@ public class StandardMiner extends MiningStyle{
 
 		return content;
 	}
-
-	CheckBox walkBox= new CheckBox("Walk when heavy");
-	private void populateOptions(FlowPane settings) {
+	
+	private void  populateOptions(FlowPane settings){
+		Node[] nodes = location.getSettingsNodes();
 		settings.getChildren().clear();
 
-		Node[] nodes = location.getSettingsNodes();
 		for (int i = 0; i < nodes.length; i++) {
 			settings.getChildren().add(nodes[i]);
 		}
+
+		if(Environment.isRS3()){
+			porterBox.setSelected(usePorters);
+			porterBox.setStyle("-fx-text-fill: -fx-text-input-text");
+			porterBox.setPadding(new Insets(10,50,0,5));
+			settings.getChildren().add(porterBox);
+
+			urnBox.setSelected(useUrns);
+			urnBox.setStyle("-fx-text-fill: -fx-text-input-text");
+			urnBox.setPadding(new Insets(10,50,0,5));
+			settings.getChildren().add(urnBox);
+		}
+		
 		walkBox.setSelected(walkToBank);
 		walkBox.setStyle("-fx-text-fill: -fx-text-input-text");
 		walkBox.setPadding(new Insets(10,50,0,5));
 		settings.getChildren().add(walkBox);
-	}
 
+	}
+	
 	@Override
 	public void loadSettings() {
 		location.loadSettings();
+		if(Environment.isRS3()){
+			useUrns = urnBox.isSelected();
+			usePorters = porterBox.isSelected();
+
+			if(useUrns){
+				location.depositBlackList.add("mining urn");
+			}
+
+			if(usePorters){
+				location.depositBlackList.add("porter");
+			}
+		}
 	}
 
 	public void removeNodeFromGrid(final int row, final int column, GridPane gridPane) {
