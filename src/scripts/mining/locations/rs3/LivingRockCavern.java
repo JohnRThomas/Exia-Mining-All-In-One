@@ -1,5 +1,6 @@
 package scripts.mining.locations.rs3;
 
+import com.runemate.game.api.client.ClientUI;
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
 import com.runemate.game.api.hybrid.entities.Npc;
@@ -8,13 +9,11 @@ import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.location.navigation.Traversal;
-import com.runemate.game.api.hybrid.location.navigation.basic.BresenhamPath;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Npcs;
 import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.hybrid.util.Filter;
-import com.runemate.game.api.script.Execution;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -24,13 +23,16 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import scripts.mining.AIOMinerGUI;
 import scripts.mining.MiningStyle;
-import scripts.mining.Paint;
 import scripts.mining.Rock;
 import scripts.mining.locations.DepositLocation;
 
 public class LivingRockCavern extends DepositLocation{
-	private boolean idleAtBank = false;
+	private boolean mineMinerals = false;
 	private boolean runFromCombat = true;
+	boolean notified = false;
+	boolean deathNotification = false;
+	boolean safeIdle = false;
+	
 	private MiningStyle miner;
 
 	public LivingRockCavern(MiningStyle miner){
@@ -79,7 +81,7 @@ public class LivingRockCavern extends DepositLocation{
 			public boolean accepts(Npc npc) {
 				return Players.getLocal().equals(npc.getTarget());
 			}
-		}).size() > 0 && runFromCombat);
+		}).size() > 0 && runFromCombat) || Players.getLocal().distanceTo(new Coordinate(3652, 5115)) > 80;
 	}
 
 	@Override
@@ -99,9 +101,7 @@ public class LivingRockCavern extends DepositLocation{
 
 		if(rocksObjs.size() > 0) return rocksObjs.get(0);
 		else{
-			if(idleAtBank){
-				return null;
-			}else{
+			if(mineMinerals){
 				LocatableEntityQueryResults<? extends LocatableEntity> remains = Npcs.getLoaded(new Filter<Npc>(){
 
 					@Override
@@ -110,10 +110,10 @@ public class LivingRockCavern extends DepositLocation{
 					}
 
 				}).sortByDistance();
-				//This will pseudo append the next list to the end of the previous list
 				if(remains.size() > 0) return remains.get(0);
 				else return null;
-
+			}else{
+				return null;
 			}
 		}
 	}
@@ -150,14 +150,10 @@ public class LivingRockCavern extends DepositLocation{
 		LocatableEntity rock = getNextRock(miner.currentRock);
 		if(minePath == null){
 			if(rock != null){
-				minePath = BresenhamPath.buildTo(rock);
+				minePath = pathBuilder.buildTo(rock);
 			}else{
-				if(idleAtBank){
-					Paint.status = "Waiting in safe-zone";
-					Execution.delay(200,300);
-				}else{
-					Paint.status = "Waiting in safe-zone";
-					Execution.delay(200,300);
+				if(safeIdle){
+					minePath = pathBuilder.buildTo(bank);
 				}
 			}
 		}else if((Traversal.getDestination() == null || Traversal.getDestination().distanceTo(rock) > 14)){
@@ -165,12 +161,81 @@ public class LivingRockCavern extends DepositLocation{
 		}
 	}
 
-	CheckBox box = new CheckBox("Idle at bank");
+	@Override
+	public void walkToBank() {
+		if(Players.getLocal().distanceTo(new Coordinate(3652, 5115)) > 80){
+			if(!notified && deathNotification){
+				ClientUI.sendTrayNotification("You have died! Please walk back to the cavern.");
+				notified = true;
+			}
+			//distance from the LRC bank is greater than 80 tiles
+			
+			/*Paint.status = "Re-entering Cavern";
+
+			//distance to ladder of dwarven mine
+			if(Players.getLocal().distanceTo(new Coordinate(3018, 3450)) <= 5){
+				bankPath = null;
+				GameObject ladder = GameObjects.getLoaded("Ladder").sortByDistance().get(0);
+				if(ladder.distanceTo(Players.getLocal()) > 8){
+					miner.walkTo(ladder);
+				}else{
+					miner.turnAndClick(ladder, "Climb-down");
+				}
+				Execution.delay(ReflexAgent.getReactionTime() * 3);
+			}else{
+				//distance to the rope
+				if(Players.getLocal().distanceTo(new Coordinate(3014, 9831)) <= 25){
+					InterfaceComponent warning = Interfaces.getLoaded(new Filter<InterfaceComponent>(){
+						@Override
+						public boolean accepts(InterfaceComponent i) {
+							return i.getText() != null & i.getText().contains("Proceed regardless");
+						}
+					}).first();
+					if(warning != null && warning.isValid() && warning.isValid()){
+						warning.click();
+						Execution.delay(ReflexAgent.getReactionTime() * 8);
+					}else{
+						GameObject rope = GameObjects.getLoaded("Rope").sortByDistance().get(0);
+						if(rope.distanceTo(Players.getLocal()) > 8){
+							miner.walkTo(rope);
+						}else{
+							miner.turnAndClick(rope, "Climb");
+						}
+						Execution.delay(ReflexAgent.getReactionTime() * 3);
+					}
+				}else{
+					//Walk to the ladder
+					if(bankPath == null){
+						bankPath = pathBuilder.buildTo(new Coordinate(3018, 3450), false);
+						System.out.println("New Path created: " + Players.getLocal().getPosition() + " -> " + new Coordinate(3018, 3450));
+					}else{
+						lastStep = bankPath.getNext();
+						
+						System.out.println("Current Location: " + Players.getLocal().getPosition() + " Vertex: " + bankPath.getNext());
+						
+						bankPath.step();
+						
+					}
+					Execution.delay(Random.nextInt(600,800) + ReflexAgent.getReactionTime());
+				}
+			}*/
+		}else{
+			notified = false;
+			super.walkToBank();
+		}
+
+	}
+
+	CheckBox idle = new CheckBox("Idle at bank");
+	CheckBox box = new CheckBox("Mine remains\nwhile waiting");
 	CheckBox combat = new CheckBox("Run from combat");
+	CheckBox death = new CheckBox("Notify on death");
 	@Override
 	public void loadSettings() {
-		idleAtBank = box.isSelected();
+		mineMinerals = box.isSelected();
 		runFromCombat = combat.isSelected();
+		deathNotification = death.isSelected();
+		safeIdle = idle.isSelected();
 	}
 
 	@Override
@@ -182,29 +247,39 @@ public class LivingRockCavern extends DepositLocation{
 		labela.setAlignment(Pos.CENTER);
 		labela.setPadding(new Insets(0,0,3,5));
 		labela.setGraphic(warnImage);
-				
+
 		Label labelb = new Label("This area has not");
 		labelb.setStyle("-fx-text-fill: -fx-text-input-text");
 		labelb.setPadding(new Insets(0,0,3,5));
-		
+
 		Label labelc = new Label("been tested and ");
 		labelc.setStyle("-fx-text-fill: -fx-text-input-text");
 		labelc.setPadding(new Insets(0,0,3,5));
-		
+
 		Label labeld = new Label("it may be buggy!");
 		labeld.setStyle("-fx-text-fill: -fx-text-input-text");
 		labeld.setPadding(new Insets(0,0,3,5));
-				
-		box.setSelected(idleAtBank);
+
+		idle.setSelected(safeIdle);
+		idle.setStyle("-fx-text-fill: -fx-text-input-text");
+		idle.setPadding(new Insets(0,0,5,5));
+		idle.setPrefWidth(165);
+		
+		box.setSelected(mineMinerals);
 		box.setStyle("-fx-text-fill: -fx-text-input-text");
 		box.setPadding(new Insets(0,0,5,5));
 		box.setPrefWidth(165);
 		
+		death.setSelected(deathNotification);
+		death.setStyle("-fx-text-fill: -fx-text-input-text");
+		death.setPadding(new Insets(0,0,5,5));
+		death.setPrefWidth(165);
+
 		combat.setSelected(runFromCombat);
 		combat.setStyle("-fx-text-fill: -fx-text-input-text");
 		combat.setPadding(new Insets(0,0,0,5));
 		combat.setPrefWidth(165);
-		
-		return new Node[]{labela, labelb, labelc, labeld, box, combat};
+
+		return new Node[]{labela, labelb, labelc, labeld, idle, box, death, combat};
 	}
 }
