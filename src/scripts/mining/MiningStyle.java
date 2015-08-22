@@ -21,37 +21,32 @@ import javafx.scene.layout.GridPane;
 
 public abstract class MiningStyle {
 	RockWatcher rockWatcher;
-
+	
 	public abstract void onStart(String... args);
 	public abstract void loop();
 	public abstract void onStop();
-	
+
 	public abstract GridPane getContentPane(Button startButton);
-
 	public abstract void loadSettings();
-
 	public abstract Rock getOre();
-
 	public abstract String getLocationName();
-
 	public abstract Coordinate[] getRockLocations();
-		
+
 	public LocatableEntity currentRock = null;
 
 	Path rockPath = null;
-	protected void walkTo(LocatableEntity rock) {
-		Paint.status = "Walking to rock";
+	public void walkTo(LocatableEntity rock) {
 		if(rockPath == null && rock != null){
 			try{
 				rockPath = BresenhamPath.buildTo(rock);
 			}catch(Exception e){}
-		}else if((Traversal.getDestination() == null || Traversal.getDestination().distanceTo(rock) > 14)){
+		}else if((Traversal.getDestination() == null || Traversal.getDestination().distanceTo(rock) > 8)){
 			ReflexAgent.delay();
 			rockPath.step();
 		}
 	}
-	
-	protected void turnAndClick(LocatableEntity rock){
+
+	public void turnAndClick(LocatableEntity rock){
 		if(rock.getVisibility() <= 20){
 			Paint.status = "Turning to rock";
 			//if only part of the rock is visible, turn to it
@@ -61,14 +56,14 @@ public abstract class MiningStyle {
 			//The rock is visible enough, so we click it
 			ReflexAgent.delay();
 			rock.interact("Mine");
-			
+
 			if(Camera.getPitch() <= 0.3){
 				Camera.concurrentlyTurnTo(Random.nextDouble(0.5, 0.9));
 			}
-			
+
 			//Decide if we should double click or not based on player sense
 			boolean doubleClick = Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.DOUBLE_CLICK.playerSenseKey);
-					
+
 			//Make sure that we actually clicked the rock 
 			currentRock = rock;
 			Player me = Players.getLocal();
@@ -79,7 +74,35 @@ public abstract class MiningStyle {
 			}
 		}
 	}
-	
+
+
+	public void turnAndClick(LocatableEntity obj, String interact){
+		if(obj.getVisibility() <= 20){
+			//if only part of the rock is visible, turn to it
+			Camera.turnTo(obj);
+		}else{
+			//The rock is visible enough, so we click it
+			ReflexAgent.delay();
+			obj.interact(interact);
+
+			if(Camera.getPitch() <= 0.3){
+				Camera.concurrentlyTurnTo(Random.nextDouble(0.5, 0.9));
+			}
+
+			//Decide if we should double click or not based on player sense
+			boolean doubleClick = Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.DOUBLE_CLICK.playerSenseKey);
+
+			//Make sure that we actually clicked the rock 
+			currentRock = obj;
+			Player me = Players.getLocal();
+			Timer timer = new Timer((int)(obj.distanceTo(me) * ReflexAgent.getReactionTime() * 4));
+			timer.start();
+			while(timer.getRemainingTime() > 0 && !doubleClick && me.getAnimationId() == -1 && obj.isValid() && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
+				Execution.delay(100);
+			}
+		}
+	}
+
 	protected boolean outOfRegion() {
 		Region baseRegion = Region.getLoaded();
 		for (Coordinate rock : getRockLocations()) {
@@ -87,7 +110,7 @@ public abstract class MiningStyle {
 		}
 		return true;
 	}
-	
+
 	protected void walkToNextEmpty(){
 		RockWatcher.Pair<Coordinate, Long, GameObject> rockPair = rockWatcher.nextRock();
 		GameObject next = rockPair == null ? null : rockWatcher.nextRock().object;
