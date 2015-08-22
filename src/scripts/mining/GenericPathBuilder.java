@@ -47,4 +47,35 @@ public class GenericPathBuilder {
 		
 		return path;
 	}
+	public Path build(Locatable start, Locatable dest, boolean vp){
+		Path path = RegionPath.build(start, dest);
+	
+		if(path == null || path.getNext() == null)
+			path = web.getPathBuilder().build(start, dest);
+		if(path == null || path.getNext() == null)
+			path = BresenhamPath.build(start, dest);
+		
+		if(vp){
+			if(path != null && Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.VIEW_PORT_WALKING.playerSenseKey))
+				path = ViewportPath.convert(path);
+		}
+		
+		return path;
+	}
+	
+	public Path buildTo(Locatable dest, boolean vp){
+		Path path = RegionPath.buildTo(dest);
+		
+		if(path == null || path.getNext() == null)
+			path = web.getPathBuilder().buildTo(dest);
+		if(path == null || path.getNext() == null)
+			path = BresenhamPath.buildTo(dest);
+		
+		if(vp){
+			if(path != null && Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.VIEW_PORT_WALKING.playerSenseKey))
+				path = ViewportPath.convert(path);
+		}
+		
+		return path;
+	}
 }
