@@ -60,7 +60,8 @@ public class ReflexAgent {
 	
 	public static int getReactionTime() {
 		if(seed != -1){
-			return applyPolynomial((System.currentTimeMillis() - start) / 3600000.0);
+			int value = applyPolynomial((System.currentTimeMillis() - start) / 3600000.0);
+			return value >= 0 ? value : -1;
 		}else{
 			return Random.nextInt(100,400);
 		}
