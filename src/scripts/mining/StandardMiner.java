@@ -13,6 +13,7 @@ import com.runemate.game.api.hybrid.local.Camera;
 import com.runemate.game.api.hybrid.local.hud.InteractablePoint;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.location.Coordinate;
+import com.runemate.game.api.hybrid.location.navigation.Traversal;
 import com.runemate.game.api.hybrid.location.navigation.basic.BresenhamPath;
 import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.hybrid.util.calculations.Random;
@@ -25,6 +26,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.FlowPane;
@@ -35,6 +37,7 @@ import scripts.mining.locations.Location;
 public class StandardMiner extends MiningStyle{	
 	int notMiningCount = 0;
 	Location location;
+	private boolean walkToBank = false;
 
 	@Override
 	public String getLocationName() {
@@ -81,6 +84,11 @@ public class StandardMiner extends MiningStyle{
 				}
 			}else{
 				Paint.status = "Walking to bank";
+				if(walkToBank){
+					if(Traversal.isRunEnabled()){
+						Traversal.toggleRun();
+					}
+				}
 				location.walkToBank();
 			}
 		}else{
@@ -99,6 +107,11 @@ public class StandardMiner extends MiningStyle{
 					location.closeBank();
 				}else{
 					Paint.status = "Walking to mine";
+					if(walkToBank){
+						if(!Traversal.isRunEnabled()){
+							Traversal.toggleRun();
+						}
+					}
 					location.walkToMine();
 				}
 			}
@@ -221,13 +234,7 @@ public class StandardMiner extends MiningStyle{
 				oreList.setItems(items);
 				oreList.getSelectionModel().clearSelection();
 
-				settings.getChildren().clear();
-				
-				Node[] nodes = location.getSettingsNodes();
-				for (int i = 0; i < nodes.length; i++) {
-					settings.getChildren().add(nodes[i]);
-				}
-
+				populateOptions(settings);
 			}
 		});
 
@@ -236,13 +243,8 @@ public class StandardMiner extends MiningStyle{
 				if(newValue != null){
 					location.intialize(newValue);
 					startButton.setDisable(false);
-					Node[] nodes = location.getSettingsNodes();
 
-					settings.getChildren().clear();
-
-					for (int i = 0; i < nodes.length; i++) {
-						settings.getChildren().add(nodes[i]);
-					}
+					populateOptions(settings);
 				}
 			}
 		});
@@ -274,6 +276,20 @@ public class StandardMiner extends MiningStyle{
 		content.add(settings, 2, 1);
 
 		return content;
+	}
+
+	CheckBox walkBox= new CheckBox("Walk when heavy");
+	private void populateOptions(FlowPane settings) {
+		settings.getChildren().clear();
+
+		Node[] nodes = location.getSettingsNodes();
+		for (int i = 0; i < nodes.length; i++) {
+			settings.getChildren().add(nodes[i]);
+		}
+		walkBox.setSelected(walkToBank);
+		walkBox.setStyle("-fx-text-fill: -fx-text-input-text");
+		walkBox.setPadding(new Insets(10,50,0,5));
+		settings.getChildren().add(walkBox);
 	}
 
 	@Override
