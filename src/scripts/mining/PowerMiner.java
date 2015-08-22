@@ -57,7 +57,7 @@ public class PowerMiner extends MiningStyle{
 	private boolean closeInv = false;
 	private boolean ignoreItems = false;
 	int dropOffset = 0;
-	int radius = 10;
+	double radius = 10;
 	Coordinate center = null;
 	int notMiningCount = 0;
 	private Rock ore;
@@ -425,7 +425,7 @@ public class PowerMiner extends MiningStyle{
 		if(!ore.name.contains("Sandstone") && !ore.name.contains("Granite"))
 			forceKeys  = forceNoClick.isSelected();
 		try{
-			radius = radLabel.isSelected() ? Integer.parseInt(radText.getText()) : 1000;
+			radius = radLabel.isSelected() ? Double.parseDouble(radText.getText()) : 1000;
 		}catch(NumberFormatException e){}
 		center = Players.getLocal().getPosition();
 	}
