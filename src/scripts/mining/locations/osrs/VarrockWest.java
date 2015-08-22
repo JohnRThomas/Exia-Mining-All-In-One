@@ -17,7 +17,7 @@ public class VarrockWest extends OSRSLocation{
 	public void intialize(String ore){
 		switch(ore){
 		case "Clay":
-			rocks = new Coordinate[] {new Coordinate(3179,3371), new Coordinate(3180,3372), new Coordinate(3183,3377)};
+			rocks = new Coordinate[] {new Coordinate(3179,3371), new Coordinate(3180,3372)};
 			break;
 		case "Tin":
 			rocks = new Coordinate[] {new Coordinate(3181,3377), new Coordinate(3181,3376), new Coordinate(3183,3376), new Coordinate(3181,3375),
@@ -54,13 +54,16 @@ public class VarrockWest extends OSRSLocation{
 		if(box.isSelected() && ore == Rock.IRON){
 			rocks = new Coordinate[] {new Coordinate(3181,3373), new Coordinate(3175,3368), new Coordinate(3175,3366)};
 		}
+		if(box.isSelected() && ore == Rock.CLAY){
+			rocks = new Coordinate[] {new Coordinate(3179,3371), new Coordinate(3180,3372), new Coordinate(3183,3377)};
+		}
 	}
 
 	@Override
 	public Node[] getSettingsNodes(){
-		if(ore == Rock.IRON){
+		if(ore == Rock.IRON || ore == Rock.CLAY){
 			box.setStyle("-fx-text-fill: -fx-text-input-text");
-			box.setPadding(new Insets(0,0,0,5));
+			box.setPadding(new Insets(10,0,0,5));
 			box.setPrefWidth(165);
 			return new Node[]{box};
 		}else{
