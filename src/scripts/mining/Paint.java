@@ -17,6 +17,7 @@ import javax.imageio.ImageIO;
 import com.runemate.game.api.client.ClientUI;
 import com.runemate.game.api.client.paint.PaintListener;
 import com.runemate.game.api.hybrid.Environment;
+import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.input.Mouse;
 import com.runemate.game.api.hybrid.local.Skill;
 import com.runemate.game.api.hybrid.util.Time;
@@ -35,6 +36,8 @@ public class Paint implements PaintListener{
 	public static long startTime = 0;
 	public static String status = "";
 	public static BufferedImage mouseImage;
+	public static GameObject rock = null;
+	
 	
 	@SuppressWarnings("unused")
 	private boolean RS3;
@@ -153,6 +156,14 @@ public class Paint implements PaintListener{
 					lastX = newX;
 					lastY = newY;
 				}
+			}
+			if(rock != null){
+				try{
+					g.setColor(Color.green);
+					Point pt = rock.getPosition().minimap().getInteractionPoint();
+					g.drawLine(pt.x, pt.y-2, pt.x, pt.y+2);
+					g.drawLine(pt.x-2, pt.y, pt.x+2, pt.y);
+				}catch(Exception e){}
 			}
 		}catch(Exception e){}		
 	}
