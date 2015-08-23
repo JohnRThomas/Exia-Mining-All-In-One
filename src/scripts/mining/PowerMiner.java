@@ -180,6 +180,7 @@ public class PowerMiner extends MiningStyle{
 				}else{
 					ActionWindow.BACKPACK.close();
 				}
+				//TODO loop check
 				ReflexAgent.delay();
 				return;
 			}
@@ -230,6 +231,7 @@ public class PowerMiner extends MiningStyle{
 			}
 			InteractablePoint pt = Inventory.getBoundsOf(i).getInteractionPoint();
 			if(pt != null){
+				//TODO loop check
 				ReflexAgent.delay();
 				ReflexAgent.delay();
 				ReflexAgent.delay();

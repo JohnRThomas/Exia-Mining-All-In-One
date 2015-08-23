@@ -162,7 +162,7 @@ public class LivingRockCavern extends DepositLocation{
 	}
 
 	@Override
-	public void walkToBank() {
+	public void walkToBank(boolean walk) {
 		if(Players.getLocal().distanceTo(new Coordinate(3652, 5115)) > 80){
 			if(!notified && deathNotification){
 				ClientUI.sendTrayNotification("You have died! Please walk back to the cavern.");
@@ -181,6 +181,7 @@ public class LivingRockCavern extends DepositLocation{
 				}else{
 					miner.turnAndClick(ladder, "Climb-down");
 				}
+				//TODO loop check
 				Execution.delay(ReflexAgent.getReactionTime() * 3);
 			}else{
 				//distance to the rope
@@ -193,6 +194,7 @@ public class LivingRockCavern extends DepositLocation{
 					}).first();
 					if(warning != null && warning.isValid() && warning.isValid()){
 						warning.click();
+						//TODO loop check
 						Execution.delay(ReflexAgent.getReactionTime() * 8);
 					}else{
 						GameObject rope = GameObjects.getLoaded("Rope").sortByDistance().get(0);
@@ -201,6 +203,7 @@ public class LivingRockCavern extends DepositLocation{
 						}else{
 							miner.turnAndClick(rope, "Climb");
 						}
+						//TODO loop check
 						Execution.delay(ReflexAgent.getReactionTime() * 3);
 					}
 				}else{
@@ -216,12 +219,13 @@ public class LivingRockCavern extends DepositLocation{
 						bankPath.step();
 						
 					}
+					//TODO loop check
 					Execution.delay(Random.nextInt(600,800) + ReflexAgent.getReactionTime());
 				}
 			}*/
 		}else{
 			notified = false;
-			super.walkToBank();
+			super.walkToBank(walk);
 		}
 
 	}
