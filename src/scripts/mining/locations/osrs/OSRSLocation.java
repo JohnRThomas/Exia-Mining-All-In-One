@@ -12,19 +12,16 @@ public abstract class OSRSLocation extends Location{
 	public OSRSLocation() {
 		depositBlackList.add("pickaxe");
 	}
-	
+
 	@Override
 	public boolean validate(GameObject o) {
 		Map<Color, Color> colors = o.getDefinition().getColorSubstitutions();
 		for (int i = 0; i < ore.colors.length; i++) {
-			if(colors.containsValue(ore.colors[i]) && o.getDefinition().getName().contains("Rock"))return true;
+			try{
+				if(colors.containsValue(ore.colors[i]) && o.getDefinition().getName().contains("Rock"))return true;
+			}catch(NullPointerException e){}
 		}
 		return false;
-	}
-
-	@Override
-	public void deposit(){
-		super.deposit();
 	}
 }
 
