@@ -40,7 +40,7 @@ public abstract class MiningStyle {
 			try{
 				rockPath = BresenhamPath.buildTo(rock);
 			}catch(Exception e){}
-		}else if((Traversal.getDestination() == null || Traversal.getDestination().distanceTo(rock) > 8)){
+		}else if((Traversal.getDestination() == null || Traversal.getDestination().distanceTo(rock) > 3)){
 			ReflexAgent.delay();
 			rockPath.step();
 		}
@@ -53,6 +53,7 @@ public abstract class MiningStyle {
 			Camera.turnTo(rock);
 		}else{
 			Paint.status = "Clicking rock";
+			rockPath = null;
 			turnAndClick(rock, "Mine");
 		}
 	}
@@ -96,9 +97,10 @@ public abstract class MiningStyle {
 	protected void walkToNextEmpty(){
 		RockWatcher.Pair<Coordinate, Long, GameObject> rockPair = rockWatcher.nextRock();
 		GameObject next = rockPair == null ? null : rockWatcher.nextRock().object;
+		Paint.rock = next;
 		Player me = Players.getLocal();
 		if(next != null && next.distanceTo(me) > 1.0 && !me.isMoving()){
-			if(next.distanceTo(me) > 16){
+			if(next.distanceTo(me) > 2){
 				Paint.status = "Walking to rock";
 				walkTo(next);
 			}else if(next.getVisibility() <= 20 && next.isValid()){
@@ -106,6 +108,7 @@ public abstract class MiningStyle {
 				Camera.turnTo(next);
 			}else{
 				if(next.isValid()){
+					rockPath = null;
 					Paint.status = "Clicking rock";
 					ReflexAgent.delay();
 					boolean clicked = next.interact("Mine");
