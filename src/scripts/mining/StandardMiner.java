@@ -99,7 +99,7 @@ public class StandardMiner extends MiningStyle{
 						Traversal.toggleRun();
 					}
 				}
-				location.walkToBank();
+				location.walkToBank(walkToBank);
 			}
 		}else{
 			if(location.inMine()){
@@ -117,11 +117,6 @@ public class StandardMiner extends MiningStyle{
 					location.closeBank();
 				}else{
 					Paint.status = "Walking to mine";
-					if(walkToBank){
-						if(!Traversal.isRunEnabled()){
-							Traversal.toggleRun();
-						}
-					}
 					location.walkToMine();
 				}
 			}
@@ -205,7 +200,7 @@ public class StandardMiner extends MiningStyle{
 	private GridPane content = null;
 	CheckBox urnBox = new CheckBox("Use urns");
 	CheckBox porterBox= new CheckBox("Use porters");
-	CheckBox walkBox= new CheckBox("Walk when heavy");
+	CheckBox walkBox = new CheckBox("Walk when heavy");
 
 	@Override 
 	public GridPane getContentPane(final Button startButton) {
@@ -312,7 +307,7 @@ public class StandardMiner extends MiningStyle{
 		
 		walkBox.setSelected(walkToBank);
 		walkBox.setStyle("-fx-text-fill: -fx-text-input-text");
-		walkBox.setPadding(new Insets(10,50,0,5));
+		walkBox.setPadding(new Insets(10,10,0,5));
 		settings.getChildren().add(walkBox);
 
 	}
@@ -332,6 +327,7 @@ public class StandardMiner extends MiningStyle{
 				location.depositBlackList.add("porter");
 			}
 		}
+		walkToBank = walkBox.isSelected();
 	}
 
 	public void removeNodeFromGrid(final int row, final int column, GridPane gridPane) {

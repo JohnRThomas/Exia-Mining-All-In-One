@@ -15,6 +15,7 @@ import com.runemate.game.api.hybrid.local.hud.interfaces.SpriteItem;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.location.navigation.Path;
+import com.runemate.game.api.hybrid.location.navigation.Path.TraversalOption;
 import com.runemate.game.api.hybrid.location.navigation.Traversal;
 import com.runemate.game.api.hybrid.location.navigation.basic.BresenhamPath;
 import com.runemate.game.api.hybrid.location.navigation.basic.ViewportPath;
@@ -207,13 +208,13 @@ public abstract class Location {
 	int tryCount = 0;
 	protected Locatable lastStep = null;
 
-	public void walkToBank() {
+	public void walkToBank(boolean walk) {
 		if(bankPath == null)
 			bankPath = pathBuilder.buildTo(bank.getArea());		
 		else if(!bank.contains(Traversal.getDestination())){
 
-			if(bankPath instanceof BresenhamPath){
-				bankPath = pathBuilder.buildTo(bank.getArea());
+			if(bankPath instanceof BresenhamPath || bankPath instanceof WebPath){
+				bankPath = pathBuilder.buildTo(bank.getArea(), false);
 				lastStep = null;
 			}else if(bankPath instanceof ViewportPath){
 				Camera.concurrentlyTurnTo(bankPath.getNext());
@@ -225,8 +226,8 @@ public abstract class Location {
 			}
 
 			lastStep = bankPath.getNext();
-
-			bankPath.step();
+			
+			bankPath.step(TraversalOption.MANAGE_DISTANCE_BETWEEN_STEPS, walk ? null : TraversalOption.MANAGE_RUN);
 
 			Execution.delay(400,600);
 		}else{
@@ -238,8 +239,8 @@ public abstract class Location {
 		if(minePath == null)minePath = pathBuilder.buildTo(mine.getArea());
 		else if(!mine.contains(Traversal.getDestination())){
 
-			if(minePath instanceof BresenhamPath){
-				minePath = pathBuilder.buildTo(mine.getArea());
+			if(minePath instanceof BresenhamPath || minePath instanceof WebPath){
+				minePath = pathBuilder.buildTo(mine.getArea(), false);
 				lastStep = null;
 			}else if(minePath instanceof ViewportPath){
 				Camera.concurrentlyTurnTo(minePath.getNext());
@@ -252,7 +253,7 @@ public abstract class Location {
 
 			lastStep = minePath.getNext();
 
-			minePath.step();
+			minePath.step(TraversalOption.MANAGE_DISTANCE_BETWEEN_STEPS, TraversalOption.MANAGE_RUN);
 
 			Execution.delay(400,600);
 		}else{
