@@ -14,10 +14,24 @@ public class MoneyCounter implements InventoryListener{
 
 	private final HashMap<Integer, Long> cache = new HashMap<Integer, Long>();
 	private volatile long totalProfit = 0;
+	private volatile long oreCount = 0;
 	private volatile boolean locked = false;
-
+	private String[] ores;
+	
+	public MoneyCounter(String... ores){
+		this.ores = ores;
+	}
+	
 	@Override
 	public void onItemAdded(ItemEvent event){
+		String name = Inventory.getItemIn(event.getItem().getIndex()).getDefinition().getName();
+		for(String o : ores){
+			if(name.equals(o)){
+				oreCount += event.getQuantityChange();
+				break;
+			}
+		}
+		
 		if(!locked){
 			int id = event.getItem().getId();
 			long price = 0;
@@ -30,10 +44,9 @@ public class MoneyCounter implements InventoryListener{
 					Item item = GrandExchange.lookup(id);
 					if(item != null){
 						price = item.getPrice();
-						System.out.println("Looked up " + item.getName() + " for " + price + "gp");
+						System.out.println("Looked up " + name + " for " + price + "gp");
 					}
 				}else{
-					String name = Inventory.getItemIn(event.getItem().getIndex()).getDefinition().getName();
 					price = Zybez.getAveragePrice(name);
 					if(price == -1){
 						price = 0;
@@ -42,15 +55,20 @@ public class MoneyCounter implements InventoryListener{
 				}
 				cache.put(id, price);
 			}
-			totalProfit += price;
+			totalProfit += price * event.getQuantityChange();
 		}
 	}
 
 	public long getProfit() {
 		return totalProfit;
 	}
-
+	public long getOreCount() {
+		return oreCount;
+	}
+	
 	public void setLocked(boolean locked) {
 		this.locked = locked;
 	}
+
+
 }

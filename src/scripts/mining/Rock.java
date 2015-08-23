@@ -1,7 +1,6 @@
 package scripts.mining;
 
 import java.awt.Color;
-import java.util.HashMap;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,7 +40,7 @@ public enum Rock {
 			true, true, new Color(0,0,0)),
 	GRANITE			("Granite", new String[]{"Granite (500g)", "Granite (2kg)", "Granite (5kg)"}, new double[]{50.0, 60.0, 75.0},
 			true, true, new Color(94,66,40)),
-	MITHRIL			("Mithril", new String[]{}, new double[]{80.0},
+	MITHRIL			("Mithril", new String[]{"Mithril ore"}, new double[]{80.0},
 			true, true, new Color(47,47,66)),
 	ADAMANTITE		("Adamantite", new String[]{"Adamantite ore"}, new double[]{95.0},
 			true, true, new Color(52,60,52)),
@@ -60,16 +59,14 @@ public enum Rock {
 	UNKNOWN			("Unknown", new String[]{}, new double[]{0.0}, false, false);
 
 	public String name;
-	public HashMap<String, Double> exps = new HashMap<String, Double>();
+	public String[] oreNames;
 	public boolean rs3;
 	public boolean osrs;
 	public Color[] colors;
 
 	Rock(String name, String[] oreNames, double[] exp, boolean rs3, boolean osrs){
 		this.name = name;
-		for(int i = 0; i < oreNames.length; i++){
-			this.exps.put(oreNames[i], exp[i]);
-		}
+		this.oreNames = oreNames;
 		this.rs3 = rs3;
 		this.osrs = osrs;
 		colors = new Color[0];
@@ -77,9 +74,8 @@ public enum Rock {
 
 	Rock(String name, String[] oreNames, double[] exp, boolean rs3, boolean osrs, Color... colors){
 		this.name = name;
-		for(int i = 0; i < oreNames.length; i++){
-			this.exps.put(oreNames[i], exp[i]);
-		}
+		this.oreNames = oreNames;
+
 		this.rs3 = rs3;
 		this.osrs = osrs;
 		this.colors = colors;

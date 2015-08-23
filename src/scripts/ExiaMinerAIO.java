@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import scripts.mining.AIOMinerGUI;
 import scripts.mining.CustomPlayerSense;
 import scripts.mining.MiningStyle;
+import scripts.mining.MoneyCounter;
 import scripts.mining.Paint;
 import scripts.mining.ReflexAgent;
 
@@ -50,9 +51,9 @@ public class ExiaMinerAIO extends LoopingScript {
 		Paint.startTime = System.currentTimeMillis();
 		miner = gui.miner;
 		gui = null;
-		getEventDispatcher().addListener(paint);
 		Paint.startEXP = Skill.MINING.getExperience();
-		Paint.exps = miner.getOre().exps;
+		Paint.profitCounter = new MoneyCounter(miner.getOre().oreNames);
+		getEventDispatcher().addListener(paint);
 		miner.onStart(args);
 	}
 		

@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.NumberFormat;
-import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
@@ -29,10 +28,8 @@ public class Paint implements PaintListener{
 	public static int levelsGained = 0;
 	public static boolean first = true;
 	public static boolean showGraph = true;
-	public static MoneyCounter profitCounter = new MoneyCounter();
+	public static MoneyCounter profitCounter = null;
 	public static int startEXP = 0;
-	public static HashMap<String, Double> exps;
-	public static double exp = 5.0;
 	public static long startTime = 0;
 	public static String status = "";
 	public static BufferedImage mouseImage;
@@ -69,18 +66,13 @@ public class Paint implements PaintListener{
 		try{
 			if(first){
 				tempLevel = Skill.MINING.getCurrentLevel();
-				if(exps.size() == 1){
-					for(String k : exps.keySet())exp = exps.get(k);
-				}else{
-					exp = 1.0;
-				}
 				first = false;
 			}
 			long time = System.currentTimeMillis();
 			int totalEXP = Skill.MINING.getExperience() - startEXP;
 			long expPhr = ((long)totalEXP*3600000)/(time - startTime);
 			long profPhr = ((long)profitCounter.getProfit()*3600000)/(time - startTime);
-			long orePhr = (long)((double)expPhr / exp);
+			long orePhr = ((long)profitCounter.getOreCount()*3600000)/(time - startTime);
 			int nextLevelEXP = Skill.MINING.getExperienceToNextLevel();
 			int currentLevel = Skill.MINING.getCurrentLevel();
 			int percentage = Skill.MINING.getExperienceAsPercent();
@@ -165,7 +157,9 @@ public class Paint implements PaintListener{
 					g.drawLine(pt.x-2, pt.y, pt.x+2, pt.y);
 				}catch(Exception e){}
 			}
-		}catch(Exception e){}		
+		}catch(Exception e){
+			e.printStackTrace();
+		}		
 	}
 		
 	private static String formatBigNumber(long number){

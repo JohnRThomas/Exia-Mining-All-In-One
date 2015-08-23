@@ -44,6 +44,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import scripts.ExiaMinerAIO;
 import scripts.mining.RockWatcher.Pair;
 import scripts.mining.RockWatcher.Validater;
 
@@ -115,6 +116,10 @@ public class PowerMiner extends MiningStyle{
 		}else{
 			rockWatcher = new RockWatcher((GameObject rock) -> validateOSRS(rock), new Coordinate[]{});
 		}
+
+		Paint.profitCounter.setLocked(true);
+		ExiaMinerAIO.instance.getEventDispatcher().addListener(Paint.profitCounter);
+
 		rockWatcher.start();
 		content = null;
 	}
@@ -146,11 +151,11 @@ public class PowerMiner extends MiningStyle{
 		if(useUrns){
 			ItemHandlers.manageUrns();
 		}
-		
+
 		if(usePorters){
 			ItemHandlers.managePorters();
 		}	
-		
+
 		if(shouldDrop()){
 			dropping = true;
 			drop();
@@ -275,7 +280,7 @@ public class PowerMiner extends MiningStyle{
 			}
 		}
 	}
-	
+
 	private LocatableEntity getNextRock() {
 		LocatableEntityQueryResults<GameObject> rocksObjs = null;
 		try{
@@ -295,13 +300,28 @@ public class PowerMiner extends MiningStyle{
 		return null;
 	}
 
-	private boolean shouldDrop() {
-		SpriteItemQueryResults items = Inventory.getItems(new Filter<SpriteItem>(){
-			@Override
-			public boolean accepts(SpriteItem i) {
-				return ore.exps.containsKey(i.getDefinition().getName());
+	Filter<SpriteItem> oreFilter = new Filter<SpriteItem>(){
+		@Override
+		public boolean accepts(SpriteItem i) {
+			try{
+				return oreStringFilter.accepts(i.getDefinition().getName());
+			}catch(Exception e){}
+			return false;
+		}
+	};
+
+	Filter<String> oreStringFilter = new Filter<String>(){
+		@Override
+		public boolean accepts(String name) {
+			for(String s : ore.oreNames){
+				if(name.contains(s))return true;
 			}
-		});
+			return false;
+		}
+	};
+
+	private boolean shouldDrop() {
+		SpriteItemQueryResults items = Inventory.getItems(oreFilter);
 
 		return !items.isEmpty() && (mine1drop1 || (Inventory.isFull() || dropping)) && !ignoreItems;
 	}
@@ -309,12 +329,7 @@ public class PowerMiner extends MiningStyle{
 	private void drop() {
 		currentRock = null;
 
-		SpriteItemQueryResults items = Inventory.getItems(new Filter<SpriteItem>(){
-			@Override
-			public boolean accepts(SpriteItem i) {
-				return ore.exps.containsKey(i.getDefinition().getName());
-			}
-		});
+		SpriteItemQueryResults items = Inventory.getItems(oreFilter);
 
 		if(items.isEmpty()){
 			//no need to keep dropping
@@ -329,7 +344,7 @@ public class PowerMiner extends MiningStyle{
 			for(Slot slot : ActionBar.Slot.values()){
 				if(slot.getAction() != null){
 					SlotAction action = slot.getAction();
-					if(action.getItem() != null && ore.exps.containsKey(action.getItem().getName())){
+					if(action.getItem() != null && oreStringFilter.accepts(action.getItem().getName())){
 						//drop each of that item
 						if(action.isActivatable()){
 							if(forceKeys) 
@@ -355,7 +370,7 @@ public class PowerMiner extends MiningStyle{
 				//find the first open action slot
 				for(Slot slot : ActionBar.Slot.values()){
 					//This indicates that this slot if not an ore dropping slot, so it's ok to overwrite it
-					if(slot.getAction() == null || slot.getAction().getItem() == null || !ore.exps.containsKey(slot.getAction().getItem().getName())){
+					if(slot.getAction() == null || slot.getAction().getItem() == null || !oreStringFilter.accepts(slot.getAction().getItem().getName())){
 						Mouse.drag(items.first(), slot.getComponent());
 						//Wait 2-4 seconds for the item to appear on the action bar
 						Timer timer = new Timer(Random.nextInt(2000,4000));
@@ -395,7 +410,7 @@ public class PowerMiner extends MiningStyle{
 						dropped = new boolean[28];
 						return;
 					}
-					
+
 					ReflexAgent.delay();
 					if(items.get(offset).interact("Drop")){
 						dropped[items.get(offset).getIndex()] = true;
@@ -484,7 +499,7 @@ public class PowerMiner extends MiningStyle{
 				}
 			}
 		});
-		
+
 		mineOne.setStyle("-fx-text-fill: -fx-text-input-text");
 		mineOne.setPadding(new Insets(10,160,0,5));
 		settings.getChildren().add(mineOne);
@@ -505,7 +520,7 @@ public class PowerMiner extends MiningStyle{
 			forceNoClick.setStyle("-fx-text-fill: -fx-text-input-text");
 			forceNoClick.setPadding(new Insets(10,100,0,5));
 			settings.getChildren().add(forceNoClick);
-			
+
 			porterBox.setStyle("-fx-text-fill: -fx-text-input-text");
 			porterBox.setPadding(new Insets(10,160,0,5));
 			settings.getChildren().add(porterBox);
@@ -535,7 +550,7 @@ public class PowerMiner extends MiningStyle{
 		radText.setMaxWidth(35.0f);
 		radText.setPadding(new Insets(3,5,2,5));
 		settings.getChildren().add(radText);
-		
+
 		final String LABEL_STYLE = "-fx-text-fill: -fx-flair-text; -fx-font-size: 15px; -fx-background-color: -fx-flair;";
 
 		Label oreLabel = new Label("Ores");
