@@ -46,7 +46,7 @@ public class AlKharid extends Location{
 		}
 		this.ore = Rock.getByName(ore);
 		bank = new Area.Rectangular(new Coordinate(3267,3169), new Coordinate(3273,3165));
-		mine = new Area.Rectangular(new Coordinate(3290,3319), new Coordinate(3305,3285));
+		mine = new Area.Rectangular(new Coordinate(3290,3319), new Coordinate(3305,3282));
 	}
 
 	@Override

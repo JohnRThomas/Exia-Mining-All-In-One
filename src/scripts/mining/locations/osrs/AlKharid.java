@@ -21,13 +21,12 @@ public class AlKharid extends OSRSLocation{
 			rocks = new Coordinate[]{new Coordinate(3297,3315),new Coordinate(3296,3314)};
 			break;
 		case "Iron":
-			rocks = new Coordinate[]{};
 			break;
 		case "Silver":
 			rocks = new Coordinate[]{new Coordinate(3295,3303),new Coordinate(3294,3301),new Coordinate(3303,3312),new Coordinate(3303,3313),new Coordinate(3293,3300)};
 			break;
 		case "Coal":
-			rocks = new Coordinate[]{new Coordinate(3301,3300),new Coordinate(3302,3299)};
+			rocks = new Coordinate[]{new Coordinate(3304,3300),new Coordinate(3303,3299), new Coordinate(3302,3317)};
 			break;
 		case "Gold":
 			rocks = new Coordinate[]{new Coordinate(3296,3287),new Coordinate(3297,3288)};
@@ -43,7 +42,7 @@ public class AlKharid extends OSRSLocation{
 		}
 		this.ore = Rock.getByName(ore);
 		bank = new Area.Rectangular(new Coordinate(3267,3169), new Coordinate(3273,3165));
-		mine = new Area.Rectangular(new Coordinate(3290,3319), new Coordinate(3305,3285));
+		mine = new Area.Rectangular(new Coordinate(3290,3319), new Coordinate(3305,3282));
 	}
 
 	@Override
@@ -99,7 +98,7 @@ public class AlKharid extends OSRSLocation{
 	public Node[] getSettingsNodes(){
 		if(ore == Rock.IRON){
 			ironArea.setStyle("-fx-text-fill: -fx-text-input-text");
-			ironArea.setPadding(new Insets(10,160,0,5));
+			ironArea.setPadding(new Insets(0,0,0,0));
 			ironArea.setPrefWidth(165);
 			return new Node[]{ironArea};
 		}else{
