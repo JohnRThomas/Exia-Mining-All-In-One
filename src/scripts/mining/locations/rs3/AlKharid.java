@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 
 public class AlKharid extends Location{
@@ -68,6 +69,7 @@ public class AlKharid extends Location{
 		        "North-east"
 		    );
 	ComboBox<String> ironArea = new ComboBox<String>(options);
+	CheckBox duelArenaBox = new CheckBox("Bank at Duel Arena");
 
 	@Override
 	public void loadSettings() {
@@ -92,17 +94,24 @@ public class AlKharid extends Location{
 				
 			}
 		}
+		if(duelArenaBox.isSelected()){
+			bank = new Area.Rectangular(new Coordinate(3345,3240), new Coordinate(3350,3236));
+		}
 	}
 
 	@Override
 	public Node[] getSettingsNodes(){
+		duelArenaBox.setStyle("-fx-text-fill: -fx-text-input-text");
+		duelArenaBox.setPadding(new Insets(10,0,0,5));
+		duelArenaBox.setPrefWidth(165);
+
 		if(ore == Rock.IRON){
 			ironArea.setStyle("-fx-text-fill: -fx-text-input-text");
 			ironArea.setPadding(new Insets(0,0,0,5));
 			ironArea.setPrefWidth(165);
-			return new Node[]{ironArea};
+			return new Node[]{duelArenaBox, ironArea};
 		}else{
-			return super.getSettingsNodes();
+			return new Node[]{duelArenaBox};
 		}
 	}
 }

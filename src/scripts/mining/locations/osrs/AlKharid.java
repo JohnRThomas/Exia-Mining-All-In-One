@@ -1,12 +1,20 @@
 package scripts.mining.locations.osrs;
 
+import java.util.regex.Pattern;
+
+import com.runemate.game.api.hybrid.entities.GameObject;
+import com.runemate.game.api.hybrid.entities.LocatableEntity;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
+import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
+import com.runemate.game.api.hybrid.region.GameObjects;
+import com.runemate.game.api.hybrid.util.Filter;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import scripts.mining.Rock;
 
@@ -46,9 +54,37 @@ public class AlKharid extends OSRSLocation{
 	}
 
 	@Override
+	public Pattern getBankInteract() {
+		if(duelArena)return Pattern.compile("Bank|Use|Open");
+		else return super.getBankInteract();
+	}
+	
+	@Override
+	protected LocatableEntityQueryResults<? extends LocatableEntity> getBankers(){
+		if(duelArena){
+			LocatableEntityQueryResults<? extends LocatableEntity> bankers = super.getBankers();
+			if(bankers.isEmpty()){
+				bankers = GameObjects.getLoaded(new Filter<GameObject>(){
+					@Override
+					public boolean accepts(GameObject o) {
+						try{
+							return o.getDefinition().getName().contains("chest");
+						}catch(Exception e){}
+						return false;
+					}
+				});
+			}
+			return bankers;
+		}
+		else return super.getBankers();
+
+	}
+	
+	@Override
 	public String getName() {
 		return "Al Kharid";
 	}
+	
 	@Override
 	public String[] getOres() {
 		ironArea.getSelectionModel().select(0);
@@ -68,6 +104,8 @@ public class AlKharid extends OSRSLocation{
 		        "North-east"
 		    );
 	ComboBox<String> ironArea = new ComboBox<String>(options);
+	CheckBox duelArenaBox = new CheckBox("Bank at Duel Arena");
+	private boolean duelArena = false;
 
 	@Override
 	public void loadSettings() {
@@ -92,17 +130,25 @@ public class AlKharid extends OSRSLocation{
 				
 			}
 		}
+		if(duelArenaBox.isSelected()){
+			duelArena = true;
+			bank = new Area.Rectangular(new Coordinate(3380,3271), new Coordinate(3384,3267));
+		}
 	}
 
 	@Override
 	public Node[] getSettingsNodes(){
+		duelArenaBox.setStyle("-fx-text-fill: -fx-text-input-text");
+		duelArenaBox.setPadding(new Insets(10,0,0,5));
+		duelArenaBox.setPrefWidth(165);
+
 		if(ore == Rock.IRON){
 			ironArea.setStyle("-fx-text-fill: -fx-text-input-text");
-			ironArea.setPadding(new Insets(0,0,0,0));
+			ironArea.setPadding(new Insets(0,0,0,5));
 			ironArea.setPrefWidth(165);
-			return new Node[]{ironArea};
+			return new Node[]{duelArenaBox, ironArea};
 		}else{
-			return super.getSettingsNodes();
+			return new Node[]{duelArenaBox};
 		}
 	}
 }

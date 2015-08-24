@@ -29,7 +29,7 @@ public abstract class DepositLocation extends Location {
 	}
 	
 	@Override
-	protected LocatableEntityQueryResults<? extends LocatableEntity> getBanker(){
+	protected LocatableEntityQueryResults<? extends LocatableEntity> getBankers(){
 		return Banks.getLoadedDepositBoxes();
 	}
 	

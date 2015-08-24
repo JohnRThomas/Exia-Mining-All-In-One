@@ -119,7 +119,7 @@ public class LivingRockCavern extends DepositLocation{
 	}
 
 	@Override
-	protected LocatableEntityQueryResults<? extends LocatableEntity> getBanker(){
+	protected LocatableEntityQueryResults<? extends LocatableEntity> getBankers(){
 		return GameObjects.getLoaded("Pulley lift");
 	}
 

@@ -36,7 +36,7 @@ public class ShiloVillage extends Location{
 	}
 	
 	@Override
-	protected LocatableEntityQueryResults<? extends LocatableEntity> getBanker(){
+	protected LocatableEntityQueryResults<? extends LocatableEntity> getBankers(){
 		return Npcs.getLoaded("Banker");
 	}
 }

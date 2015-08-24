@@ -72,7 +72,7 @@ public abstract class Location {
 
 	public void openBank(){
 		ReflexAgent.delay();
-		LocatableEntityQueryResults<? extends LocatableEntity> banks = getBanker();
+		LocatableEntityQueryResults<? extends LocatableEntity> banks = getBankers();
 
 		if(banks.size() > 0){
 			LocatableEntity bank = banks.nearest();
@@ -118,7 +118,7 @@ public abstract class Location {
 		return null;
 	}
 
-	protected LocatableEntityQueryResults<? extends LocatableEntity> getBanker(){
+	protected LocatableEntityQueryResults<? extends LocatableEntity> getBankers(){
 		int banktype = PlayerSense.getAsInteger(CustomPlayerSense.Key.BANKER_PREFERENCE.playerSenseKey);
 		if(banktype <= 33){
 			//Return the chests or the bankers
@@ -191,7 +191,7 @@ public abstract class Location {
 	}
 
 	public boolean inBank() {
-		LocatableEntityQueryResults<? extends LocatableEntity> bankers = getBanker().sortByDistance();
+		LocatableEntityQueryResults<? extends LocatableEntity> bankers = getBankers().sortByDistance();
 		if(bank.contains(Players.getLocal()) || (bankers.size() > 0 && bankers.first().isVisible() && bankers.first().distanceTo(Players.getLocal()) < 5)){
 			bankPath = null;
 			return true;
