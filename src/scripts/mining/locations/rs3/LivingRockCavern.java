@@ -5,6 +5,9 @@ import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
 import com.runemate.game.api.hybrid.entities.Npc;
 import com.runemate.game.api.hybrid.entities.Player;
+import com.runemate.game.api.hybrid.input.Mouse;
+import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceComponent;
+import com.runemate.game.api.hybrid.local.hud.interfaces.Interfaces;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
@@ -14,6 +17,9 @@ import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Npcs;
 import com.runemate.game.api.hybrid.region.Players;
 import com.runemate.game.api.hybrid.util.Filter;
+import com.runemate.game.api.hybrid.util.Timer;
+import com.runemate.game.api.hybrid.util.calculations.Random;
+import com.runemate.game.api.script.Execution;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,6 +29,8 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import scripts.mining.AIOMinerGUI;
 import scripts.mining.MiningStyle;
+import scripts.mining.Paint;
+import scripts.mining.ReflexAgent;
 import scripts.mining.Rock;
 import scripts.mining.locations.DepositLocation;
 
@@ -32,7 +40,7 @@ public class LivingRockCavern extends DepositLocation{
 	boolean notified = false;
 	boolean deathNotification = false;
 	boolean safeIdle = false;
-	
+
 	private MiningStyle miner;
 
 	public LivingRockCavern(MiningStyle miner){
@@ -146,7 +154,7 @@ public class LivingRockCavern extends DepositLocation{
 	}
 
 	@Override
-	public void walkToMine() {
+	public void walkToMine(Area... destL) {
 		LocatableEntity rock = getNextRock(miner.currentRock);
 		if(minePath == null){
 			if(rock != null){
@@ -161,68 +169,84 @@ public class LivingRockCavern extends DepositLocation{
 		}
 	}
 
+	Filter<InterfaceComponent> warningFilter = new Filter<InterfaceComponent>(){
+		@Override
+		public boolean accepts(InterfaceComponent i) {
+			return i.getText() != null & i.getText().contains("Proceed regardless");
+		}
+	};
+
 	@Override
-	public void walkToBank(boolean walk) {
-		if(Players.getLocal().distanceTo(new Coordinate(3652, 5115)) > 80){
+	public void walkToBank(boolean walk, Area... destL) {
+		Player me = Players.getLocal();
+
+		if(me.distanceTo(new Coordinate(3652, 5115)) > 80){
 			if(!notified && deathNotification){
-				ClientUI.sendTrayNotification("You have died! Please walk back to the cavern.");
+				ClientUI.sendTrayNotification("You have died! Walking back to LRC!");
 				notified = true;
 			}
 			//distance from the LRC bank is greater than 80 tiles
-			
-			/*Paint.status = "Re-entering Cavern";
+
+			Paint.status = "Re-entering Cavern";
 
 			//distance to ladder of dwarven mine
-			if(Players.getLocal().distanceTo(new Coordinate(3018, 3450)) <= 5){
+			if(me.distanceTo(new Coordinate(3018, 3450)) <= 5){
 				bankPath = null;
-				GameObject ladder = GameObjects.getLoaded("Ladder").sortByDistance().get(0);
-				if(ladder.distanceTo(Players.getLocal()) > 8){
-					miner.walkTo(ladder);
-				}else{
-					miner.turnAndClick(ladder, "Climb-down");
+				LocatableEntityQueryResults<GameObject> ladders = GameObjects.getLoaded("Ladder").sortByDistance();
+				if(ladders.size() > 0){
+					GameObject ladder = ladders.get(0);
+					if(ladder.distanceTo(me) > 8){
+						miner.walkTo(ladder);
+					}else{
+						miner.turnAndClick(ladder, "Climb-down");
+					}
+					Timer timer = new Timer((int)(ladder.distanceTo(me) * ReflexAgent.getReactionTime()) + Random.nextInt(900, 1000));
+					timer.start();
+					while(timer.getRemainingTime() > 0 && Players.getLocal().distanceTo(new Coordinate(3018, 3450)) <= 5 && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
+						Execution.delay(10);
+					}
 				}
-				//TODO loop check
-				Execution.delay(ReflexAgent.getReactionTime() * 3);
 			}else{
 				//distance to the rope
-				if(Players.getLocal().distanceTo(new Coordinate(3014, 9831)) <= 25){
-					InterfaceComponent warning = Interfaces.getLoaded(new Filter<InterfaceComponent>(){
-						@Override
-						public boolean accepts(InterfaceComponent i) {
-							return i.getText() != null & i.getText().contains("Proceed regardless");
-						}
-					}).first();
-					if(warning != null && warning.isValid() && warning.isValid()){
+				if(me.distanceTo(new Coordinate(3014, 9831)) <= 25){
+					InterfaceComponent warning = Interfaces.getLoaded(warningFilter).first();
+					if(warning != null && warning.isValid() && warning.isVisible()){
+						//Click proceed
 						warning.click();
-						//TODO loop check
-						Execution.delay(ReflexAgent.getReactionTime() * 8);
+						Timer timer = new Timer((int)(ReflexAgent.getReactionTime() * 4) + Random.nextInt(900, 1000));
+						timer.start();
+						while(timer.getRemainingTime() > 0 && Interfaces.getLoaded(warningFilter).first() != null && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
+							Execution.delay(10);
+						}	
 					}else{
-						GameObject rope = GameObjects.getLoaded("Rope").sortByDistance().get(0);
-						if(rope.distanceTo(Players.getLocal()) > 8){
-							miner.walkTo(rope);
-						}else{
-							miner.turnAndClick(rope, "Climb");
+						//open the warning
+						LocatableEntityQueryResults<GameObject> ropes = GameObjects.getLoaded("Rope").sortByDistance();
+						if(ropes.size() > 0){
+							GameObject rope = ropes.get(0);
+							if(rope.distanceTo(me) > 8){
+								miner.walkTo(rope);
+							}else{
+								miner.turnAndClick(rope, "Climb");
+								Timer timer = new Timer((int)(rope.distanceTo(me) * ReflexAgent.getReactionTime()) + Random.nextInt(900, 1000));
+								timer.start();
+								while(timer.getRemainingTime() > 0 && Players.getLocal().distanceTo(new Coordinate(3014, 9831)) <= 25 &&
+										Interfaces.getLoaded(warningFilter).first() == null && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
+									Execution.delay(10);
+								}
+							}
 						}
-						//TODO loop check
-						Execution.delay(ReflexAgent.getReactionTime() * 3);
 					}
 				}else{
 					//Walk to the ladder
 					if(bankPath == null){
 						bankPath = pathBuilder.buildTo(new Coordinate(3018, 3450), false);
-						System.out.println("New Path created: " + Players.getLocal().getPosition() + " -> " + new Coordinate(3018, 3450));
 					}else{
 						lastStep = bankPath.getNext();
-						
-						System.out.println("Current Location: " + Players.getLocal().getPosition() + " Vertex: " + bankPath.getNext());
-						
+
 						bankPath.step();
-						
 					}
-					//TODO loop check
-					Execution.delay(Random.nextInt(600,800) + ReflexAgent.getReactionTime());
 				}
-			}*/
+			}
 		}else{
 			notified = false;
 			super.walkToBank(walk);
@@ -268,12 +292,12 @@ public class LivingRockCavern extends DepositLocation{
 		idle.setStyle("-fx-text-fill: -fx-text-input-text");
 		idle.setPadding(new Insets(0,0,5,5));
 		idle.setPrefWidth(165);
-		
+
 		box.setSelected(mineMinerals);
 		box.setStyle("-fx-text-fill: -fx-text-input-text");
 		box.setPadding(new Insets(0,0,5,5));
 		box.setPrefWidth(165);
-		
+
 		death.setSelected(deathNotification);
 		death.setStyle("-fx-text-fill: -fx-text-input-text");
 		death.setPadding(new Insets(0,0,5,5));
@@ -281,7 +305,7 @@ public class LivingRockCavern extends DepositLocation{
 
 		combat.setSelected(runFromCombat);
 		combat.setStyle("-fx-text-fill: -fx-text-input-text");
-		combat.setPadding(new Insets(0,0,0,5));
+		combat.setPadding(new Insets(5,0,0,5));
 		combat.setPrefWidth(165);
 
 		return new Node[]{labela, labelb, labelc, labeld, idle, box, death, combat};
