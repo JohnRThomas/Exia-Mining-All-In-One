@@ -56,7 +56,7 @@ public class DwarvenMine extends DepositLocation{
 	}
 	
 	@Override
-	public void walkToBank(boolean walk) {
+	public void walkToBank(boolean walk, Area... destL) {
 		LocatableEntityQueryResults<GameObject> doors = GameObjects.getLoaded(entrance);
 		if(doors.size() > 0){
 			GameObject door = doors.nearestTo(new Coordinate(3033, 9772, 0));
@@ -78,7 +78,7 @@ public class DwarvenMine extends DepositLocation{
 	}
 
 	@Override
-	public void walkToMine() {
+	public void walkToMine(Area... destL) {
 		LocatableEntityQueryResults<GameObject> doors = GameObjects.getLoaded(exit);
 		if(doors.size() > 0){
 			GameObject door = doors.nearestTo(new Coordinate(1040, 4576, 0));

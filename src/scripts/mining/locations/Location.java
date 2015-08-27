@@ -208,13 +208,16 @@ public abstract class Location {
 	int tryCount = 0;
 	protected Locatable lastStep = null;
 
-	public void walkToBank(boolean walk) {
+	public void walkToBank(boolean walk, Area... destL) {
+		Area dest;
+		if(destL.length == 0)dest = bank;
+		else dest = destL[0];
+		
 		if(bankPath == null)
-			bankPath = pathBuilder.buildTo(bank.getArea());		
-		else if(!bank.contains(Traversal.getDestination())){
-
+			bankPath = pathBuilder.buildTo(dest);		
+		else if(!dest.contains(Traversal.getDestination())){
 			if(bankPath instanceof BresenhamPath || bankPath instanceof WebPath){
-				bankPath = pathBuilder.buildTo(bank.getArea(), false);
+				bankPath = pathBuilder.buildTo(dest, false);
 				lastStep = null;
 			}else if(bankPath instanceof ViewportPath){
 				Camera.concurrentlyTurnTo(bankPath.getNext());
@@ -222,7 +225,7 @@ public abstract class Location {
 				//Sometimes viewport paths get stuck trying to click through walls
 				if(lastStep == bankPath.getNext())tryCount++;
 				else tryCount = 0;
-				if(tryCount >= 3)bankPath = pathBuilder.buildTo(bank.getArea());
+				if(tryCount >= 3)bankPath = pathBuilder.buildTo(dest);
 			}
 
 			lastStep = bankPath.getNext();
@@ -235,12 +238,16 @@ public abstract class Location {
 		}
 	}
 
-	public void walkToMine() {
-		if(minePath == null)minePath = pathBuilder.buildTo(mine.getArea());
-		else if(!mine.contains(Traversal.getDestination())){
+	public void walkToMine(Area... destL) {
+		Area dest;
+		if(destL.length == 0)dest = mine;
+		else dest = destL[0];
+			
+		if(minePath == null)minePath = pathBuilder.buildTo(dest);
+		else if(!dest.contains(Traversal.getDestination())){
 
 			if(minePath instanceof BresenhamPath || minePath instanceof WebPath){
-				minePath = pathBuilder.buildTo(mine.getArea(), false);
+				minePath = pathBuilder.buildTo(dest, false);
 				lastStep = null;
 			}else if(minePath instanceof ViewportPath){
 				Camera.concurrentlyTurnTo(minePath.getNext());
@@ -248,7 +255,7 @@ public abstract class Location {
 				//Sometimes viewport paths get stuck trying to click through walls
 				if(lastStep == minePath.getNext())tryCount++;
 				else tryCount = 0;
-				if(tryCount >= 3)minePath = pathBuilder.buildTo(mine.getArea());
+				if(tryCount >= 3)minePath = pathBuilder.buildTo(dest);
 			}
 
 			lastStep = minePath.getNext();
