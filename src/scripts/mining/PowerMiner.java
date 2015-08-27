@@ -149,7 +149,7 @@ public class PowerMiner extends MiningStyle{
 	@Override
 	public void loop() {
 		if(useUrns){
-			ItemHandlers.manageUrns();
+			ItemHandlers.manageUrns(0);
 		}
 
 		if(usePorters){

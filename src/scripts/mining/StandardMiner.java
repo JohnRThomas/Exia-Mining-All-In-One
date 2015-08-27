@@ -28,6 +28,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import scripts.ExiaMinerAIO;
@@ -35,6 +36,7 @@ import scripts.mining.locations.Location;
 
 public class StandardMiner extends MiningStyle{	
 	int notMiningCount = 0;
+	private int urnAmount = 1;
 	Location location;
 
 	private boolean usePorters = false;
@@ -76,14 +78,14 @@ public class StandardMiner extends MiningStyle{
 	@Override
 	public void loop() {
 		if(useUrns){
-			ItemHandlers.manageUrns();
+			ItemHandlers.manageUrns(urnAmount);
 		}
 		
 		if(usePorters){
-			ItemHandlers.managePorters();
+			usePorters = ItemHandlers.managePorters();
 		}	
 
-		if(location.shouldBank()){
+		if(location.shouldBank() || ItemHandlers.shouldBank(usePorters, location)){
 			if(location.inBank()){
 				if(location.isBankOpen()){
 					Paint.status = "Depositing items";
@@ -198,7 +200,8 @@ public class StandardMiner extends MiningStyle{
 	}
 
 	private GridPane content = null;
-	CheckBox urnBox = new CheckBox("Use urns");
+	CheckBox urnBox = new CheckBox("Use urns: ");
+	TextField urnText = new TextField("" + urnAmount);
 	CheckBox porterBox= new CheckBox("Use porters");
 	CheckBox walkBox = new CheckBox("Walk when heavy");
 
@@ -294,22 +297,32 @@ public class StandardMiner extends MiningStyle{
 		}
 
 		if(Environment.isRS3()){
-			porterBox.setSelected(usePorters);
 			porterBox.setStyle("-fx-text-fill: -fx-text-input-text");
 			porterBox.setPadding(new Insets(10,50,0,5));
 			settings.getChildren().add(porterBox);
 
-			urnBox.setSelected(useUrns);
+			urnBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+				@Override
+				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+					urnText.setDisable(!newValue);
+				}
+			});
+			
 			urnBox.setStyle("-fx-text-fill: -fx-text-input-text");
-			urnBox.setPadding(new Insets(10,50,0,5));
+			urnBox.setPadding(new Insets(10,5,0,5));
 			settings.getChildren().add(urnBox);
+
+			urnText.setDisable(!urnBox.isSelected());
+			urnText.setStyle("-fx-text-fill: -fx-text-input-text");
+			urnText.setMaxWidth(35.0f);
+			urnText.setPadding(new Insets(3,5,2,5));
+			settings.getChildren().add(urnText);
+			
 		}
 		
-		walkBox.setSelected(walkToBank);
 		walkBox.setStyle("-fx-text-fill: -fx-text-input-text");
 		walkBox.setPadding(new Insets(10,10,0,5));
 		settings.getChildren().add(walkBox);
-
 	}
 	
 	@Override
@@ -321,6 +334,9 @@ public class StandardMiner extends MiningStyle{
 
 			if(useUrns){
 				location.depositBlackList.add("mining urn");
+				try{
+					urnAmount = Integer.parseInt(urnText.getText());
+				}catch(NumberFormatException e){}
 			}
 
 			if(usePorters){
