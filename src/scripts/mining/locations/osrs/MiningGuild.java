@@ -1,6 +1,13 @@
 package scripts.mining.locations.osrs;
 
+import scripts.mining.MiningStyle;
+import scripts.mining.RockWatcher;
+
 public class MiningGuild extends OSRSLocation{
+
+	public MiningGuild(RockWatcher rockWatcher, MiningStyle standardMiner) {
+		// TODO Auto-generated constructor stub
+	}
 
 	@Override
 	public void intialize(String ore) {

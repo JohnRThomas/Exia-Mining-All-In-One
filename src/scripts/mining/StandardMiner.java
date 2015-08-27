@@ -375,6 +375,7 @@ public class StandardMiner extends MiningStyle{
 			locations.add(new scripts.mining.locations.rs3.VarrockWest());
 		}else{
 			locations.add(new scripts.mining.locations.osrs.AlKharid());
+			locations.add(new scripts.mining.locations.osrs.MiningGuild(rockWatcher, this));
 			locations.add(new scripts.mining.locations.osrs.VarrockEast());
 			locations.add(new scripts.mining.locations.osrs.VarrockWest());
 		}
