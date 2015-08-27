@@ -30,6 +30,7 @@
         <tag>Corrupted</tag>
         <tag>Concentrated</tag>
         <tag>LRC</tag>
+        <tag>Guild</tag>
     </tags>
 	<internal-id>minerAIO</internal-id>
 	<hidden>false</hidden>
