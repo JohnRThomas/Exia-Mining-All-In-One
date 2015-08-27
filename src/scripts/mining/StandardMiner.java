@@ -367,6 +367,7 @@ public class StandardMiner extends MiningStyle{
 			locations.add(new scripts.mining.locations.rs3.LivingRockCavern(this));
 			locations.add(new scripts.mining.locations.rs3.LumbridgeEast());
 			locations.add(new scripts.mining.locations.rs3.LumbridgeWest());
+			locations.add(new scripts.mining.locations.rs3.MiningGuild(rockWatcher, this));
 			if(Environment.isSDK())locations.add(new scripts.mining.locations.rs3.PiratesHideout());
 			locations.add(new scripts.mining.locations.rs3.Rimmington());
 			locations.add(new scripts.mining.locations.rs3.ShiloVillage());
