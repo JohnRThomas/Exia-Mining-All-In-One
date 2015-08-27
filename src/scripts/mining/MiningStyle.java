@@ -40,29 +40,28 @@ public abstract class MiningStyle {
 			try{
 				rockPath = BresenhamPath.buildTo(rock);
 			}catch(Exception e){}
-		}else if((Traversal.getDestination() == null || Traversal.getDestination().distanceTo(rock) > 3)){
+		}else if((Traversal.getDestination() == null || Traversal.getDestination().distanceTo(rock) > 5)){
 			ReflexAgent.delay();
 			rockPath.step();
 		}
 	}
 
-	public void turnAndClick(LocatableEntity rock){
-		if(rock.getVisibility() <= 20){
-			Paint.status = "Turning to rock";
-			//if only part of the rock is visible, turn to it
-			Camera.turnTo(rock);
-		}else{
-			Paint.status = "Clicking rock";
-			rockPath = null;
-			turnAndClick(rock, "Mine");
+	public boolean turnAndClick(LocatableEntity rock){
+		Paint.status = "Clicking rock";
+		rockPath = null;
+		if(turnAndClick(rock, "Mine")){
+			currentRock = rock;
+			return true;
 		}
+		return false;
 	}
 
 
-	public void turnAndClick(LocatableEntity object, String interact){
+	public boolean turnAndClick(LocatableEntity object, String interact){
 		if(object.getVisibility() <= 20){
 			//if only part of the rock is visible, turn to it
 			Camera.turnTo(object);
+			return false;
 		}else{
 			//The rock is visible enough, so we click it
 			ReflexAgent.delay();
@@ -76,13 +75,18 @@ public abstract class MiningStyle {
 			boolean doubleClick = Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.DOUBLE_CLICK.playerSenseKey);
 
 			//Make sure that we actually clicked the rock 
-			currentRock = object;
 			Player me = Players.getLocal();
 			Timer timer = new Timer((int)(object.distanceTo(me) * ReflexAgent.getReactionTime() * 4));
 			timer.start();
-			while(timer.getRemainingTime() > 0 && !doubleClick && me.getAnimationId() == -1 && object.isValid() && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
+			boolean broke = false;
+			while(me.getAnimationId() == -1 && object.isValid() && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
+				if(timer.getRemainingTime() <= 0 || doubleClick){
+					broke = true;
+					break;
+				}
 				Execution.delay(100);
 			}
+			return !broke;
 		}
 	}
 
@@ -91,7 +95,7 @@ public abstract class MiningStyle {
 		for (Coordinate rock : getRockLocations()) {
 			if(baseRegion.getArea().contains(rock)) return false;
 		}
-		return true;
+		return getRockLocations().length != 0;
 	}
 
 	protected void walkToNextEmpty(){
