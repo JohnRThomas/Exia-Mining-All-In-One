@@ -17,46 +17,48 @@ public class MoneyCounter implements InventoryListener{
 	private volatile long oreCount = 0;
 	private volatile boolean locked = false;
 	private String[] ores;
-	
+
 	public MoneyCounter(String... ores){
 		this.ores = ores;
 	}
-	
+
 	@Override
 	public void onItemAdded(ItemEvent event){
-		String name = Inventory.getItemIn(event.getItem().getIndex()).getDefinition().getName();
-		for(String o : ores){
-			if(name.equals(o)){
-				oreCount += event.getQuantityChange();
-				break;
-			}
-		}
-		
-		if(!locked){
-			int id = event.getItem().getId();
-			long price = 0;
-			if(cache.containsKey(id)){
-				if(cache.get(id) != null){
-					price = cache.get(id);
+		try{
+			String name = Inventory.getItemIn(event.getItem().getIndex()).getDefinition().getName();
+			for(String o : ores){
+				if(name.equals(o)){
+					oreCount += event.getQuantityChange();
+					break;
 				}
-			}else{
-				if(Environment.isRS3()){
-					Item item = GrandExchange.lookup(id);
-					if(item != null){
-						price = item.getPrice();
-						System.out.println("Looked up " + name + " for " + price + "gp");
+			}
+
+			if(!locked){
+				int id = event.getItem().getId();
+				long price = 0;
+				if(cache.containsKey(id)){
+					if(cache.get(id) != null){
+						price = cache.get(id);
 					}
 				}else{
-					price = Zybez.getAveragePrice(name);
-					if(price == -1){
-						price = 0;
+					if(Environment.isRS3()){
+						Item item = GrandExchange.lookup(id);
+						if(item != null){
+							price = item.getPrice();
+							System.out.println("Looked up " + name + " for " + price + "gp");
+						}
+					}else{
+						price = Zybez.getAveragePrice(name);
+						if(price == -1){
+							price = 0;
+						}
+						System.out.println("Looked up " + name + " for " + price + "gp");
 					}
-					System.out.println("Looked up " + name + " for " + price + "gp");
+					cache.put(id, price);
 				}
-				cache.put(id, price);
+				totalProfit += price * event.getQuantityChange();
 			}
-			totalProfit += price * event.getQuantityChange();
-		}
+		}catch(NullPointerException e){}
 	}
 
 	public long getProfit() {
@@ -65,7 +67,7 @@ public class MoneyCounter implements InventoryListener{
 	public long getOreCount() {
 		return oreCount;
 	}
-	
+
 	public void setLocked(boolean locked) {
 		this.locked = locked;
 	}
