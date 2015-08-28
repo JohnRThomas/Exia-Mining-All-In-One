@@ -21,7 +21,7 @@ import javafx.scene.layout.GridPane;
 
 public abstract class MiningStyle {
 	RockWatcher rockWatcher;
-	
+
 	public abstract void onStart(String... args);
 	public abstract void loop();
 	public abstract void onStop();
@@ -39,10 +39,12 @@ public abstract class MiningStyle {
 		if(rockPath == null && rock != null){
 			try{
 				rockPath = BresenhamPath.buildTo(rock);
-			}catch(Exception e){}
+			}catch(NullPointerException e){}
 		}else if((Traversal.getDestination() == null || Traversal.getDestination().distanceTo(rock) > 5)){
 			ReflexAgent.delay();
-			rockPath.step();
+			try{
+				rockPath.step();
+			}catch(NullPointerException e){}
 		}
 	}
 
