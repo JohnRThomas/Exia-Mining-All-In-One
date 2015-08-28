@@ -44,7 +44,7 @@ public class MiningGuild extends OSRSLocation{
 			throw new RuntimeException(ore + " is not supported in " + getName());
 		}
 		this.ore = Rock.getByName(ore);
-		bank = new Area.Rectangular(new Coordinate(3009,3358), new Coordinate(3015,3354));
+		bank = new Area.Rectangular(new Coordinate(3009,3358), new Coordinate(3015,3355));
 		mine = new Area.Rectangular(new Coordinate(3023,9755), new Coordinate(3055,9731));
 	}
 
