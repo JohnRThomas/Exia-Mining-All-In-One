@@ -74,11 +74,11 @@ public abstract class MiningStyle {
 			}
 
 			//Decide if we should double click or not based on player sense
-			boolean doubleClick = Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.DOUBLE_CLICK.playerSenseKey);
+			boolean doubleClick = Random.nextInt(ReflexAgent.getReactionTime()) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.DOUBLE_CLICK.playerSenseKey);
 
 			//Make sure that we actually clicked the rock 
 			Player me = Players.getLocal();
-			Timer timer = new Timer((int)(object.distanceTo(me) * ReflexAgent.getReactionTime() * 4));
+			Timer timer = new Timer((int)(object.distanceTo(me) * ReflexAgent.getReactionTime() * 8));
 			timer.start();
 			boolean broke = false;
 			while(me.getAnimationId() == -1 && object.isValid() && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
