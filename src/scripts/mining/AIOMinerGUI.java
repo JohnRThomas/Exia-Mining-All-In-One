@@ -160,7 +160,7 @@ public class AIOMinerGUI extends Stage{
 				saveAs = new Image(new URL("http://i.imgur.com/ws9xyTd.png").openStream());
 				ImageIO.write(SwingFXUtils.fromFXImage(saveAs, null), "png", new File(Environment.getStorageDirectory() + "/location.png"));
 				locationImage = new ImageView(saveAs);
-				
+
 				saveAs = new Image(new URL("http://i.imgur.com/wdFM8s2.png").openStream());
 				ImageIO.write(SwingFXUtils.fromFXImage(saveAs, null), "png", new File(Environment.getStorageDirectory() + "/start.png"));
 				startImage = new ImageView(saveAs);
@@ -168,7 +168,7 @@ public class AIOMinerGUI extends Stage{
 				saveAs = new Image(new URL("http://i.imgur.com/60mcBHM.png").openStream());
 				ImageIO.write(SwingFXUtils.fromFXImage(saveAs, null), "png", new File(Environment.getStorageDirectory() + "/close.png"));
 				closeImage = new ImageView(saveAs);
-				
+
 				saveAs = new Image(new URL("http://i.imgur.com/4bOrdWf.png").openStream());
 				ImageIO.write(SwingFXUtils.fromFXImage(saveAs, null), "png", new File(Environment.getStorageDirectory() + "/warning.png"));
 				warnImage = new ImageView(saveAs);
@@ -238,8 +238,8 @@ public class AIOMinerGUI extends Stage{
 		final Button[] localButtons = {
 				new Button("Standard Mining"),
 				new Button("Power Mining"),
-				new Button("Multi-World Mining"),
-				new Button("Special Mining")
+				new Button("Special Mining"),
+				new Button("Multi-World Mining")
 		};
 
 		localButtons[0].setOnAction(new EventHandler<ActionEvent>(){
@@ -252,7 +252,7 @@ public class AIOMinerGUI extends Stage{
 				root.setCenter(locationContent);
 			}
 		});
-		
+
 		localButtons[1].setOnAction(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle(ActionEvent event) {
@@ -263,7 +263,21 @@ public class AIOMinerGUI extends Stage{
 				root.setCenter(locationContent);
 			}
 		});
-		localButtons[2].setDisable(true);
+		if(Environment.isSDK()){
+			localButtons[2].setOnAction(new EventHandler<ActionEvent>(){
+				@Override
+				public void handle(ActionEvent event) {
+					miner = new SpecialMiner();
+					setSelected(1);
+					buttons[1].setDisable(false);
+					locationContent = miner.getContentPane(buttons[2]);
+					root.setCenter(locationContent);
+				}
+			});
+		}else{
+			localButtons[2].setDisable(true);
+		}
+
 		localButtons[3].setDisable(true);
 
 		for (int i = 0; i < localButtons.length; i++) {
@@ -296,7 +310,7 @@ public class AIOMinerGUI extends Stage{
 				reflexSeed.setDisable(false);
 			}
 		});
-		
+
 		settings.getChildren().addAll(enableReflex, reflexLabel, reflexSeed);
 
 		content.add(settings, 2, 1, 1, 2);
