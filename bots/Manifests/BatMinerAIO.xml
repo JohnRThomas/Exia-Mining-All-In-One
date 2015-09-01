@@ -2,7 +2,7 @@
 	<main-class>scripts.ExiaMinerAIO</main-class>
 	<name>Exia Miner AIO</name>
 	<description>Mine or power mine things all over Runescape.</description>
-	<version>1.4.4</version>
+	<version>1.5.0</version>
 	<compatibility>
 		<game-type>RS3</game-type>
 		<game-type>OSRS</game-type>
