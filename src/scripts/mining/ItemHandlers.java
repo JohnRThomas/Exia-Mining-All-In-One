@@ -15,33 +15,36 @@ public class ItemHandlers {
 	private static Filter<SpriteItem> porterFilter = new Filter<SpriteItem>(){
 		@Override
 		public boolean accepts(SpriteItem i) {
-			if(i.getDefinition() != null && i.getDefinition().getName() != null){
-				String name = i.getDefinition().getName();
-				return name.toLowerCase().contains("sign of the porter");
-			}else return false;
+			String name = "";
+			try{
+				name = i.getDefinition().getName();
+			}catch(NullPointerException e){}
 
+			return name.toLowerCase().contains("sign of the porter");
 		}
 	};
 
 	private static Filter<SpriteItem> urnFilter = new Filter<SpriteItem>(){
 		@Override
 		public boolean accepts(SpriteItem i) {
-			if(i.getDefinition() != null && i.getDefinition().getName() != null){
-				String name = i.getDefinition().getName();
-				return name.toLowerCase().contains("mining") && name.contains("urn");
-			}else return false;
-
+			String name = "";
+			try{
+				name = i.getDefinition().getName();
+			}catch(NullPointerException e){}
+			
+			return name.toLowerCase().contains("mining") && name.contains("urn");
 		}
 	};
 
 	private static Filter<SpriteItem> fullUrnFilter = new Filter<SpriteItem>(){
 		@Override
 		public boolean accepts(SpriteItem i) {
-			if(i.getDefinition() != null && i.getDefinition().getName() != null){
-				String name = i.getDefinition().getName();
-				return name.toLowerCase().contains("mining") && name.contains("urn") && name.contains("(full)");
-			}else return false;
+			String name = "";
+			try{
+				name = i.getDefinition().getName();
+			}catch(NullPointerException e){}
 
+			return name.toLowerCase().contains("mining") && name.contains("urn") && name.contains("(full)");
 		}
 	};
 	
@@ -55,10 +58,15 @@ public class ItemHandlers {
 					SpriteItemQueryResults items = Bank.getItems(new Filter<SpriteItem>(){
 						@Override
 						public boolean accepts(SpriteItem i) {
+							String name = "";
+							try{
+								name = i.getDefinition().getName();
+							}catch(NullPointerException e){}
+
 							if(urnType.equals("Normal"))
-								return urnFilter.accepts(i) && !i.getDefinition().getName().contains(urns[0]) && !i.getDefinition().getName().contains(urns[1]);
+								return urnFilter.accepts(i) && !name.contains(urns[0]) && !name.contains(urns[1]);
 							else
-								return urnFilter.accepts(i) && i.getDefinition().getName().contains(urnType);
+								return urnFilter.accepts(i) && name.contains(urnType);
 						}
 					});
 					
@@ -96,7 +104,12 @@ public class ItemHandlers {
 					SpriteItemQueryResults items = Bank.getItems(new Filter<SpriteItem>(){
 						@Override
 						public boolean accepts(SpriteItem i) {
-							return porterFilter.accepts(i) && i.getDefinition().getName().contains(porterType);
+							String name = "";
+							try{
+								name = i.getDefinition().getName();
+							}catch(NullPointerException e){}
+
+							return porterFilter.accepts(i) && name.contains(porterType);
 						}
 					});
 					

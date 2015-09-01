@@ -2,6 +2,7 @@ package scripts.mining;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.runemate.game.api.hybrid.Environment;
@@ -73,24 +74,28 @@ public class PowerMiner extends MiningStyle{
 			rockWatcher = new RockWatcher(new Validater(){
 				@Override
 				public boolean validate(GameObject o) {
+					Map<Color, Color> colors = new HashMap<Color, Color>();
+					String name = "";
+					int id = 0;
 					try{
-						if(ore.name.equals("Granite")){
-							return o != null && o.getDefinition() != null && o.getDefinition().getName() != null &&
-									o.getId() != 2560 && o.getDefinition().getName().contains("rocks");
-						}else if(ore.name.equals("SandStone")){
-							return o != null && o.getDefinition() != null && o.getDefinition().getName() != null &&
-									o.getId() != 2551 && o.getDefinition().getName().contains("rocks");
-						}else if(ore.name.equals("Concentrated Coal")){
-							return o != null && o.getDefinition() != null && o.getDefinition().getName() != null && o.getDefinition().getName().contains("Mineral") &&
-									o.getDefinition().getColorSubstitutions().containsValue(new Color(5,6,5));	
-						}else if(ore.name.equals("Concentrated Gold")){
-							return o != null && o.getDefinition() != null && o.getDefinition().getName() != null && o.getDefinition().getName().contains("Mineral") &&
-									o.getDefinition().getColorSubstitutions().size() == 0;
-						}else{
-							return validateRS3(o);
-						}
+						id = o.getId();
+						name = o.getDefinition().getName();
+						colors = o.getDefinition().getColorSubstitutions();
 					}catch(NullPointerException e){}
-					return false;
+
+					if(ore.name.equals("Granite")){
+						return id != 2560 && name.contains("rocks");
+					}else if(ore.name.equals("SandStone")){
+						return id != 2551 && name.contains("rocks");
+					}else if(ore.name.equals("Seren")){
+						return name.contains("Seren stone");
+					}else if(ore.name.equals("Concentrated Coal")){
+						return name.contains("Mineral") && colors.containsValue(new Color(5,6,5));	
+					}else if(ore.name.equals("Concentrated Gold")){
+						return name.contains("Mineral") && colors.size() == 0;
+					}else{
+						return validateRS3(o);
+					}
 				}
 
 			}, new Coordinate[]{});
@@ -256,18 +261,18 @@ public class PowerMiner extends MiningStyle{
 
 	private LocatableEntity getNextRock() {
 		LocatableEntityQueryResults<GameObject> rocksObjs = null;
-		try{
-			rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
-				@Override
-				public boolean accepts(GameObject o) {
-					if(o.equals(currentRock))
-						return false;
-					else
-						if(Environment.isRS3()) return o.getDefinition().getName().contains(ore.name) && o.distanceTo(center) <= radius && RockWatcher.validater.validate(o);
-						else return o.distanceTo(center) <= radius && RockWatcher.validater.validate(o);
-				}
-			}).sortByDistance();
-		}catch(Exception e){}
+		rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
+			@Override
+			public boolean accepts(GameObject o) {
+				String name = "";
+				try{
+					name = o.getDefinition().getName();
+				}catch(NullPointerException e){}
+
+				if(Environment.isRS3()) return !o.equals(currentRock) && name.contains(ore.name) && o.distanceTo(center) <= radius && RockWatcher.validater.validate(o);
+				else return !o.equals(currentRock) && o.distanceTo(center) <= radius && RockWatcher.validater.validate(o);
+			}
+		}).sortByDistance();
 
 		if(rocksObjs != null && rocksObjs.size() > 0) return rocksObjs.get(0);
 		return null;
@@ -276,10 +281,12 @@ public class PowerMiner extends MiningStyle{
 	Filter<SpriteItem> oreFilter = new Filter<SpriteItem>(){
 		@Override
 		public boolean accepts(SpriteItem i) {
+			String name = "";
 			try{
-				return oreStringFilter.accepts(i.getDefinition().getName());
-			}catch(Exception e){}
-			return false;
+				name = i.getDefinition().getName();
+			}catch(NullPointerException e){}
+
+			return oreStringFilter.accepts(name);
 		}
 	};
 
@@ -366,14 +373,12 @@ public class PowerMiner extends MiningStyle{
 				if(powerDrop){
 					ReflexAgent.delay();
 					for(SpriteItem item : items){
-						try{
-							Mouse.getPathGenerator().hop(item.getInteractionPoint());
-							Mouse.click(Mouse.Button.RIGHT);
-							Execution.delay(50,100);
-							MenuItem mItem = Menu.getItem("Drop");
-							Mouse.getPathGenerator().hop(mItem.getInteractionPoint());
-							Mouse.click(Mouse.Button.LEFT);
-						}catch(Exception e){}
+						Mouse.getPathGenerator().hop(item.getInteractionPoint());
+						Mouse.click(Mouse.Button.RIGHT);
+						Execution.delay(50,100);
+						MenuItem mItem = Menu.getItem("Drop");
+						Mouse.getPathGenerator().hop(mItem.getInteractionPoint());
+						Mouse.click(Mouse.Button.LEFT);
 					}
 				}else{
 					int offset = 0;
@@ -398,20 +403,25 @@ public class PowerMiner extends MiningStyle{
 	}
 
 	public boolean validateRS3(GameObject rock) {
+		String name = "";
 		try{
-			return rock != null && rock.getDefinition() != null && rock.getDefinition().getName() != null &&
-					!rock.getDefinition().getName().equals("Rocks") && rock.getDefinition().getName().contains("rocks");
+			name = rock.getDefinition().getName();
 		}catch(NullPointerException e){}
-		return false;
+
+		return !name.equals("Rocks") && name.contains("rocks");
 	}
 
 	public boolean validateOSRS(GameObject o) {
+		Map<Color, Color> colors = new HashMap<Color, Color>();
+		String name = "";
 		try{
-			Map<Color, Color> colors = o.getDefinition().getColorSubstitutions();
-			for (int i = 0; i < ore.colors.length; i++) {
-				if(colors.containsValue(ore.colors[i]) && o.getDefinition().getName().contains("Rock"))return true;
-			}
+			name = o.getDefinition().getName();
+			colors = o.getDefinition().getColorSubstitutions();
 		}catch(NullPointerException e){}
+
+		for (int i = 0; i < ore.colors.length; i++) {
+			if(colors.containsValue(ore.colors[i]) && name.contains("Rock"))return true;
+		}
 		return false;
 	}
 

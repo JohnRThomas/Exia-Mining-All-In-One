@@ -66,10 +66,12 @@ public class MiningGuild extends Location{
 				rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
 					@Override
 					public boolean accepts(GameObject o) {
+						String name = "";
 						try{
-							return validate(o) && o.getDefinition().getName().contains(ore.name) && !o.equals(currentRock);
+							name = o.getDefinition().getName();
 						}catch(NullPointerException e){}
-						return false;
+							
+						return validate(o) && name.contains(ore.name) && !o.equals(currentRock);
 					}
 				}).sortByDistance();
 			}catch(Exception e){}

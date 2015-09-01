@@ -79,7 +79,12 @@ public class LivingRockCavern extends DepositLocation{
 
 	@Override
 	public boolean validate(GameObject rock) {
-		return rock.getDefinition().getName().equals("Mineral deposit");
+		String name = "";
+		try{
+			name = rock.getDefinition().getName();
+		}catch(NullPointerException e){}
+
+		return name.equals("Mineral deposit");
 	}
 
 	@Override

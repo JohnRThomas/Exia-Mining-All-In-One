@@ -45,10 +45,17 @@ public class DesertQuarry extends Location{
 
 	@Override
 	public boolean validate(GameObject rock) {
+		String name = "";
+		int id = 0;
+		try{
+			id = rock.getId();
+			name = rock.getDefinition().getName();
+		}catch(NullPointerException e){}
+		
 		if(ore.name.equals("Granite")){
-			return rock != null && rock.getDefinition() != null && rock.getDefinition().getName() != null && rock.getId() != 2560 && rock.getDefinition().getName().contains("rocks");
+			return id != 2560 && name.contains("rocks");
 		}else if(ore.name.equals("SandStone")){
-			return rock != null && rock.getDefinition() != null && rock.getDefinition().getName() != null && rock.getId() != 2551 && rock.getDefinition().getName().contains("rocks");
+			return id != 2551 && name.contains("rocks");
 		}else{
 			return super.validate(rock);
 		}

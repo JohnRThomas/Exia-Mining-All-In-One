@@ -13,13 +13,11 @@ public class CoalTrucks extends Location {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return "Coal Trucks";
 	}
 
 	@Override
 	public String[] getOres() {
-		// TODO Auto-generated method stub
 		return new String[0];
 	}
 }

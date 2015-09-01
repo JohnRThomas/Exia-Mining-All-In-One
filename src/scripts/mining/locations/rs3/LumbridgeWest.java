@@ -72,8 +72,11 @@ public class LumbridgeWest extends Location{
 	}
 	
 	public boolean validate(GameObject rock) {
-		return rock != null && rock.getDefinition() != null && rock.getDefinition().getName() != null &&
-				!rock.getDefinition().getName().equals("Rocks") && rock.getDefinition().getName().contains("rocks") && 
-				(rock.getDefinition().getName().contains("ore") || rock.getAnimationId() > 0);
+		String name = "";
+		try{
+			name = rock.getDefinition().getName();
+		}catch(NullPointerException e){}
+
+		return !name.equals("Rocks") && name.contains("rocks") && (name.contains("ore") || rock.getAnimationId() > 0);
 	}
 }

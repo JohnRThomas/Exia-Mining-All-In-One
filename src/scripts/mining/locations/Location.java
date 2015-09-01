@@ -162,14 +162,15 @@ public abstract class Location {
 			Bank.depositAllExcept(new Filter<SpriteItem>(){
 				@Override
 				public boolean accepts(SpriteItem i) {
-					if(i.getDefinition() != null && i.getDefinition().getName() != null){
-						String name = i.getDefinition().getName();
-						for(String s : depositBlackList){
-							if(name.toLowerCase().contains(s))return true;
-						}
-						return false;
+					String name = "";
+					try{
+						name = i.getDefinition().getName();
+					}catch(NullPointerException e){}
+
+					for(String s : depositBlackList){
+						if(name.toLowerCase().contains(s))return true;
 					}
-					return true;
+					return false;					
 				}
 			});
 		}catch(Exception e){}
@@ -212,7 +213,7 @@ public abstract class Location {
 		Area dest;
 		if(destL.length == 0)dest = bank;
 		else dest = destL[0];
-		
+
 		if(bankPath == null)
 			bankPath = pathBuilder.buildTo(dest);		
 		else if(!dest.contains(Traversal.getDestination())){
@@ -227,9 +228,7 @@ public abstract class Location {
 				else tryCount = 0;
 				if(tryCount >= 3)bankPath = pathBuilder.buildTo(dest);
 			}
-
 			lastStep = bankPath.getNext();
-			
 			bankPath.step(TraversalOption.MANAGE_DISTANCE_BETWEEN_STEPS, walk ? null : TraversalOption.MANAGE_RUN);
 
 			Execution.delay(400,600);
@@ -242,9 +241,10 @@ public abstract class Location {
 		Area dest;
 		if(destL.length == 0)dest = mine;
 		else dest = destL[0];
-			
+
 		if(minePath == null)minePath = pathBuilder.buildTo(dest);
-		else if(!dest.contains(Traversal.getDestination())){
+
+		if(!dest.contains(Traversal.getDestination())){
 
 			if(minePath instanceof BresenhamPath || minePath instanceof WebPath){
 				minePath = pathBuilder.buildTo(dest, false);
@@ -259,7 +259,6 @@ public abstract class Location {
 			}
 
 			lastStep = minePath.getNext();
-
 			minePath.step(TraversalOption.MANAGE_DISTANCE_BETWEEN_STEPS, TraversalOption.MANAGE_RUN);
 
 			Execution.delay(400,600);
@@ -282,7 +281,11 @@ public abstract class Location {
 	}
 
 	public boolean validate(GameObject rock) {
-		return rock != null && rock.getDefinition() != null && rock.getDefinition().getName() != null &&
-				!rock.getDefinition().getName().equals("Rocks") && rock.getDefinition().getName().contains("rocks");
+		String name = "";
+		try{
+			name = rock.getDefinition().getName();
+		}catch(NullPointerException e){}
+
+		return !name.equals("Rocks") && name.contains("rocks");
 	}
 }

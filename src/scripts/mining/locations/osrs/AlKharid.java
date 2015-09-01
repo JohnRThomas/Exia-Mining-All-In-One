@@ -67,10 +67,11 @@ public class AlKharid extends OSRSLocation{
 				bankers = GameObjects.getLoaded(new Filter<GameObject>(){
 					@Override
 					public boolean accepts(GameObject o) {
+						String name = "";
 						try{
-							return o.getDefinition().getName().contains("chest");
-						}catch(Exception e){}
-						return false;
+							name = o.getDefinition().getName();
+						}catch(NullPointerException e){}
+						return name.contains("chest");
 					}
 				});
 			}
