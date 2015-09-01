@@ -1,10 +1,8 @@
-package scripts.mining.locations.rs3;
+package scripts.mining.locations.special;
 
 import com.runemate.game.api.hybrid.location.Coordinate;
 
-import scripts.mining.locations.Location;
-
-public class CoalTrucks extends Location {
+public class CoalTrucks extends SpecialLocation {
 
 	@Override
 	public void intialize(String ore) {

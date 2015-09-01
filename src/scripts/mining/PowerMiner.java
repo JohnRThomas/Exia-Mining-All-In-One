@@ -293,6 +293,8 @@ public class PowerMiner extends MiningStyle{
 	Filter<String> oreStringFilter = new Filter<String>(){
 		@Override
 		public boolean accepts(String name) {
+			if(name == null)return false;
+			
 			for(String s : ore.oreNames){
 				if(name.contains(s))return true;
 			}
@@ -324,7 +326,7 @@ public class PowerMiner extends MiningStyle{
 			for(Slot slot : ActionBar.Slot.values()){
 				if(slot.getAction() != null){
 					SlotAction action = slot.getAction();
-					if(action.getItem() != null && oreStringFilter.accepts(action.getItem().getName())){
+					if(action.getName() != null && oreStringFilter.accepts(action.getName())){
 						//drop each of that item
 						if(action.isActivatable()){
 							if(forceKeys) 
@@ -349,13 +351,13 @@ public class PowerMiner extends MiningStyle{
 			if(InterfaceWindows.getInventory().isOpen()){
 				//find the first open action slot
 				for(Slot slot : ActionBar.Slot.values()){
-					//This indicates that this slot if not an ore dropping slot, so it's ok to overwrite it
-					if(slot.getAction() == null || slot.getAction().getItem() == null || !oreStringFilter.accepts(slot.getAction().getItem().getName())){
+					//This indicates that this slot is not an ore dropping slot, so it's ok to overwrite it
+					if(slot.getAction() == null || !oreStringFilter.accepts(slot.getAction().getName())){
 						Mouse.drag(items.first(), slot.getComponent());
 						//Wait 2-4 seconds for the item to appear on the action bar
 						Timer timer = new Timer(Random.nextInt(2000,4000));
 						timer.start();
-						while(timer.getRemainingTime() > 0 && slot.getAction() == null){
+						while(timer.getRemainingTime() > 0 && !oreStringFilter.accepts(slot.getAction().getName())){
 							Execution.delay(10);
 						}
 						ReflexAgent.delay();
@@ -408,7 +410,7 @@ public class PowerMiner extends MiningStyle{
 			name = rock.getDefinition().getName();
 		}catch(NullPointerException e){}
 
-		return !name.equals("Rocks") && name.contains("rocks");
+		return !name.equals("Rocks") && name.contains("rocks") && rock.getAnimationId() > 0;
 	}
 
 	public boolean validateOSRS(GameObject o) {
