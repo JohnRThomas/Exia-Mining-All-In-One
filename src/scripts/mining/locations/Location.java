@@ -244,7 +244,7 @@ public abstract class Location {
 
 		if(minePath == null)minePath = pathBuilder.buildTo(dest);
 
-		if(!dest.contains(Traversal.getDestination())){
+		else if(!dest.contains(Traversal.getDestination())){
 
 			if(minePath instanceof BresenhamPath || minePath instanceof WebPath){
 				minePath = pathBuilder.buildTo(dest, false);
