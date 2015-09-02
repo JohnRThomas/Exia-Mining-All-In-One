@@ -3,7 +3,9 @@ package scripts.mining;
 import java.util.HashMap;
 
 import com.runemate.game.api.hybrid.Environment;
+import com.runemate.game.api.hybrid.entities.definitions.ItemDefinition;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
+import com.runemate.game.api.hybrid.local.hud.interfaces.SpriteItem;
 import com.runemate.game.api.osrs.net.Zybez;
 import com.runemate.game.api.rs3.net.GrandExchange;
 import com.runemate.game.api.rs3.net.GrandExchange.Item;
@@ -24,41 +26,44 @@ public class MoneyCounter implements InventoryListener{
 
 	@Override
 	public void onItemAdded(ItemEvent event){
-		try{
-			String name = Inventory.getItemIn(event.getItem().getIndex()).getDefinition().getName();
-			for(String o : ores){
-				if(name.equals(o)){
-					oreCount += event.getQuantityChange();
-					break;
-				}
-			}
+		SpriteItem invItem = Inventory.getItemIn(event.getItem().getIndex());
+		ItemDefinition def = invItem.getDefinition();
+		String name = "";
+		if(def != null)name = def.getName();
 
-			if(!locked){
-				int id = event.getItem().getId();
-				long price = 0;
-				if(cache.containsKey(id)){
-					if(cache.get(id) != null){
-						price = cache.get(id);
-					}
-				}else{
-					if(Environment.isRS3()){
-						Item item = GrandExchange.lookup(id);
-						if(item != null){
-							price = item.getPrice();
-							System.out.println("Looked up " + name + " for " + price + "gp");
-						}
-					}else{
-						price = Zybez.getAveragePrice(name);
-						if(price == -1){
-							price = 0;
-						}
+		for(String o : ores){
+			if(name.equals(o)){
+				oreCount += event.getQuantityChange();
+				break;
+			}
+		}
+
+		if(!locked){
+			int id = event.getItem().getId();
+			long price = 0;
+			if(cache.containsKey(id)){
+				if(cache.get(id) != null){
+					price = cache.get(id);
+				}
+			}else{
+				if(Environment.isRS3()){
+					Item item = GrandExchange.lookup(id);
+					if(item != null){
+						if(name.equals(""))name = item.getName();
+						price = item.getPrice();
 						System.out.println("Looked up " + name + " for " + price + "gp");
 					}
-					cache.put(id, price);
+				}else{
+					price = Zybez.getAveragePrice(name);
+					if(price == -1){
+						price = 0;
+					}
+					System.out.println("Looked up " + name + " for " + price + "gp");
 				}
-				totalProfit += price * event.getQuantityChange();
+				cache.put(id, price);
 			}
-		}catch(NullPointerException e){}
+			totalProfit += price * event.getQuantityChange();
+		}
 	}
 
 	public long getProfit() {

@@ -5,6 +5,7 @@ import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
 import com.runemate.game.api.hybrid.entities.Npc;
 import com.runemate.game.api.hybrid.entities.Player;
+import com.runemate.game.api.hybrid.entities.definitions.GameObjectDefinition;
 import com.runemate.game.api.hybrid.input.Mouse;
 import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceComponent;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Interfaces;
@@ -79,10 +80,9 @@ public class LivingRockCavern extends DepositLocation{
 
 	@Override
 	public boolean validate(GameObject rock) {
+		GameObjectDefinition def = rock.getDefinition();
 		String name = "";
-		try{
-			name = rock.getDefinition().getName();
-		}catch(NullPointerException e){}
+		if(def != null)name = def.getName();
 
 		return name.equals("Mineral deposit");
 	}

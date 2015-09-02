@@ -3,6 +3,7 @@ package scripts.mining.locations.rs3;
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
 import com.runemate.game.api.hybrid.entities.Player;
+import com.runemate.game.api.hybrid.entities.definitions.GameObjectDefinition;
 import com.runemate.game.api.hybrid.input.Mouse;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
@@ -66,10 +67,9 @@ public class MiningGuild extends Location{
 				rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
 					@Override
 					public boolean accepts(GameObject o) {
+						GameObjectDefinition def = o.getDefinition();
 						String name = "";
-						try{
-							name = o.getDefinition().getName();
-						}catch(NullPointerException e){}
+						if(def != null)name = def.getName();
 							
 						return validate(o) && name.contains(ore.name) && !o.equals(currentRock);
 					}

@@ -1,6 +1,7 @@
 package scripts.mining.locations.rs3;
 
 import com.runemate.game.api.hybrid.entities.GameObject;
+import com.runemate.game.api.hybrid.entities.definitions.GameObjectDefinition;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 
@@ -72,10 +73,9 @@ public class LumbridgeWest extends Location{
 	}
 	
 	public boolean validate(GameObject rock) {
+		GameObjectDefinition def = rock.getDefinition();
 		String name = "";
-		try{
-			name = rock.getDefinition().getName();
-		}catch(NullPointerException e){}
+		if(def != null)name = def.getName();
 
 		return !name.equals("Rocks") && name.contains("rocks") && (name.contains("ore") || rock.getAnimationId() > 0);
 	}

@@ -65,10 +65,7 @@ public class MiningGuild extends OSRSLocation{
 				rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
 					@Override
 					public boolean accepts(GameObject o) {
-						try{
-							return validate(o) && !o.equals(currentRock);
-						}catch(NullPointerException e){}
-						return false;
+						return validate(o) && !o.equals(currentRock);
 					}
 				}).sortByDistance();
 			}catch(Exception e){}

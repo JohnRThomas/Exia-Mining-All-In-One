@@ -36,15 +36,16 @@ public abstract class MiningStyle {
 
 	Path rockPath = null;
 	public void walkTo(LocatableEntity rock) {
-		if(rockPath == null && rock != null){
-			try{
-				rockPath = BresenhamPath.buildTo(rock);
-			}catch(NullPointerException e){}
+		if(rockPath == null){
+			if(rock != null){
+				Coordinate pt = rock.getPosition();
+				if(pt != null){
+					rockPath = BresenhamPath.buildTo(pt);
+				}
+			}	
 		}else if((Traversal.getDestination() == null || Traversal.getDestination().distanceTo(rock) > 5)){
 			ReflexAgent.delay();
-			try{
-				rockPath.step();
-			}catch(NullPointerException e){}
+			rockPath.step();
 		}
 	}
 

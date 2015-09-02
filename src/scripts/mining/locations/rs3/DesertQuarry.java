@@ -1,6 +1,7 @@
 package scripts.mining.locations.rs3;
 
 import com.runemate.game.api.hybrid.entities.GameObject;
+import com.runemate.game.api.hybrid.entities.definitions.GameObjectDefinition;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 
@@ -47,10 +48,12 @@ public class DesertQuarry extends Location{
 	public boolean validate(GameObject rock) {
 		String name = "";
 		int id = 0;
-		try{
+		
+		GameObjectDefinition def = rock.getDefinition();
+		if(def != null){
+			name = def.getName();
 			id = rock.getId();
-			name = rock.getDefinition().getName();
-		}catch(NullPointerException e){}
+		}
 		
 		if(ore.name.equals("Granite")){
 			return id != 2560 && name.contains("rocks");

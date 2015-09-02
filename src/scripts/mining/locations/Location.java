@@ -6,6 +6,8 @@ import java.util.regex.Pattern;
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
 import com.runemate.game.api.hybrid.entities.Npc;
+import com.runemate.game.api.hybrid.entities.definitions.GameObjectDefinition;
+import com.runemate.game.api.hybrid.entities.definitions.ItemDefinition;
 import com.runemate.game.api.hybrid.entities.details.Interactable;
 import com.runemate.game.api.hybrid.entities.details.Locatable;
 import com.runemate.game.api.hybrid.local.Camera;
@@ -162,10 +164,9 @@ public abstract class Location {
 			Bank.depositAllExcept(new Filter<SpriteItem>(){
 				@Override
 				public boolean accepts(SpriteItem i) {
+					ItemDefinition def = i.getDefinition();
 					String name = "";
-					try{
-						name = i.getDefinition().getName();
-					}catch(NullPointerException e){}
+					if(def != null)name = def.getName();
 
 					for(String s : depositBlackList){
 						if(name.toLowerCase().contains(s))return true;
@@ -281,10 +282,9 @@ public abstract class Location {
 	}
 
 	public boolean validate(GameObject rock) {
+		GameObjectDefinition def = rock.getDefinition();
 		String name = "";
-		try{
-			name = rock.getDefinition().getName();
-		}catch(NullPointerException e){}
+		if(def != null)name = def.getName();
 
 		return !name.equals("Rocks") && name.contains("rocks");
 	}

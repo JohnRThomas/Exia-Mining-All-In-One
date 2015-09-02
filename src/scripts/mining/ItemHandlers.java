@@ -1,5 +1,6 @@
 package scripts.mining;
 
+import com.runemate.game.api.hybrid.entities.definitions.ItemDefinition;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Equipment;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
@@ -15,10 +16,9 @@ public class ItemHandlers {
 	private static Filter<SpriteItem> porterFilter = new Filter<SpriteItem>(){
 		@Override
 		public boolean accepts(SpriteItem i) {
+			ItemDefinition def = i.getDefinition();
 			String name = "";
-			try{
-				name = i.getDefinition().getName();
-			}catch(NullPointerException e){}
+			if(def != null)name = def.getName();
 
 			return name.toLowerCase().contains("sign of the porter");
 		}
@@ -27,10 +27,9 @@ public class ItemHandlers {
 	private static Filter<SpriteItem> urnFilter = new Filter<SpriteItem>(){
 		@Override
 		public boolean accepts(SpriteItem i) {
+			ItemDefinition def = i.getDefinition();
 			String name = "";
-			try{
-				name = i.getDefinition().getName();
-			}catch(NullPointerException e){}
+			if(def != null)name = def.getName();
 			
 			return name.toLowerCase().contains("mining") && name.contains("urn");
 		}
@@ -39,10 +38,9 @@ public class ItemHandlers {
 	private static Filter<SpriteItem> fullUrnFilter = new Filter<SpriteItem>(){
 		@Override
 		public boolean accepts(SpriteItem i) {
+			ItemDefinition def = i.getDefinition();
 			String name = "";
-			try{
-				name = i.getDefinition().getName();
-			}catch(NullPointerException e){}
+			if(def != null)name = def.getName();
 
 			return name.toLowerCase().contains("mining") && name.contains("urn") && name.contains("(full)");
 		}
@@ -58,10 +56,9 @@ public class ItemHandlers {
 					SpriteItemQueryResults items = Bank.getItems(new Filter<SpriteItem>(){
 						@Override
 						public boolean accepts(SpriteItem i) {
+							ItemDefinition def = i.getDefinition();
 							String name = "";
-							try{
-								name = i.getDefinition().getName();
-							}catch(NullPointerException e){}
+							if(def != null)name = def.getName();
 
 							if(urnType.equals("Normal"))
 								return urnFilter.accepts(i) && !name.contains(urns[0]) && !name.contains(urns[1]);
@@ -104,10 +101,9 @@ public class ItemHandlers {
 					SpriteItemQueryResults items = Bank.getItems(new Filter<SpriteItem>(){
 						@Override
 						public boolean accepts(SpriteItem i) {
+							ItemDefinition def = i.getDefinition();
 							String name = "";
-							try{
-								name = i.getDefinition().getName();
-							}catch(NullPointerException e){}
+							if(def != null)name = def.getName();
 
 							return porterFilter.accepts(i) && name.contains(porterType);
 						}
