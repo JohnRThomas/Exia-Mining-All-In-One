@@ -378,9 +378,11 @@ public class PowerMiner extends MiningStyle{
 					ReflexAgent.delay();
 					for(SpriteItem item : items){
 						Mouse.getPathGenerator().hop(item.getInteractionPoint());
-						Mouse.click(Mouse.Button.RIGHT);
-						Execution.delay(50,100);
 						MenuItem mItem = Menu.getItem("Drop");
+						while(mItem == null){
+							Mouse.click(Mouse.Button.RIGHT);
+							Execution.delay(50,100);
+						}
 						Mouse.getPathGenerator().hop(mItem.getInteractionPoint());
 						Mouse.click(Mouse.Button.LEFT);
 					}
