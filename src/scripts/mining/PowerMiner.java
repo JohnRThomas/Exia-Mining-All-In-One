@@ -14,6 +14,7 @@ import com.runemate.game.api.hybrid.entities.definitions.ItemDefinition;
 import com.runemate.game.api.hybrid.input.Mouse;
 import com.runemate.game.api.hybrid.local.Camera;
 import com.runemate.game.api.hybrid.local.hud.InteractablePoint;
+import com.runemate.game.api.hybrid.local.hud.InteractableRectangle;
 import com.runemate.game.api.hybrid.local.hud.Menu;
 import com.runemate.game.api.hybrid.local.hud.MenuItem;
 import com.runemate.game.api.hybrid.local.hud.interfaces.InterfaceWindows;
@@ -225,8 +226,11 @@ public class PowerMiner extends MiningStyle{
 			}
 
 			Execution.delay(ReflexAgent.getReactionTime() * 3);
-			Inventory.getBoundsOf(i).hover();
-			ReflexAgent.delay();
+			InteractableRectangle bounds = Inventory.getBoundsOf(i);
+			if(bounds != null){
+				bounds.hover();
+				ReflexAgent.delay();
+			}
 			return;
 		}
 
