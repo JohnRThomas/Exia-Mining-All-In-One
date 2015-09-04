@@ -43,7 +43,7 @@ public abstract class MiningStyle {
 					rockPath = BresenhamPath.buildTo(pt);
 				}
 			}	
-		}else if((Traversal.getDestination() == null || Traversal.getDestination().distanceTo(rock) > 5)){
+		}else if((Traversal.getDestination() == null || Traversal.getDestination().distanceTo(rock) > 7)){
 			ReflexAgent.delay();
 			rockPath.step();
 		}
@@ -82,7 +82,8 @@ public abstract class MiningStyle {
 			Timer timer = new Timer((int)(object.distanceTo(me) * ReflexAgent.getReactionTime() * 8));
 			timer.start();
 			boolean broke = false;
-			while(me.getAnimationId() == -1 && object.isValid() && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
+			Execution.delay(100);
+			while(me.getAnimationId() == -1 && object.isValid() && me.isMoving() && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
 				if(timer.getRemainingTime() <= 0 || doubleClick){
 					broke = true;
 					break;
