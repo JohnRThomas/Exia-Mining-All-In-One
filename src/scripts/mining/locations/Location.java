@@ -218,20 +218,20 @@ public abstract class Location {
 		if(bankPath == null)
 			bankPath = pathBuilder.buildTo(dest);		
 		else if(!dest.contains(Traversal.getDestination())){
-			if(bankPath instanceof BresenhamPath || bankPath instanceof WebPath){
-				bankPath = pathBuilder.buildTo(dest, false);
-				lastStep = null;
-			}else if(bankPath instanceof ViewportPath){
-				Camera.concurrentlyTurnTo(bankPath.getNext());
+			if(bankPath instanceof ViewportPath && !bankPath.getNext().getArea().isVisible())Camera.concurrentlyTurnTo(bankPath.getNext());
 
-				//Sometimes viewport paths get stuck trying to click through walls
-				if(lastStep == bankPath.getNext())tryCount++;
-				else tryCount = 0;
-				if(tryCount >= 3)bankPath = pathBuilder.buildTo(dest);
-			}
 			lastStep = bankPath.getNext();
 			bankPath.step(TraversalOption.MANAGE_DISTANCE_BETWEEN_STEPS, walk ? null : TraversalOption.MANAGE_RUN);
 
+			if(bankPath instanceof BresenhamPath || bankPath instanceof WebPath){
+				bankPath = null;
+				lastStep = null;
+			}else if(bankPath instanceof ViewportPath){
+				//Sometimes viewport paths get stuck trying to click through walls
+				if(lastStep == bankPath.getNext())tryCount++;
+				else tryCount = 0;
+				if(tryCount >= 3)bankPath = null;
+			}
 			Execution.delay(400,600);
 		}else{
 			Execution.delay(400,600);
@@ -243,25 +243,25 @@ public abstract class Location {
 		if(destL.length == 0)dest = mine;
 		else dest = destL[0];
 
-		if(minePath == null)minePath = pathBuilder.buildTo(dest);
-
+		if(minePath == null)
+			minePath = pathBuilder.buildTo(dest);
 		else if(!dest.contains(Traversal.getDestination())){
-
-			if(minePath instanceof BresenhamPath || minePath instanceof WebPath){
-				minePath = pathBuilder.buildTo(dest, false);
-				lastStep = null;
-			}else if(minePath instanceof ViewportPath){
-				Camera.concurrentlyTurnTo(minePath.getNext());
-
-				//Sometimes viewport paths get stuck trying to click through walls
-				if(lastStep == minePath.getNext())tryCount++;
-				else tryCount = 0;
-				if(tryCount >= 3)minePath = pathBuilder.buildTo(dest);
-			}
+			if(minePath instanceof ViewportPath && !minePath.getNext().getArea().isVisible())Camera.concurrentlyTurnTo(minePath.getNext());
 
 			lastStep = minePath.getNext();
 			minePath.step(TraversalOption.MANAGE_DISTANCE_BETWEEN_STEPS, TraversalOption.MANAGE_RUN);
-
+			
+			if(minePath instanceof BresenhamPath || minePath instanceof WebPath){
+				minePath = null;
+				lastStep = null;
+				return;
+			}else if(minePath instanceof ViewportPath){
+				//Sometimes viewport paths get stuck trying to click through walls
+				if(lastStep == minePath.getNext())tryCount++;
+				else tryCount = 0;
+				if(tryCount >= 3)minePath = null;
+			}
+			
 			Execution.delay(400,600);
 		}else{
 			Execution.delay(400,600);
