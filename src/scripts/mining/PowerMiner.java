@@ -370,13 +370,14 @@ public class PowerMiner extends MiningStyle{
 			if(InterfaceWindows.getInventory().isOpen()){
 				//find the first open action slot
 				for(Slot slot : ActionBar.Slot.values()){
+					SlotAction action = slot.getAction();
 					//This indicates that this slot is not an ore dropping slot, so it's ok to overwrite it
-					if(slot.getAction() == null || !oreStringFilter.accepts(slot.getAction().getName())){
+					if(action == null || !oreStringFilter.accepts(action.getName())){
 						Mouse.drag(items.first(), slot.getComponent());
 						//Wait 2-4 seconds for the item to appear on the action bar
 						Timer timer = new Timer(Random.nextInt(2000,4000));
 						timer.start();
-						while(timer.getRemainingTime() > 0 && !oreStringFilter.accepts(slot.getAction().getName())){
+						while(timer.getRemainingTime() > 0 && !oreStringFilter.accepts(slot.getAction() == null ? null : slot.getAction().getName())){
 							Execution.delay(10);
 						}
 						ReflexAgent.delay();
