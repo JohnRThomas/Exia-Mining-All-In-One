@@ -21,7 +21,7 @@ public enum Rock {
 	COAL				("Coal", new String[]{"Coal"},true, true, new Color(24,24,17), new Color(0,0,0)),
 	PAY_DIRT			("Ore vein", new String[]{"Pay-dirt"},false, false),
 	SANDSTONE			("Sandstone", new String[]{"Sandstone (1kg)", "Sandstone (2kg)", "Sandstone (5kg)", "Sandstone (10kg)"},true, true, new Color(74,47,11)),
-	GEMS				("Gems", new String[]{"Uncut opal", "Uncut jade", "Uncut red topaz", "Uncut sapphire", "Uncut emerald", "Uncut diamond"},true, true, new Color(66,0,63)),
+	GEMS				("Gems", new String[]{"Uncut opal", "Uncut jade", "Uncut red topaz", "Uncut sapphire", "Uncut emerald", "Uncut ruby", "Uncut diamond"},true, true, new Color(66,0,63)),
 	GOLD				("Gold", new String[]{"Gold ore"},true, true, new Color(0,0,0)),
 	GRANITE				("Granite", new String[]{"Granite (500g)", "Granite (2kg)", "Granite (5kg)"},true, true, new Color(94,66,40)),
 	MITHRIL				("Mithril", new String[]{"Mithril ore"},true, true, new Color(47,47,66)),

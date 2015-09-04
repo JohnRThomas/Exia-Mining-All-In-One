@@ -146,4 +146,9 @@ public class ItemHandlers {
 	public static boolean shouldBank(boolean usePorters, Location location) {
 		return usePorters && location.inBank() && (Inventory.getItems(porterFilter).size() == 0 || Equipment.getItems(porterFilter).size() == 0);
 	}
+
+	public static void manageJujus() {
+		// TODO Auto-generated method stub
+		
+	}
 }

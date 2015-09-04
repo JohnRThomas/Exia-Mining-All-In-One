@@ -62,6 +62,8 @@ public class PowerMiner extends MiningStyle{
 	private boolean ignoreItems = false;
 	private boolean usePorters = false;
 	private boolean useUrns = false;
+	private boolean useJujus = false;
+	private boolean dropGems = true;
 
 	int dropOffset = 0;
 	double radius = 10;
@@ -145,6 +147,10 @@ public class PowerMiner extends MiningStyle{
 		if(usePorters){
 			ItemHandlers.managePorters();
 		}	
+
+		if(useJujus){
+			ItemHandlers.manageJujus();
+		}
 
 		if(shouldDrop()){
 			dropping = true;
@@ -300,6 +306,13 @@ public class PowerMiner extends MiningStyle{
 			for(String s : ore.oreNames){
 				if(name.contains(s))return true;
 			}
+			
+			if(dropGems){
+				for(String s : Rock.GEMS.oreNames){
+					if(name.contains(s))return true;
+				}
+			}
+			
 			return false;
 		}
 	};
@@ -437,6 +450,8 @@ public class PowerMiner extends MiningStyle{
 	CheckBox power = new CheckBox("Power drop (disable antiban for dropping)");
 	CheckBox urnBox = new CheckBox("Use urns");
 	CheckBox porterBox= new CheckBox("Use porters");
+	CheckBox jujuBox= new CheckBox("Use juju potions");
+	CheckBox gemBox= new CheckBox("Drop gems");
 	CheckBox radLabel = new CheckBox("Radius:");
 	TextField radText = new TextField("10");
 
@@ -447,6 +462,8 @@ public class PowerMiner extends MiningStyle{
 		powerDrop  = power.isSelected();
 		useUrns = urnBox.isSelected();
 		usePorters = porterBox.isSelected();
+		useJujus = jujuBox.isSelected();
+		dropGems = gemBox.isSelected();
 		if(!ore.name.contains("Sandstone") && !ore.name.contains("Granite"))
 			forceKeys  = forceNoClick.isSelected();
 		try{
@@ -520,7 +537,15 @@ public class PowerMiner extends MiningStyle{
 			urnBox.setStyle("-fx-text-fill: -fx-text-input-text");
 			urnBox.setPadding(new Insets(10,160,0,5));
 			settings.getChildren().add(urnBox);
-		}
+
+			gemBox.setStyle("-fx-text-fill: -fx-text-input-text");
+			gemBox.setPadding(new Insets(10,160,0,5));
+			settings.getChildren().add(gemBox);
+
+			jujuBox.setStyle("-fx-text-fill: -fx-text-input-text");
+			jujuBox.setPadding(new Insets(10,160,0,5));
+			settings.getChildren().add(jujuBox);
+}
 
 		power.setStyle("-fx-text-fill: -fx-text-input-text");
 		power.setPadding(new Insets(10,20,0,5));
