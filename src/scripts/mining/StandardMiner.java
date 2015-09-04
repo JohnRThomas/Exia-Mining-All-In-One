@@ -360,6 +360,7 @@ public class StandardMiner extends MiningStyle{
 		ArrayList<Location> locations = new ArrayList<Location>();
 		if(Environment.isRS3()){
 			locations.add(new scripts.mining.locations.rs3.AlKharid());
+			if(Environment.isSDK())locations.add(new scripts.mining.locations.rs3.CoalTrucks());
 			if(Environment.isSDK())locations.add(new scripts.mining.locations.rs3.DesertQuarry());
 			locations.add(new scripts.mining.locations.rs3.DwarvenMine());
 			locations.add(new scripts.mining.locations.rs3.DwarvenResourceMine());
@@ -367,6 +368,7 @@ public class StandardMiner extends MiningStyle{
 			locations.add(new scripts.mining.locations.rs3.LumbridgeEast());
 			locations.add(new scripts.mining.locations.rs3.LumbridgeWest());
 			locations.add(new scripts.mining.locations.rs3.MiningGuild(rockWatcher, this));
+			if(Environment.isSDK())locations.add(new scripts.mining.locations.rs3.Monastary());
 			if(Environment.isSDK())locations.add(new scripts.mining.locations.rs3.PiratesHideout());
 			locations.add(new scripts.mining.locations.rs3.Rimmington());
 			locations.add(new scripts.mining.locations.rs3.ShiloVillage());
@@ -374,7 +376,13 @@ public class StandardMiner extends MiningStyle{
 			locations.add(new scripts.mining.locations.rs3.VarrockWest());
 		}else{
 			locations.add(new scripts.mining.locations.osrs.AlKharid());
+			if(Environment.isSDK())locations.add(new scripts.mining.locations.osrs.CoalTrucks());
+			if(Environment.isSDK())locations.add(new scripts.mining.locations.osrs.LumbridgeEast());
+			if(Environment.isSDK())locations.add(new scripts.mining.locations.osrs.LumbridgeWest());
 			locations.add(new scripts.mining.locations.osrs.MiningGuild(rockWatcher, this));
+			if(Environment.isSDK())locations.add(new scripts.mining.locations.osrs.Monastary());
+			if(Environment.isSDK())locations.add(new scripts.mining.locations.osrs.PiratesHideout());
+			locations.add(new scripts.mining.locations.osrs.Rimmington());
 			locations.add(new scripts.mining.locations.osrs.VarrockEast());
 			locations.add(new scripts.mining.locations.osrs.VarrockWest());
 		}

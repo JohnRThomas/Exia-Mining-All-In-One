@@ -117,10 +117,8 @@ public class SpecialMiner extends MiningStyle{
 	private ArrayList<SpecialLocation> getLocations() {
 		ArrayList<SpecialLocation> locations = new ArrayList<SpecialLocation>();
 		if(Environment.isRS3()){
-			locations.add(new scripts.mining.locations.special.CoalTrucks());
 			locations.add(new scripts.mining.locations.special.LavaFlow());
 		}else{
-			locations.add(new scripts.mining.locations.special.CoalTrucks());
 			locations.add(new scripts.mining.locations.special.MotherLoad());
 		}
 		return locations;

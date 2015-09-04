@@ -1,8 +1,8 @@
-package scripts.mining.locations.special;
+package scripts.mining.locations.osrs;
 
 import com.runemate.game.api.hybrid.location.Coordinate;
 
-public class CoalTrucks extends SpecialLocation {
+public class Monastary extends OSRSLocation {
 
 	@Override
 	public void intialize(String ore) {
@@ -11,7 +11,7 @@ public class CoalTrucks extends SpecialLocation {
 
 	@Override
 	public String getName() {
-		return "Coal Trucks";
+		return "Monastary";
 	}
 
 	@Override
