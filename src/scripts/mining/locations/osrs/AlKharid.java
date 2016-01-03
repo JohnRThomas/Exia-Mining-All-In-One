@@ -20,11 +20,12 @@ import javafx.scene.control.ComboBox;
 import scripts.mining.Rock;
 
 public class AlKharid extends OSRSLocation{
+
 	@Override
 	public void intialize(String ore) {
 		switch(ore){
 		case "Tin":
-			rocks = new Coordinate[]{new Coordinate(3295,3311)};
+			rocks = new Coordinate[]{new Coordinate(3302,3316)};
 			break;
 		case "Copper":
 			rocks = new Coordinate[]{new Coordinate(3297,3315),new Coordinate(3296,3314)};
@@ -32,26 +33,26 @@ public class AlKharid extends OSRSLocation{
 		case "Iron":
 			break;
 		case "Silver":
-			rocks = new Coordinate[]{new Coordinate(3295,3303),new Coordinate(3294,3301),new Coordinate(3303,3312),new Coordinate(3303,3313),new Coordinate(3293,3300)};
+			rocks = new Coordinate[]{new Coordinate(3295,3304),new Coordinate(3294,3301),new Coordinate(3303,3314),new Coordinate(3303,3313),new Coordinate(3293,3300)};
 			break;
 		case "Coal":
 			rocks = new Coordinate[]{new Coordinate(3304,3300),new Coordinate(3303,3299), new Coordinate(3302,3317)};
 			break;
 		case "Gold":
-			rocks = new Coordinate[]{new Coordinate(3296,3287),new Coordinate(3297,3288)};
+			rocks = new Coordinate[]{new Coordinate(3294,3287),new Coordinate(3294,3288)};
 			break;
 		case "Mithril":
-			rocks = new Coordinate[]{new Coordinate(3303,3314),new Coordinate(3303,3305),new Coordinate(3303,3304)};
+			rocks = new Coordinate[]{new Coordinate(3304,3305),new Coordinate(3305,3304)};
 			break;
 		case "Adamantite":
-			rocks = new Coordinate[]{new Coordinate(3300,3317),new Coordinate(3299,3317)};
+			rocks = new Coordinate[]{new Coordinate(3300,3318),new Coordinate(3298,3317)};
 			break;
 		default:
 			throw new RuntimeException(ore + " is not supported in " + getName());
 		}
 		this.ore = Rock.getByName(ore);
 		bank = new Area.Rectangular(new Coordinate(3267,3169), new Coordinate(3273,3165));
-		mine = new Area.Rectangular(new Coordinate(3290,3319), new Coordinate(3305,3282));
+		mine = new Area.Rectangular(new Coordinate(3293,3319), new Coordinate(3306,3283));
 	}
 
 	@Override
