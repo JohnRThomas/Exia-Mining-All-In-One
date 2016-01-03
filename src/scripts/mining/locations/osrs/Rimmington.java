@@ -18,26 +18,26 @@ public class Rimmington extends OSRSLocation{
 	public void intialize(String ore) {
 		switch(ore){
 		case "Tin":
-			rocks = new Coordinate[] {new Coordinate(2972,3229),new Coordinate(2974,3230)};
+			rocks = new Coordinate[] {new Coordinate(2984,3237),new Coordinate(2986,3235)};
 			break;
 		case "Copper":
-			rocks = new Coordinate[] {new Coordinate(2966,3234),new Coordinate(2967,3235)};
+			rocks = new Coordinate[] {new Coordinate(2977,3247),new Coordinate(2978,3248)};
 			break;
 		case "Clay":
-			rocks = new Coordinate[] {new Coordinate(2979,3241),new Coordinate(2980,3240)};
+			rocks = new Coordinate[] {new Coordinate(2987,3240),new Coordinate(2986,3239)};
 			break;
 		case "Iron":
 			rocks = new Coordinate[]{};
 			break;
 		case "Gold":
-			rocks = new Coordinate[] {new Coordinate(2979,3232),new Coordinate(2977,3229)};
+			rocks = new Coordinate[] {new Coordinate(2977,3233),new Coordinate(2975,3234)};
 			break;
 		default:
 			throw new RuntimeException(ore + " is not supported in " + getName());
 		}
 		this.ore = Rock.getByName(ore);
-		mine = new Area.Rectangular(new Coordinate(2984,3243), new Coordinate(2963,3228));
-		bank = new Area.Rectangular(new Coordinate(2959,3299), new Coordinate(2954,3295));
+		mine = new Area.Rectangular(new Coordinate(2988,3250), new Coordinate(2966,3231));
+		bank = new Area.Rectangular(new Coordinate(3015,3359), new Coordinate(3010,3354));
 	}
 
 	@Override
@@ -64,11 +64,11 @@ public class Rimmington extends OSRSLocation{
 			switch(ironArea.getSelectionModel().getSelectedIndex()){
 			case 0:
 				//East
-				rocks = new Coordinate[] {new Coordinate(2980,3233),new Coordinate(2981,3234)};
+				rocks = new Coordinate[] {new Coordinate(2982,3234),new Coordinate(2981,3233)};
 				break;
 			case 1:
 				//West
-				rocks = new Coordinate[] {new Coordinate(2966,3238),new Coordinate(2967,3239),new Coordinate(2967,3240)};
+				rocks = new Coordinate[] {new Coordinate(2968,3239),new Coordinate(2969,3240),new Coordinate(2969,3242),new Coordinate(2971,3237)};
 				break;
 			}
 		}
@@ -85,7 +85,7 @@ public class Rimmington extends OSRSLocation{
 			return super.getSettingsNodes();
 		}
 	}
-
+/* Commented this section out since it stopped the miner from seeing OSRS rocks.
 	public boolean validate(GameObject rock) {
 		GameObjectDefinition def = rock.getDefinition();
 		String name = "";
@@ -93,4 +93,5 @@ public class Rimmington extends OSRSLocation{
 
 		return !name.equals("Rocks") && name.contains("rocks") && (name.contains("ore") || rock.getAnimationId() > 0);
 	}
+*/
 }
