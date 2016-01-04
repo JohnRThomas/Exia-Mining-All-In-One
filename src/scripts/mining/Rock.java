@@ -9,8 +9,8 @@ import javafx.collections.ObservableList;
 public enum Rock {
 
 	CLAY				("Clay", new String[]{"Clay"},true, true, new Color(98,74,42), new Color(122,100,70)),
-	COPPER				("Copper", new String[]{"Copper ore"},true, true, new Color(74,48,32)),
-	TIN					("Tin", new String[]{"Tin ore"},true, true, new Color(106,106,106)),
+	COPPER				("Copper", new String[]{"Copper ore"},true, true, new Color(74,48,32), new Color(129,63,37)),
+	TIN					("Tin", new String[]{"Tin ore"},true, true, new Color(106,106,106), new Color(114,114,114)),
 	LIMESTONE			("Limestone", new String[]{"Limestone"},true, true, new Color(110,110,110)),
 	BLUERITE			("Bluerite", new String[]{"Bluerite ore"},true, true, new Color(0,47,122)),
 	IRON				("Iron", new String[]{"Iron ore"},true, true, new Color(32,17,14)),
@@ -22,7 +22,7 @@ public enum Rock {
 	PAY_DIRT			("Ore vein", new String[]{"Pay-dirt"},false, false),
 	SANDSTONE			("Sandstone", new String[]{"Sandstone (1kg)", "Sandstone (2kg)", "Sandstone (5kg)", "Sandstone (10kg)"},true, true, new Color(74,47,11)),
 	GEMS				("Gems", new String[]{"Uncut opal", "Uncut jade", "Uncut red topaz", "Uncut sapphire", "Uncut emerald", "Uncut ruby", "Uncut diamond"},true, true, new Color(66,0,63)),
-	GOLD				("Gold", new String[]{"Gold ore"},true, true, new Color(0,0,0)),
+	GOLD				("Gold", new String[]{"Gold ore"},true, true, new Color(129,86,0), new Color(106,88,30)),
 	GRANITE				("Granite", new String[]{"Granite (500g)", "Granite (2kg)", "Granite (5kg)"},true, true, new Color(94,66,40)),
 	MITHRIL				("Mithril", new String[]{"Mithril ore"},true, true, new Color(47,47,66)),
 	ADAMANTITE			("Adamantite", new String[]{"Adamantite ore"}, true, true, new Color(52,60,52)),
