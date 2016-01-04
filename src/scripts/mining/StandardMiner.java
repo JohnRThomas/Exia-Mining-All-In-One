@@ -360,6 +360,7 @@ public class StandardMiner extends MiningStyle{
 		ArrayList<Location> locations = new ArrayList<Location>();
 		if(Environment.isRS3()){
 			locations.add(new scripts.mining.locations.rs3.AlKharid());
+			if(Environment.isSDK())locations.add(new scripts.mining.locations.rs3.BarbarianVillage());
 			if(Environment.isSDK())locations.add(new scripts.mining.locations.rs3.CoalTrucks());
 			if(Environment.isSDK())locations.add(new scripts.mining.locations.rs3.DesertQuarry());
 			locations.add(new scripts.mining.locations.rs3.DwarvenMine());
@@ -376,7 +377,7 @@ public class StandardMiner extends MiningStyle{
 			locations.add(new scripts.mining.locations.rs3.VarrockWest());
 		}else{
 			locations.add(new scripts.mining.locations.osrs.AlKharid());
-			locations.add(new scripts.mining.locations.osrs.BarbarianVillage());
+			if(Environment.isSDK())locations.add(new scripts.mining.locations.osrs.BarbarianVillage());
 			if(Environment.isSDK())locations.add(new scripts.mining.locations.osrs.CoalTrucks());
 			locations.add(new scripts.mining.locations.osrs.LumbridgeEast());
 			locations.add(new scripts.mining.locations.osrs.LumbridgeWest());
