@@ -83,7 +83,6 @@ public class Rimmington extends OSRSLocation{
 			return super.getSettingsNodes();
 		}
 	}
-	
 /* Commented this section out since it stopped the miner from seeing OSRS rocks.
 	public boolean validate(GameObject rock) {
 		GameObjectDefinition def = rock.getDefinition();
