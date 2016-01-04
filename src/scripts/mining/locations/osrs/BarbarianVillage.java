@@ -4,7 +4,7 @@ import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import scripts.mining.Rock;
 
-public class BarbVilage extends OSRSLocation{
+public class BarbarianVillage extends OSRSLocation{
 	
 	@Override
 	public void intialize(String ore){

@@ -1,7 +1,5 @@
 package scripts.mining.locations.osrs;
 
-import com.runemate.game.api.hybrid.entities.GameObject;
-import com.runemate.game.api.hybrid.entities.definitions.GameObjectDefinition;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 

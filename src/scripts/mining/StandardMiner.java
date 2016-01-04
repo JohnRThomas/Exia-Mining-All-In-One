@@ -376,7 +376,8 @@ public class StandardMiner extends MiningStyle{
 			locations.add(new scripts.mining.locations.rs3.VarrockWest());
 		}else{
 			locations.add(new scripts.mining.locations.osrs.AlKharid());
-			if(Environment.isSDK())locations.add(new scripts.mining.locations.osrs.BarbVilage());
+			locations.add(new scripts.mining.locations.osrs.BarbarianVillage());
+			if(Environment.isSDK())locations.add(new scripts.mining.locations.osrs.CoalTrucks());
 			locations.add(new scripts.mining.locations.osrs.LumbridgeEast());
 			locations.add(new scripts.mining.locations.osrs.LumbridgeWest());
 			locations.add(new scripts.mining.locations.osrs.MiningGuild(rockWatcher, this));
