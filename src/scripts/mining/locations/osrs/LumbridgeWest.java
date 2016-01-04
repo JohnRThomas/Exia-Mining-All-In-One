@@ -1,7 +1,5 @@
 package scripts.mining.locations.osrs;
 
-import com.runemate.game.api.hybrid.entities.GameObject;
-import com.runemate.game.api.hybrid.entities.definitions.GameObjectDefinition;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 
@@ -18,20 +16,20 @@ public class LumbridgeWest extends OSRSLocation{
 	public void intialize(String ore) {
 		switch(ore){
 		case "Coal":
-			rocks = new Coordinate[]{new Coordinate(3146,3151),new Coordinate(3147,3150),new Coordinate(3145,3149),new Coordinate(3144,3148),new Coordinate(3145,3147),new Coordinate(3143,3147),new Coordinate(3148,3144)};
+			rocks = new Coordinate[]{new Coordinate(3145,3153),new Coordinate(3144,3152),new Coordinate(3145,3151),new Coordinate(3146,3151),new Coordinate(3144,3150),new Coordinate(3145,3149),new Coordinate(3144,3148)};
 			break;
 		case "Mithril":
-			rocks = new Coordinate[]{new Coordinate(3229,3146),new Coordinate(3230,3147),new Coordinate(3227,3145),new Coordinate(3228,3151),new Coordinate(3223,3150)};
+			rocks = new Coordinate[]{new Coordinate(3144,3145),new Coordinate(3144,3147),new Coordinate(3143,3146),new Coordinate(3146,3145),new Coordinate(3148,3144)};
 			break;
 		case "Adamantite":
-			rocks = new Coordinate[]{new Coordinate(3149,3145),new Coordinate(3149,3147)};
+			rocks = new Coordinate[]{new Coordinate(3147,3146),new Coordinate(3148,3147)};
 			break;
 		default:
 			throw new RuntimeException(ore + " is not supported in " + getName());
 		}
 		this.ore = Rock.getByName(ore);
-		bank = new Area.Rectangular(new Coordinate(3155,3234), new Coordinate(3150,3229));
-		mine = new Area.Rectangular(new Coordinate(3150,3149), new Coordinate(3142,3142));
+		bank = new Area.Rectangular(new Coordinate(3091,3245), new Coordinate(3096,3241));
+		mine = new Area.Rectangular(new Coordinate(3150,3155), new Coordinate(3141,3143));
 	}
 
 	@Override
@@ -71,6 +69,7 @@ public class LumbridgeWest extends OSRSLocation{
 		return new Node[]{labela, labelb, labelc, labeld};
 	}
 	
+/* Commented this section out since it stopped the miner from seeing OSRS rocks.
 	public boolean validate(GameObject rock) {
 		GameObjectDefinition def = rock.getDefinition();
 		String name = "";
@@ -78,4 +77,5 @@ public class LumbridgeWest extends OSRSLocation{
 
 		return !name.equals("Rocks") && name.contains("rocks") && (name.contains("ore") || rock.getAnimationId() > 0);
 	}
+*/
 }
