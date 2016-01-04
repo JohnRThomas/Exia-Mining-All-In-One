@@ -1,11 +1,20 @@
 package scripts.mining;
 
+import java.awt.TrayIcon;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+
+import javax.imageio.ImageIO;
+
+import com.runemate.game.api.client.ClientUI;
+import com.runemate.game.api.client.palette.Palettes;
+import com.runemate.game.api.hybrid.Environment;
+import com.runemate.game.api.hybrid.util.calculations.Random;
+import com.runemate.game.api.script.framework.AbstractScript;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -31,17 +40,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-
 import scripts.mining.locations.Location;
-
-import com.runemate.game.api.client.ClientUI;
-import com.runemate.game.api.client.palette.Palettes;
-import com.runemate.game.api.hybrid.Environment;
-import com.runemate.game.api.hybrid.util.calculations.Random;
-import com.runemate.game.api.script.framework.AbstractScript;
 
 public class AIOMinerGUI extends Stage{
 
@@ -61,7 +60,6 @@ public class AIOMinerGUI extends Stage{
 		this.name = name;
 		this.version = version;
 		this.setTitle(name + " v" + version);
-		JFrame frame = ClientUI.getFrame();
 		initStyle(StageStyle.TRANSPARENT);
 
 		setOnCloseRequest(new EventHandler<WindowEvent>(){
@@ -74,9 +72,11 @@ public class AIOMinerGUI extends Stage{
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				getIcons().add(SwingFXUtils.toFXImage((BufferedImage)frame.getIconImage(), null));
-				setX(frame.getX() + (frame.getWidth()/2) - 290);
-				setY(frame.getY() + (frame.getHeight()/2) - 176  + 40);
+				TrayIcon icon = ClientUI.getTrayIcon();
+				getIcons().add(SwingFXUtils.toFXImage((BufferedImage)icon.getImage(), null));
+				Scene scene = ClientUI.getScene();
+				setX(scene.getX() + (scene.getWidth()/2) - 290);
+				setY(scene.getY() + (scene.getHeight()/2) - 176  + 40);
 				setScene(createScene());
 			}
 		});
