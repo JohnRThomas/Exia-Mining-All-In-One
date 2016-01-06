@@ -95,7 +95,7 @@ public class Paint implements PaintListener{
 			g.drawRect(x, y-20, width, height);
 			g.setColor(new Color(247,246,242));
 			g.setFont(new Font("Lucida Bright", 0, 18));
-			g.drawString("BatMiner AIO v" + ExiaMinerAIO.version, x+6, y+1);
+			g.drawString("ExiaMiner AIO v" + ExiaMinerAIO.version, x+6, y+1);
 			g.setFont(new Font("Dialog", 0, 12));
 			g.drawString("Runtime: " + Time.format(time - startTime), x+6, y+=20);
 			g.drawString("Location: " + ExiaMinerAIO.miner.getLocationName() + " (" + ExiaMinerAIO.miner.getOre().name + ")", x+6, y+=17);
