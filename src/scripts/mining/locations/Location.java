@@ -218,7 +218,11 @@ public abstract class Location {
 		if(bankPath == null)
 			bankPath = pathBuilder.buildTo(dest);		
 		else if(!dest.contains(Traversal.getDestination())){
-			if(bankPath instanceof ViewportPath && !bankPath.getNext().getArea().isVisible())Camera.concurrentlyTurnTo(bankPath.getNext());
+			if(bankPath instanceof ViewportPath){
+				if(bankPath.getNext() != null && !bankPath.getNext().getArea().isVisible()){
+					Camera.concurrentlyTurnTo(bankPath.getNext());
+				}
+			}
 
 			lastStep = bankPath.getNext();
 			bankPath.step(TraversalOption.MANAGE_DISTANCE_BETWEEN_STEPS, walk ? null : TraversalOption.MANAGE_RUN);
@@ -246,7 +250,11 @@ public abstract class Location {
 		if(minePath == null)
 			minePath = pathBuilder.buildTo(dest);
 		else if(!dest.contains(Traversal.getDestination())){
-			if(minePath instanceof ViewportPath && !minePath.getNext().getArea().isVisible())Camera.concurrentlyTurnTo(minePath.getNext());
+			if(minePath instanceof ViewportPath){
+				if(minePath.getNext() != null && !minePath.getNext().getArea().isVisible()){
+					Camera.concurrentlyTurnTo(minePath.getNext());
+				}
+			}
 
 			lastStep = minePath.getNext();
 			minePath.step(TraversalOption.MANAGE_DISTANCE_BETWEEN_STEPS, TraversalOption.MANAGE_RUN);
