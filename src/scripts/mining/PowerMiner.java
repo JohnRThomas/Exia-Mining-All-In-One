@@ -552,7 +552,7 @@ public class PowerMiner extends MiningStyle{
 
 			jujuBox.setStyle("-fx-text-fill: -fx-text-input-text");
 			jujuBox.setPadding(new Insets(10,160,0,5));
-			settings.getChildren().add(jujuBox);
+			//settings.getChildren().add(jujuBox);
 }
 
 		power.setStyle("-fx-text-fill: -fx-text-input-text");
