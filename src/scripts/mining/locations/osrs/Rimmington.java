@@ -14,6 +14,7 @@ public class Rimmington extends OSRSLocation{
 
 	@Override
 	public void intialize(String ore) {
+		earlyBanking = false;
 		switch(ore){
 		case "Tin":
 			rocks = new Coordinate[] {new Coordinate(2984,3237),new Coordinate(2986,3235)};

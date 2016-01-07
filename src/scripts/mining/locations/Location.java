@@ -53,7 +53,8 @@ public abstract class Location {
 	protected Path bankPath = null;
 	protected Rock ore;
 	protected Coordinate[] rocks;
-
+	protected boolean earlyBanking = true;
+	
 	public abstract void intialize(String ore);
 
 	public abstract String getName();
@@ -194,7 +195,10 @@ public abstract class Location {
 
 	public boolean inBank() {
 		LocatableEntityQueryResults<? extends LocatableEntity> bankers = getBankers().sortByDistance();
-		if(bank.contains(Players.getLocal()) || (bankers.size() > 0 && bankers.first().isVisible() && bankers.first().distanceTo(Players.getLocal()) < 5)){
+		if(bank.contains(Players.getLocal())){
+			bankPath = null;
+			return true;
+		}else if(earlyBanking && (bankers.size() > 0 && bankers.first().isVisible() && bankers.first().distanceTo(Players.getLocal()) < 5)){
 			bankPath = null;
 			return true;
 		}else return false;

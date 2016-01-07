@@ -35,6 +35,7 @@ public class MiningGuild extends Location{
 
 	@Override
 	public void intialize(String ore) {
+		earlyBanking = false;
 		switch(ore){
 		case "Coal":
 			rocks = new Coordinate[]{};

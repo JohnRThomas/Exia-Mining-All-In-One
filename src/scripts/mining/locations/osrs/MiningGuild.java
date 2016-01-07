@@ -33,6 +33,7 @@ public class MiningGuild extends OSRSLocation{
 
 	@Override
 	public void intialize(String ore) {
+		earlyBanking = false;
 		switch(ore){
 		case "Coal":
 			rocks = new Coordinate[]{};
