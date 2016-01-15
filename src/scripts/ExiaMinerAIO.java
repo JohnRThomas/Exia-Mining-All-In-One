@@ -8,6 +8,7 @@ import com.runemate.game.api.script.framework.LoopingScript;
 import javafx.application.Platform;
 import scripts.mining.AIOMinerGUI;
 import scripts.mining.CustomPlayerSense;
+import scripts.mining.ErrorHandler;
 import scripts.mining.MiningStyle;
 import scripts.mining.MoneyCounter;
 import scripts.mining.Paint;
@@ -40,11 +41,11 @@ public class ExiaMinerAIO extends LoopingScript {
 			return;
 		}
 		int reflexSeed = gui.getReflexSeed();
-			
+
 		if(reflexSeed == -1){
 			Paint.showGraph = false;
 		}
-		
+
 		ReflexAgent.initialize(reflexSeed);
 		CustomPlayerSense.intialize();
 
@@ -56,11 +57,19 @@ public class ExiaMinerAIO extends LoopingScript {
 		getEventDispatcher().addListener(paint);
 		miner.onStart(args);
 	}
-		
+
 	@Override
 	public void onLoop() {
-		miner.loop();
-		
+		try{
+			miner.loop();
+		}catch(Exception e){
+			if(e.getMessage().contains("Pitch must") || e.getMessage().contains("The delay length")){
+				ErrorHandler.add(e);
+			}else{
+				throw e;
+			}
+		}
+
 		//At ~8 hours we need to generate a new line
 		if(System.currentTimeMillis() - Paint.startTime >=  3600000 * 7.875 * (1 + ReflexAgent.resets)){
 			Paint.status = "Regenerating reflex delay";
@@ -78,5 +87,8 @@ public class ExiaMinerAIO extends LoopingScript {
 		});
 		if(miner != null)miner.onStop();
 		System.gc();
+		if(ErrorHandler.hasErrors()){
+			ErrorHandler.throwAll();
+		}
 	}
 }
