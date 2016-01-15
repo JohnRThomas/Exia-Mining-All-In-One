@@ -10,7 +10,14 @@ public class VarrockEast extends Location{
 
 	@Override
 	public void intialize(String ore){
+		mine = new Area.Rectangular(new Coordinate(3282,3366), new Coordinate(3290,3372));
+		bank = new Area.Rectangular(new Coordinate(3250,3418, 0), new Coordinate(3257,3423, 0));
+
 		switch(ore){
+		case "Essence":
+			rocks = new Coordinate[] {};
+			mine = new Area.Rectangular(new Coordinate(0,0), new Coordinate(0,0));
+			break;
 		case "Tin":
 			rocks = new Coordinate[] {new Coordinate(3281,3363),new Coordinate(3282,3364)};
 			break;
@@ -24,8 +31,6 @@ public class VarrockEast extends Location{
 			throw new RuntimeException(ore + " is not supported in " + getName());
 		}
 		this.ore = Rock.getByName(ore);
-		mine = new Area.Rectangular(new Coordinate(3282,3366), new Coordinate(3290,3372));
-		bank = new Area.Rectangular(new Coordinate(3250,3418, 0), new Coordinate(3257,3423, 0));
 	}
 	
 	@Override
@@ -35,6 +40,6 @@ public class VarrockEast extends Location{
 
 	@Override
 	public String[] getOres() {
-		return new String[]{"Copper", "Iron"};
+		return new String[]{"Essence","Copper", "Tin", "Iron"};
 	}
 }
