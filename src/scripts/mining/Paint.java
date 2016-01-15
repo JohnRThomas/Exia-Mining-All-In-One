@@ -77,7 +77,7 @@ public class Paint implements PaintListener{
 			int currentLevel = Skill.MINING.getCurrentLevel();
 			int percentage = Skill.MINING.getExperienceAsPercent();
 			if(tempLevel < currentLevel){
-				ClientUI.sendTrayNotification("Congradulation! You have just advanced a Mining level! You now reached level " + currentLevel + ".");
+				ClientUI.sendTrayNotification("Congratulations! You have just advanced a Mining level! You now reached level " + currentLevel + ".");
 				levelsGained++;
 			}
 			tempLevel = currentLevel;
