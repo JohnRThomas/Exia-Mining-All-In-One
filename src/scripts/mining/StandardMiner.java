@@ -33,7 +33,6 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import scripts.ExiaMinerAIO;
 import scripts.mining.locations.Location;
-import scripts.mining.locations.osrs.VarrockEssence;
 
 public class StandardMiner extends MiningStyle{	
 	int notMiningCount = 0;
