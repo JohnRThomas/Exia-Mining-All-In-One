@@ -19,6 +19,7 @@ import scripts.mining.ReflexAgent;
 public class ExiaMinerAIO extends LoopingScript {
 	public static MiningStyle miner;
 	public static String version = "";
+	public static String name = "";
 	public static ExiaMinerAIO instance;
 	public static boolean isPaid = false;
 	private AIOMinerGUI gui;
@@ -29,7 +30,7 @@ public class ExiaMinerAIO extends LoopingScript {
 	public void onStart(String... args){
 		setLoopDelay(0);
 		version = getMetaData().getVersion();
-		String name = getMetaData().getName();
+		name = getMetaData().getName();
 		isPaid = getMetaData().getHourlyPrice().compareTo(BigDecimal.ZERO) > 0;
 		instance = this;
 		Platform.runLater(new Runnable() {
