@@ -20,7 +20,8 @@ public class ExiaMinerAIO extends LoopingScript {
 	public static ExiaMinerAIO instance;
 	private AIOMinerGUI gui;
 	private Paint paint = new Paint(Environment.isRS3());
-
+	private boolean catchErrors = true;
+	
 	@Override
 	public void onStart(String... args){
 		setLoopDelay(0);
@@ -51,6 +52,7 @@ public class ExiaMinerAIO extends LoopingScript {
 
 		Paint.startTime = System.currentTimeMillis();
 		miner = gui.miner;
+		catchErrors = gui.catchErrors;
 		gui = null;
 		Paint.startEXP = Skill.MINING.getExperience();
 		Paint.profitCounter = new MoneyCounter(miner.getOre().oreNames);
@@ -63,7 +65,7 @@ public class ExiaMinerAIO extends LoopingScript {
 		try{
 			miner.loop();
 		}catch(Exception e){
-			if(e.getMessage().contains("Pitch must") || e.getMessage().contains("The delay length")){
+			if(catchErrors || e.getMessage().contains("Pitch must") || e.getMessage().contains("The delay length")){
 				ErrorHandler.add(e);
 			}else{
 				throw e;

@@ -52,6 +52,7 @@ public class AIOMinerGUI extends Stage{
 	String style;
 	Location location;
 	public MiningStyle miner;
+	public boolean catchErrors = true;
 	public int dispose = 0;
 	public static ImageView warnImage = null;
 
@@ -224,6 +225,7 @@ public class AIOMinerGUI extends Stage{
 	}
 
 	CheckBox enableReflex = new CheckBox("Dynamic Reflexes");
+	CheckBox enableErrorCatching = new CheckBox("Enable Error Catching");
 	TextField reflexSeed = new TextField("" + Random.nextInt(190, 230));
 	private GridPane createStylePane() {
 		GridPane content = new GridPane();
@@ -311,7 +313,15 @@ public class AIOMinerGUI extends Stage{
 			}
 		});
 
-		settings.getChildren().addAll(enableReflex, reflexLabel, reflexSeed);
+		enableErrorCatching.setStyle("-fx-text-fill: -fx-text-input-text");
+		enableErrorCatching.setPadding(new Insets(3,3,3,3));
+		enableErrorCatching.setPrefWidth(165);
+		enableErrorCatching.setSelected(true);
+		enableErrorCatching.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+			catchErrors = new_val;
+		});
+		
+		settings.getChildren().addAll(enableErrorCatching, enableReflex, reflexLabel, reflexSeed);
 
 		content.add(settings, 2, 1, 1, 2);
 		return content;
