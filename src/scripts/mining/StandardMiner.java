@@ -33,6 +33,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import scripts.ExiaMinerAIO;
 import scripts.mining.locations.Location;
+import scripts.mining.locations.osrs.VarrockEssence;
 
 public class StandardMiner extends MiningStyle{	
 	int notMiningCount = 0;
@@ -379,10 +380,11 @@ public class StandardMiner extends MiningStyle{
 			locations.add(new scripts.mining.locations.osrs.AlKharid());
 			locations.add(new scripts.mining.locations.osrs.BarbarianVillage());
 			if(Environment.isSDK())locations.add(new scripts.mining.locations.osrs.CoalTrucks());
+			locations.add(new scripts.mining.locations.osrs.LegendsGuild());
 			locations.add(new scripts.mining.locations.osrs.LumbridgeEast());
 			locations.add(new scripts.mining.locations.osrs.LumbridgeWest());
 			locations.add(new scripts.mining.locations.osrs.MiningGuild(rockWatcher, this));
-			if(Environment.isSDK())locations.add(new scripts.mining.locations.osrs.Monastary());
+			locations.add(new scripts.mining.locations.osrs.Monastery());
 			if(Environment.isSDK())locations.add(new scripts.mining.locations.osrs.PiratesHideout());
 			locations.add(new scripts.mining.locations.osrs.Rimmington());
 			locations.add(new scripts.mining.locations.osrs.VarrockEast());
