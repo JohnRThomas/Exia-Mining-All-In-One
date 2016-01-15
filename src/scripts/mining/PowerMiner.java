@@ -329,7 +329,7 @@ public class PowerMiner extends MiningStyle{
 
 	private void drop() {
 		currentRock = null;
-
+		deselect();
 		SpriteItemQueryResults items = Inventory.getItems(oreFilter);
 
 		if(items.isEmpty()){
@@ -395,6 +395,7 @@ public class PowerMiner extends MiningStyle{
 				if(powerDrop){
 					ReflexAgent.delay();
 					for(SpriteItem item : items){
+						deselect();
 						MenuItem mItem = null;
 						while(mItem == null){
 							Mouse.getPathGenerator().hop(item.getInteractionPoint());
@@ -425,6 +426,11 @@ public class PowerMiner extends MiningStyle{
 				closeInv = true;
 			}
 		}
+	}
+
+	private void deselect() {
+		SpriteItem selected = Inventory.getSelectedItem();
+		if(selected != null)selected.click();
 	}
 
 	public boolean validateRS3(GameObject rock) {
