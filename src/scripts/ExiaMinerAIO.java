@@ -1,5 +1,7 @@
 package scripts;
 
+import java.math.BigDecimal;
+
 import com.runemate.game.api.hybrid.Environment;
 import com.runemate.game.api.hybrid.local.Skill;
 import com.runemate.game.api.script.Execution;
@@ -17,7 +19,9 @@ import scripts.mining.ReflexAgent;
 public class ExiaMinerAIO extends LoopingScript {
 	public static MiningStyle miner;
 	public static String version = "";
+	public static String name = "";
 	public static ExiaMinerAIO instance;
+	public static boolean isPaid = false;
 	private AIOMinerGUI gui;
 	private Paint paint = new Paint(Environment.isRS3());
 	private boolean catchErrors = true;
@@ -26,7 +30,8 @@ public class ExiaMinerAIO extends LoopingScript {
 	public void onStart(String... args){
 		setLoopDelay(0);
 		version = getMetaData().getVersion();
-		String name = getMetaData().getName();
+		name = getMetaData().getName();
+		isPaid = getMetaData().getHourlyPrice().compareTo(BigDecimal.ZERO) > 0;
 		instance = this;
 		Platform.runLater(new Runnable() {
 			@Override

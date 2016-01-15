@@ -1,0 +1,40 @@
+<manifest>
+	<main-class>scripts.ExiaMinerAIO</main-class>
+	<name>Exia Miner Lite</name>
+	<tag-line>It’s honestly the best miner around</tag-line>
+	<description>Mine or power mine things all over Runescape.</description>
+	<version>1.4.8</version>
+	<compatibility>
+		<game>RS3</game>
+		<game>DARK</game>
+		<game>OSRS</game>
+	</compatibility>
+	<categories>
+		<category>MINING</category>
+	</categories>
+	<tags>
+       <tag>Mining</tag>
+       <tag>Iron</tag>
+       <tag>Coal</tag>
+       <tag>Runite</tag>
+       <tag>Rune</tag>
+       <tag>Mine</tag>
+       <tag>Ore</tag>
+       <tag>Power</tag>
+       <tag>Gold</tag>
+       <tag>Living</tag>
+       <tag>Rock</tag>
+       <tag>Cavern</tag>
+       <tag>Gem</tag>
+       <tag>Shilo</tag>
+       <tag>Bane</tag>
+       <tag>Seren</tag>
+       <tag>Corrupted</tag>
+       <tag>Concentrated</tag>
+       <tag>LRC</tag>
+       <tag>Guild</tag>
+    </tags>
+	<internal-id>minerLite</internal-id>
+	<hidden>false</hidden>
+	<access>public</access>
+</manifest>
