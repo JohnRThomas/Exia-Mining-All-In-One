@@ -1,5 +1,7 @@
-package scripts.mining.locations.osrs;
+package scripts.mining.locations.rs3;
 
+import com.runemate.game.api.hybrid.entities.GameObject;
+import com.runemate.game.api.hybrid.entities.definitions.GameObjectDefinition;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import javafx.collections.FXCollections;
@@ -8,17 +10,18 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import scripts.mining.Rock;
+import scripts.mining.locations.Location;
 
-public class Yanille extends OSRSLocation{
-	
+public class Yanille extends Location{
+
 	@Override
-	public void intialize(String ore){
+	public void intialize(String ore) {
 		switch(ore){
 			case "Coal":
-				rocks = new Coordinate[] {new Coordinate(2626,3131)};
+				rocks = new Coordinate[] {new Coordinate(2626, 3131)};
 				break;
 			case "Copper":
-				rocks = new Coordinate[] {new Coordinate(2630,3145),new Coordinate(2630,3137)};
+				rocks = new Coordinate[] {new Coordinate(2630, 3137),new Coordinate(2630, 3145)};
 				break;
 			case "Iron":
 				rocks = new Coordinate[] {};
@@ -27,19 +30,19 @@ public class Yanille extends OSRSLocation{
 				rocks = new Coordinate[] {};
 				break;
 			case "Mithril":
-				rocks = new Coordinate[] {new Coordinate(2629,3147),new Coordinate(2628,3147)};
+				rocks = new Coordinate[] {new Coordinate(2628, 3147),new Coordinate(2629, 3147)};
 				break;
 			case "Clay":
-				rocks = new Coordinate[] {new Coordinate(2632,3139),new Coordinate(2630,3143),new Coordinate(2629,3143),new Coordinate(2629,3145)};
+				rocks = new Coordinate[] {new Coordinate(2629, 3145),new Coordinate(2630, 3143),new Coordinate(2629, 3143),new Coordinate(2632, 3139)};
 				break;
 			default:
 				throw new RuntimeException(ore + " is not supported in " + getName());
 		}
 		this.ore = Rock.getByName(ore);
-		mine = new Area.Rectangular(new Coordinate(2623,3129), new Coordinate(2637,3153));
-		bank = new Area.Rectangular(new Coordinate(2608,3087), new Coordinate(2616,3098));
+		mine = new Area.Rectangular(new Coordinate(2623, 3129), new Coordinate(2634, 3153));
+		bank = new Area.Rectangular(new Coordinate(2609, 3095), new Coordinate(2613, 3091));
 	}
-		
+
 	@Override
 	public String getName() {
 		return "Yanille";
@@ -64,22 +67,22 @@ public class Yanille extends OSRSLocation{
 			switch(ironArea.getSelectionModel().getSelectedIndex()){
 				case 0:
 					//North
-					rocks = new Coordinate[] {new Coordinate(2626,3149),new Coordinate(2625,3150),new Coordinate(2625,3151),new Coordinate(2626,3150)};
+					rocks = new Coordinate[] {new Coordinate(2626, 3149),new Coordinate(2626, 3150),new Coordinate(2625, 3150),new Coordinate(2625, 3151)};
 					break;
 				case 1:
 					//South
-					rocks = new Coordinate[] {new Coordinate(2628,3140),new Coordinate(2628,3141),new Coordinate(2627,3142)};
+					rocks = new Coordinate[] {new Coordinate(2627, 3142),new Coordinate(2628, 3141),new Coordinate(2628, 3140)};
 					break;
 			}
 		}else if (ore == Rock.TIN){
 			switch(ironArea.getSelectionModel().getSelectedIndex()){
 				case 0:
 					//North
-					rocks = new Coordinate[] {new Coordinate(2630,3150),new Coordinate(2630,3148),new Coordinate(2631,3147)};
+					rocks = new Coordinate[] {new Coordinate(2630, 3148),new Coordinate(2630, 3150),new Coordinate(2631, 3147)};
 					break;
 				case 1:
 					//South
-					rocks = new Coordinate[] {new Coordinate(2632,3141),new Coordinate(2632,3142),new Coordinate(2630,3140)};
+					rocks = new Coordinate[] {new Coordinate(2632, 3142),new Coordinate(2632, 3141),new Coordinate(2630, 3140)};
 					break;
 			}
 		}
@@ -102,4 +105,11 @@ public class Yanille extends OSRSLocation{
 		}
 	}
 
+	public boolean validate(GameObject rock) {
+		GameObjectDefinition def = rock.getDefinition();
+		String name = "";
+		if(def != null)name = def.getName();
+
+		return !name.equals("Rocks") && name.contains("rocks") && (name.contains("ore") || rock.getAnimationId() > 0);
+	}
 }

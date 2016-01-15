@@ -366,16 +366,18 @@ public class StandardMiner extends MiningStyle{
 			if(Environment.isSDK())locations.add(new scripts.mining.locations.rs3.DesertQuarry());
 			locations.add(new scripts.mining.locations.rs3.DwarvenMine());
 			locations.add(new scripts.mining.locations.rs3.DwarvenResourceMine());
+			locations.add(new scripts.mining.locations.rs3.LegendsGuild());
 			locations.add(new scripts.mining.locations.rs3.LivingRockCavern(this));
 			locations.add(new scripts.mining.locations.rs3.LumbridgeEast());
 			locations.add(new scripts.mining.locations.rs3.LumbridgeWest());
 			locations.add(new scripts.mining.locations.rs3.MiningGuild(rockWatcher, this));
-			if(Environment.isSDK())locations.add(new scripts.mining.locations.rs3.Monastary());
+			locations.add(new scripts.mining.locations.rs3.Monastery());
 			if(Environment.isSDK())locations.add(new scripts.mining.locations.rs3.PiratesHideout());
 			locations.add(new scripts.mining.locations.rs3.Rimmington());
 			locations.add(new scripts.mining.locations.rs3.ShiloVillage());
 			locations.add(new scripts.mining.locations.rs3.VarrockEast());
 			locations.add(new scripts.mining.locations.rs3.VarrockWest());
+			locations.add(new scripts.mining.locations.rs3.Yanille());
 		}else{
 			locations.add(new scripts.mining.locations.osrs.AlKharid());
 			locations.add(new scripts.mining.locations.osrs.BarbarianVillage());
@@ -389,6 +391,7 @@ public class StandardMiner extends MiningStyle{
 			locations.add(new scripts.mining.locations.osrs.Rimmington());
 			locations.add(new scripts.mining.locations.osrs.VarrockEast());
 			locations.add(new scripts.mining.locations.osrs.VarrockWest());
+			if(Environment.isSDK())locations.add(new scripts.mining.locations.osrs.VarrockEssence(this));
 			locations.add(new scripts.mining.locations.osrs.Yanille());
 		}
 		return locations;
