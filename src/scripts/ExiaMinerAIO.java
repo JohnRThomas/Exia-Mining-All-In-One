@@ -90,7 +90,7 @@ public class ExiaMinerAIO extends LoopingScript {
 		if(miner != null)miner.onStop();
 		System.gc();
 		if(ErrorHandler.hasErrors()){
-			ErrorHandler.throwAll();
+			ErrorHandler.throwAll(miner);
 		}
 	}
 }

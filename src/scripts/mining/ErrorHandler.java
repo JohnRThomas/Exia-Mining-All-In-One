@@ -10,8 +10,8 @@ public class ErrorHandler {
 		errors.add(e);
 	}
 
-	public static void throwAll() {
-		ErrorHandlerException finalException = new ErrorHandlerException();
+	public static void throwAll(MiningStyle miner) {
+		ErrorHandlerException finalException = new ErrorHandlerException(miner);
 		for(Exception e : errors){
 			finalException.addSuppressed(e);
 		}
@@ -25,8 +25,8 @@ public class ErrorHandler {
 	private static class ErrorHandlerException extends RuntimeException{
 		private static final long serialVersionUID = -4575630592933381077L;
 
-		public ErrorHandlerException(){
-			super(ErrorHandler.errors.size() + " supressed error" + (ErrorHandler.errors.size() == 1 ? "" : "s") + " occured durring runtime please submit " + (ErrorHandler.errors.size() == 1 ? "it" : "them") + " now!");
+		public ErrorHandlerException(MiningStyle miner){
+			super(miner.getLocationName() + "(" + miner.getOre() + ") " + ErrorHandler.errors.size() + " supressed error" + (ErrorHandler.errors.size() == 1 ? "" : "s") + " occured durring runtime please submit " + (ErrorHandler.errors.size() == 1 ? "it" : "them") + " now!");
 		}
 	}
 }
