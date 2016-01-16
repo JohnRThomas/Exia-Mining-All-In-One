@@ -14,10 +14,10 @@ public class VarrockEast extends Location{
 		bank = new Area.Rectangular(new Coordinate(3250,3418, 0), new Coordinate(3257,3423, 0));
 
 		switch(ore){
-		case "Essence":
+		/*case "Essence":
 			rocks = new Coordinate[] {};
 			mine = new Area.Rectangular(new Coordinate(0,0), new Coordinate(0,0));
-			break;
+			break;*/
 		case "Tin":
 			rocks = new Coordinate[] {new Coordinate(3281,3363),new Coordinate(3282,3364)};
 			break;
@@ -40,6 +40,6 @@ public class VarrockEast extends Location{
 
 	@Override
 	public String[] getOres() {
-		return new String[]{"Essence","Copper", "Tin", "Iron"};
+		return new String[]{"Copper", "Tin", "Iron"};
 	}
 }
