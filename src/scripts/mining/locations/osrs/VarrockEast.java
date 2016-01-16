@@ -86,13 +86,14 @@ public class VarrockEast extends OSRSLocation{
 					miner.walkTo(aubury);
 				}else{
 					MenuItem mItem = null;
-					while(mItem == null){
+					while(mItem == null){//Sometimes gets stuck on the Walk/Cancel menu. Might add a mouse move so it clears.
 						Mouse.getPathGenerator().hop(aubury.getInteractionPoint());
 						Mouse.click(Mouse.Button.RIGHT);
 						Execution.delay(50,100);
 						mItem = Menu.getItem("Teleport");
 					}
 					Mouse.getPathGenerator().hop(mItem.getInteractionPoint());
+					Execution.delay(50,100);
 					Mouse.click(Mouse.Button.LEFT);
 				}
 				Timer timer = new Timer((int)(aubury.distanceTo(me) * ReflexAgent.getReactionTime()) + Random.nextInt(900, 1000));
@@ -101,10 +102,23 @@ public class VarrockEast extends OSRSLocation{
 					Execution.delay(100);
 				}
 			}
-			//}else if(exits.contains(me)){
-			//	super.walkToMine();
+		}else if (runeEssence()){//If the Rune Essence is located, return true
+			//Locate the coordinates of the essence; set the ore coors; set the mine coors
+			LocatableEntityQueryResults<GameObject> runeEss = GameObjects.getLoaded("Rune Essence").sortByDistance();
+			rocks = new Coordinate[] {runeEss.nearest().getPosition()};
+			mine = new Area.Rectangular(new Coordinate(runeEss.nearest().getPosition().getX()+5,runeEss.nearest().getPosition().getY()+5), new Coordinate(runeEss.nearest().getPosition().getX()-5,runeEss.nearest().getPosition().getY()-5));
+			super.walkToMine();
 		}else{
 			super.walkToMine(shop);
+		}
+	}
+
+	public Boolean runeEssence(){
+		LocatableEntityQueryResults<GameObject> runeEssence = GameObjects.getLoaded("Rune Essence").sortByDistance();
+		if(runeEssence.size() > 0){
+			return true;
+		}else{
+			return false;
 		}
 	}
 
