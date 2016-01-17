@@ -388,7 +388,7 @@ public class StandardMiner extends MiningStyle{
 			locations.add(new scripts.mining.locations.osrs.Monastery());
 			if(Environment.isSDK())locations.add(new scripts.mining.locations.osrs.PiratesHideout());
 			locations.add(new scripts.mining.locations.osrs.Rimmington());
-			locations.add(new scripts.mining.locations.osrs.VarrockEast(this));
+			locations.add(new scripts.mining.locations.osrs.VarrockEast());
 			locations.add(new scripts.mining.locations.osrs.VarrockWest());
 			locations.add(new scripts.mining.locations.osrs.Yanille());
 		}

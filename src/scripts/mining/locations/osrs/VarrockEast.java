@@ -1,13 +1,13 @@
 package scripts.mining.locations.osrs;
 
+import java.util.regex.Pattern;
+
 import com.runemate.game.api.hybrid.Environment;
 import com.runemate.game.api.hybrid.entities.GameObject;
-import com.runemate.game.api.hybrid.entities.Npc;
+import com.runemate.game.api.hybrid.entities.LocatableEntity;
 import com.runemate.game.api.hybrid.entities.Player;
-import com.runemate.game.api.hybrid.input.Mouse;
+import com.runemate.game.api.hybrid.entities.definitions.GameObjectDefinition;
 import com.runemate.game.api.hybrid.local.Camera;
-import com.runemate.game.api.hybrid.local.hud.Menu;
-import com.runemate.game.api.hybrid.local.hud.MenuItem;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
@@ -18,20 +18,13 @@ import com.runemate.game.api.hybrid.util.Timer;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.Execution;
 
-import scripts.mining.MiningStyle;
-import scripts.mining.ReflexAgent;
 import scripts.mining.Rock;
 
 public class VarrockEast extends OSRSLocation{
 
-	private MiningStyle miner;
 	private Area shop = new Area.Rectangular(new Coordinate(3250, 3404), new Coordinate(3256, 3398));
-	//private Area exits = new Area.Rectangular(new Coordinate(3250, 3404), new Coordinate(3256, 3398));
-
-	public VarrockEast(MiningStyle miner) {
-		this.miner = miner;
-	}
-
+	private boolean treatAuburyAsBanker = false;
+	
 	@Override
 	public void intialize(String ore){
 		mine = new Area.Rectangular(new Coordinate(3280,3360), new Coordinate(3291,3371));
@@ -39,8 +32,7 @@ public class VarrockEast extends OSRSLocation{
 
 		switch(ore){
 		case "Essence":
-			rocks = new Coordinate[] {};
-			mine = new Area.Rectangular(new Coordinate(7501,7436), new Coordinate(7454,7389));
+			rocks = new Coordinate[0];
 			break;
 		case "Tin":
 			rocks = new Coordinate[] {new Coordinate(3281,3363),new Coordinate(3282,3364)};
@@ -69,56 +61,86 @@ public class VarrockEast extends OSRSLocation{
 	}
 
 	@Override
+	public Coordinate[] getRocks(){
+		if(ore != Rock.ESSENCE){
+			return super.getRocks();
+		}
+
+		//Find all the essence and return their locations
+		LocatableEntityQueryResults<GameObject> essence = GameObjects.getLoaded("Rune Essence").sortByDistance();
+		Coordinate[] outRocks = new Coordinate[essence.size()];
+		int i = 0;
+		for(GameObject o : essence){
+			outRocks[i++] = o.getPosition();
+		}
+		return outRocks;
+	}
+	
+	@Override
+	public boolean inMine() {
+		if(ore != Rock.ESSENCE){
+			return super.inMine();
+		}
+
+		//Check if there are any rune essence objects loaded
+		if(this.getRocks().length > 0){
+			minePath = null;
+			return true;
+		}else return false;
+	}
+	
+	@Override
+	public Pattern getBankInteract() {
+		if(treatAuburyAsBanker)	return Pattern.compile("Teleport");
+		else return super.getBankInteract();
+	}
+	
+	@Override
+	protected LocatableEntityQueryResults<? extends LocatableEntity> getBankers(){
+		if(treatAuburyAsBanker) return Npcs.getLoaded("Aubury");
+		else return super.getBankers();
+	}
+	
+	@Override
+	public boolean validate(GameObject o) {
+		if(ore != Rock.ESSENCE){
+			return super.validate(o);
+		}else{
+			String name = "";
+			GameObjectDefinition def = o.getDefinition();
+			if(def != null){
+				name = def.getName();
+			}
+
+			return name.contains("Rune Essence");
+		}
+	}
+	
+	@Override
 	public void walkToMine(Area... destL) { //works to walk to the Aubury and teleport.
 		if(ore != Rock.ESSENCE){
 			super.walkToMine(destL);
 			return;
 		}
-		
+
 		//This part will only run for Essence mining
 		Player me = Players.getLocal();
-		if(shop.contains(me)){
-			minePath = null;
-			LocatableEntityQueryResults<Npc> auburys = Npcs.getLoaded("Aubury").sortByDistance();
-			if(auburys.size() > 0){
-				Npc aubury = auburys.get(0);
-				if(aubury.distanceTo(me) > 8){
-					miner.walkTo(aubury);
-				}else{
-					MenuItem mItem = null;
-					while(mItem == null){//Sometimes gets stuck on the Walk/Cancel menu. Might add a mouse move so it clears.
-						Mouse.getPathGenerator().hop(aubury.getInteractionPoint());
-						Mouse.click(Mouse.Button.RIGHT);
-						Execution.delay(50,100);
-						mItem = Menu.getItem("Teleport");
-					}
-					Mouse.getPathGenerator().hop(mItem.getInteractionPoint());
-					Execution.delay(50,100);
-					Mouse.click(Mouse.Button.LEFT);
-				}
-				Timer timer = new Timer((int)(aubury.distanceTo(me) * ReflexAgent.getReactionTime()) + Random.nextInt(900, 1000));
-				timer.start();
-				while(timer.getRemainingTime() > 0 && shop.contains(Players.getLocal()) && aubury.isValid() && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
-					Execution.delay(100);
-				}
-			}
-		}else if (runeEssence()){//If the Rune Essence is located, return true
-			//Locate the coordinates of the essence; set the ore coors; set the mine coors
-			LocatableEntityQueryResults<GameObject> runeEss = GameObjects.getLoaded("Rune Essence").sortByDistance();
-			rocks = new Coordinate[] {runeEss.nearest().getPosition()};
-			mine = new Area.Rectangular(new Coordinate(runeEss.nearest().getPosition().getX()+5,runeEss.nearest().getPosition().getY()+5), new Coordinate(runeEss.nearest().getPosition().getX()-5,runeEss.nearest().getPosition().getY()-5));
-			super.walkToMine();
-		}else{
-			super.walkToMine(shop);
-		}
-	}
 
-	public Boolean runeEssence(){
-		LocatableEntityQueryResults<GameObject> runeEssence = GameObjects.getLoaded("Rune Essence").sortByDistance();
-		if(runeEssence.size() > 0){
-			return true;
+		if(shop.contains(me)){
+			//We are in the shop, so teleport on Aubury
+			minePath = null;
+
+			//This exploits code that was already written to interact with banks since it's 
+			//essentially the same logic just with different strings.
+			treatAuburyAsBanker = true;
+			openBank();
+			//Remove Aubury from being the banker
+			treatAuburyAsBanker = false;
+			
 		}else{
-			return false;
+			//Walk to the shop
+			super.walkToMine(shop);
+			//TODO Handle the door
 		}
 	}
 

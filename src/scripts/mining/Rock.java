@@ -17,7 +17,7 @@ public enum Rock {
 	//ELEMENTAL			("Elemental", new String[]{"Elemental ore"}, true, true, new Color(0,0,0)),
 	//DAEYALT			("Daeyalt", new String[]{"Daeyalt ore"}, true, false),
 	SILVER				("Silver", new String[]{"Silver ore"},true, true, new Color(141,134,120), new Color(149,149,149)),
-	ESSENCE				("Essence", new String[]{"Rune essence", "Pure essence"},true, true, new Color(122,122,122), new Color(74,67,53)),
+	ESSENCE				("Essence", new String[]{"Rune essence", "Pure essence"},true, true),
 	COAL				("Coal", new String[]{"Coal"},true, true, new Color(24,24,17), new Color(0,0,0)),
 	PAY_DIRT			("Ore vein", new String[]{"Pay-dirt"},false, false),
 	SANDSTONE			("Sandstone", new String[]{"Sandstone (1kg)", "Sandstone (2kg)", "Sandstone (5kg)", "Sandstone (10kg)"},true, true, new Color(74,47,11)),
