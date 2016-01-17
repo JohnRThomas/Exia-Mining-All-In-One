@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
 import com.runemate.game.api.hybrid.entities.Npc;
+import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.hybrid.entities.definitions.GameObjectDefinition;
 import com.runemate.game.api.hybrid.entities.definitions.ItemDefinition;
 import com.runemate.game.api.hybrid.entities.details.Interactable;
@@ -86,8 +87,9 @@ public abstract class Location {
 				if(Camera.getPitch() <= 0.3){
 					Camera.concurrentlyTurnTo(Random.nextDouble(0.4, 0.7));
 				}
-
-				Timer timer = new Timer(Random.nextInt(2000,4000));
+				
+				Player me = Players.getLocal();
+				Timer timer = new Timer((int)(bank.distanceTo(me) * ReflexAgent.getReactionTime() * 3));
 				timer.start();
 				while(timer.getRemainingTime() > 0 && !isBankOpen()){
 					Execution.delay(10);
