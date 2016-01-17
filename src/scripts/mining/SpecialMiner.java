@@ -68,13 +68,13 @@ public class SpecialMiner extends MiningStyle{
 		content.setVgap(1.0);
 		ListView<String> locationList = new ListView<String>(); 
 		locationList.setPrefWidth(167);
-
+		
 		FlowPane settings = new FlowPane();
 		settings.setStyle("-fx-background-color: -fx-background-dark-hundred; -fx-border-color: -fx-flair; -fx-border-style: solid; -fx-border-width: 1;");
-		settings.setPrefWrapLength(165);
+		settings.setPrefWrapLength(332);
 
 		ObservableList<String> items = FXCollections.observableArrayList();
-
+		
 		ArrayList<SpecialLocation> locations = getLocations();
 		for (int i = 0; i < locations.size(); i++) {
 			items.add(locations.get(i).getName());
@@ -102,8 +102,17 @@ public class SpecialMiner extends MiningStyle{
 		locLabel.setAlignment(Pos.CENTER);
 		locLabel.setPrefWidth(167);
 		
+		Label setLabel = new Label("Settings");
+		setLabel.setStyle(LABEL_STYLE);
+		setLabel.setAlignment(Pos.CENTER);
+		setLabel.setPrefWidth(332);
+
+		
 		content.add(locLabel, 0, 0);
 		content.add(locationList, 0, 1); 
+		
+		content.add(setLabel, 1, 0);
+		content.add(settings, 1, 1);
 		
 		return content;
 	}
