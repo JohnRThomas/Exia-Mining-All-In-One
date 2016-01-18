@@ -76,6 +76,7 @@ public class VarrockEast extends OSRSLocation{
 		for(GameObject o : essence){
 			outRocks[i++] = o.getPosition();
 		}
+		System.out.println("outRocks.length: "+outRocks.length);
 		return outRocks;
 	}
 
@@ -84,7 +85,9 @@ public class VarrockEast extends OSRSLocation{
 		if(ore != Rock.ESSENCE){
 			return super.inMine();
 		}
-
+		//Execution.delay(1000);
+		System.out.println("getRocks: "+getRocks());
+		System.out.println("getRocks.length: "+getRocks().length);
 		//Check if there are any rune essence objects loaded
 		if(this.getRocks().length > 0){
 			minePath = null;
@@ -140,6 +143,7 @@ public class VarrockEast extends OSRSLocation{
 			//Remove Aubury from being the banker
 			treatAuburyAsBanker = false;
 
+			getRocks();
 		}else{
 			//Walk to the shop
 			super.walkToMine(shop);
