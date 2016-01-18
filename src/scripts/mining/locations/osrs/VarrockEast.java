@@ -21,12 +21,13 @@ import com.runemate.game.api.hybrid.util.Timer;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.Execution;
 
+import scripts.mining.Paint;
+import scripts.mining.ReflexAgent;
 import scripts.mining.Rock;
 
 public class VarrockEast extends OSRSLocation{
 
 	private Area shop = new Area.Rectangular(new Coordinate(3250, 3404), new Coordinate(3256, 3398));
-	private boolean treatAuburyAsBanker = false;
 	
 	@Override
 	public void intialize(String ore){
@@ -70,12 +71,17 @@ public class VarrockEast extends OSRSLocation{
 		}
 
 		//Find all the essence and return their locations
-		LocatableEntityQueryResults<GameObject> essence = GameObjects.getLoaded("Rune Essence").sortByDistance();
-		Coordinate[] outRocks = new Coordinate[essence.size()];
+		LocatableEntityQueryResults<GameObject> essenceObjects = GameObjects.getLoaded("Rune Essence").sortByDistance();
+		LocatableEntityQueryResults<Npc> essenceNPCs = Npcs.getLoaded("Rune Essence").sortByDistance();
+		Coordinate[] outRocks = new Coordinate[essenceObjects.size() + essenceNPCs.size()];
 		int i = 0;
-		for(GameObject o : essence){
+		for(GameObject o : essenceObjects){
 			outRocks[i++] = o.getPosition();
 		}
+		for(Npc npc : essenceNPCs){
+			outRocks[i++] = npc.getPosition();
+		}
+		System.out.println(outRocks.length);
 		return outRocks;
 	}
 
@@ -90,18 +96,6 @@ public class VarrockEast extends OSRSLocation{
 			minePath = null;
 			return true;
 		}else return false;
-	}
-
-	@Override
-	public Pattern getBankInteract() {
-		if(treatAuburyAsBanker)	return Pattern.compile("Teleport");
-		else return super.getBankInteract();
-	}
-	
-	@Override
-	protected LocatableEntityQueryResults<? extends LocatableEntity> getBankers(){
-		if(treatAuburyAsBanker) return Npcs.getLoaded("Aubury");
-		else return super.getBankers();
 	}
 	
 	@Override
@@ -132,13 +126,25 @@ public class VarrockEast extends OSRSLocation{
 		if(shop.contains(me)){
 			//We are in the shop, so teleport on Aubury
 			minePath = null;
-
-			//This exploits code that was already written to interact with banks since it's 
-			//essentially the same logic just with different strings.
-			treatAuburyAsBanker = true;
-			openBank();
-			//Remove Aubury from being the banker
-			treatAuburyAsBanker = false;
+			
+			LocatableEntityQueryResults<Npc> auburys = Npcs.getLoaded("Aubury");
+			if(auburys.size() > 0){
+				LocatableEntity aubury = auburys.nearest();
+				if(aubury.getVisibility() <= 10){
+					Camera.turnTo(aubury);
+				}else{
+					aubury.interact("Teleport");
+					if(Camera.getPitch() <= 0.3){
+						Camera.concurrentlyTurnTo(Random.nextDouble(0.4, 0.7));
+					}
+					
+					Timer timer = new Timer((int)(aubury.distanceTo(me) * ReflexAgent.getReactionTime() * 5));
+					timer.start();
+					while(timer.getRemainingTime() > 0 && !inMine()){
+						Execution.delay(10);
+					}
+				}
+			}
 
 		}else{
 			//Walk to the shop
@@ -155,19 +161,21 @@ public class VarrockEast extends OSRSLocation{
 		}
 		
 		//This part will only run for Essence mining
-		LocatableEntityQueryResults<GameObject> portalObject = GameObjects.getLoaded("Portal");
+		LocatableEntityQueryResults<GameObject> portalObject = GameObjects.getLoaded("Portal").sortByDistance();
 		//The portal can also be an NPC on some maps.
-		LocatableEntityQueryResults<Npc> portalNPC = Npcs.getLoaded("Portal");
-
-		if(portalObject.size() > 0){ //For when the portal is an object.
-			GameObject portal = portalObject.nearestTo(Players.getLocal());
+		LocatableEntityQueryResults<Npc> portalNPC = Npcs.getLoaded("Portal").sortByDistance();
+		
+		//Grab the proper portal
+		LocatableEntity portal = portalNPC.size() > 0 ? portalNPC.first() : (portalObject.size() > 0 ? portalObject.first() : null);
+		
+		if(portal != null){ //If we are in the mine, a portal will exist
+			Paint.status = "Walking to bank: Entering portal";
 			if(portal.getVisibility() <= 70){
 				Camera.turnTo(portal);
 				Path portalPath = BresenhamPath.buildTo(portal);
 				portalPath.step();
 			}else{
-				portal.interact("Exit");
-				portal.interact("Use");
+				portal.interact(Pattern.compile("Exit|Use"));
 				if(Camera.getPitch() <= 0.3){
 					if(Random.nextBoolean()){
 						Camera.concurrentlyTurnTo(Random.nextDouble(0.4, 0.7));
@@ -176,37 +184,15 @@ public class VarrockEast extends OSRSLocation{
 					}
 				}
 
-				Timer timer = new Timer(Random.nextInt(2000,4000));
+				Player me = Players.getLocal();
+				Timer timer = new Timer((int)(portal.distanceTo(me) * ReflexAgent.getReactionTime() * 3));
 				timer.start();
 				while(timer.getRemainingTime() > 0 && !inMine()){
 					Execution.delay(10);
 				}
 			}
-		}else if(portalNPC.size() > 0){ //For when the portal is an NPC.
-			Npc portal = portalNPC.nearestTo(Players.getLocal());
-			if(portal.getVisibility() <= 70){
-				Camera.turnTo(portal);
-				Path portalPath = BresenhamPath.buildTo(portal);
-				portalPath.step();
-			}else{
-				portal.interact("Use");
-				portal.interact("Exit");
-				if(Camera.getPitch() <= 0.3){
-					if(Random.nextBoolean()){
-						Camera.concurrentlyTurnTo(Random.nextDouble(0.4, 0.7));
-					}else{
-						Camera.concurrentlyTurnTo(Random.nextInt(0, 360));
-					}
-				}
-
-				Timer timer = new Timer(Random.nextInt(2000,4000));
-				timer.start();
-				while(timer.getRemainingTime() > 0 && !inMine()){
-					Execution.delay(10);
-				}
-			}
-		}else{
-			super.walkToBank(walk);
+		}else{//Otherwise, walk to the bank normally
+			super.walkToBank(walk, destL);
 		}
 	}
 }
