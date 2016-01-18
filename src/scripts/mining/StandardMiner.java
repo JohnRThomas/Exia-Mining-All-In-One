@@ -176,8 +176,10 @@ public class StandardMiner extends MiningStyle{
 		if(next != null){
 			if(!next.contains(Mouse.getPosition())){
 				ReflexAgent.delay();
-				InteractablePoint pt = next.getInteractionPoint(new Point(Random.nextInt(-2,3), Random.nextInt(-2,3)));
-				if(pt != null){
+				InteractablePoint pt = next.getInteractionPoint();
+				if(pt != null && pt.x >= 0 &&  pt.y >= 0){
+					pt.x += Random.nextInt(-2,3);
+					pt.y += Random.nextInt(-2,3);
 					Mouse.move(pt);
 				}else{
 					next.hover();
