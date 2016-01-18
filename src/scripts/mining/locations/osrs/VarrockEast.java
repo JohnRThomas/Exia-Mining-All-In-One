@@ -140,7 +140,9 @@ public class VarrockEast extends OSRSLocation{
 						Camera.concurrentlyTurnTo(Random.nextDouble(0.4, 0.7));
 					}
 
-					Timer timer = new Timer((int)(aubury.distanceTo(me) * ReflexAgent.getReactionTime() * 7));
+					double distance = aubury.distanceTo(me);
+					distance = (distance <= 0 || distance > 40) ? 0 : distance;
+					Timer timer = new Timer((int)(distance * ReflexAgent.getReactionTime() * 7));
 					timer.start();
 					while(clicked && timer.getRemainingTime() > 0 && !inMine()){
 						Execution.delay(10);
@@ -215,8 +217,9 @@ public class VarrockEast extends OSRSLocation{
 					}
 				}
 
-				Timer timer = new Timer((int)(portal.distanceTo(me) * ReflexAgent.getReactionTime() * 3));
-				timer.start();
+				double distance = portal.distanceTo(me);
+				distance = (distance <= 0 || distance > 40) ? 0 : distance;
+				Timer timer = new Timer((int)(distance * ReflexAgent.getReactionTime() * 7));
 				while(timer.getRemainingTime() > 0 && !inMine()){
 					Execution.delay(10);
 				}
