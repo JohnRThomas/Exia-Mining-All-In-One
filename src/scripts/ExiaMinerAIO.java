@@ -57,7 +57,7 @@ public class ExiaMinerAIO extends LoopingScript {
 
 		Paint.startTime = System.currentTimeMillis();
 		miner = gui.miner;
-		catchErrors = gui.catchErrors;
+		catchErrors = !Environment.isSDK() && gui.catchErrors;
 		gui = null;
 		Paint.startEXP = Skill.MINING.getExperience();
 		Paint.profitCounter = new MoneyCounter(miner.getOre().oreNames);
