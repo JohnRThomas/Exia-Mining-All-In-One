@@ -42,7 +42,7 @@ public class StandardMiner extends MiningStyle{
 	private boolean usePorters = false;
 	private boolean useUrns = false;
 	private boolean walkToBank = false;
-	
+
 	@Override
 	public String getLocationName() {
 		return location == null ? "Unknown" : location.getName();
@@ -80,7 +80,7 @@ public class StandardMiner extends MiningStyle{
 		if(useUrns){
 			ItemHandlers.manageUrns(urnAmount);
 		}
-		
+
 		if(usePorters){
 			usePorters = ItemHandlers.managePorters();
 		}	
@@ -174,10 +174,12 @@ public class StandardMiner extends MiningStyle{
 		}
 
 		if(next != null){
-			if(!next.contains(Mouse.getPosition())){
+			if(next.contains(Mouse.getPosition())){
 				ReflexAgent.delay();
-				InteractablePoint pt = next.getInteractionPoint(new Point(Random.nextInt(-2,3), Random.nextInt(-2,3)));
-				if(pt != null){
+				InteractablePoint pt = next.getInteractionPoint();
+				if(pt != null && pt.x >= 0 &&  pt.y >= 0){
+					pt.x += Random.nextInt(-2,3);
+					pt.y += Random.nextInt(-2,3);
 					Mouse.move(pt);
 				}else{
 					next.hover();
@@ -185,16 +187,17 @@ public class StandardMiner extends MiningStyle{
 			}else{
 				if(next instanceof GameObject && ((GameObject) next).getVisibility() < 80){
 					Camera.concurrentlyTurnTo((Camera.getYaw() + Random.nextInt(0, 360)) % 360);
-				}
-				if(Random.nextInt(0,100) < 5){
-					InteractablePoint pt = next.getInteractionPoint(new Point(Random.nextInt(-2,3), Random.nextInt(-2,3)));
-					if(pt != null){
-						Mouse.move(pt);
-					}else{
-						next.hover();
+				}else{
+					if(Random.nextInt(0,100) < 5){
+						InteractablePoint pt = next.getInteractionPoint(new Point(Random.nextInt(-2,3), Random.nextInt(-2,3)));
+						if(pt != null){
+							Mouse.move(pt);
+						}else{
+							next.hover();
+						}
 					}
+					ReflexAgent.delay();
 				}
-				ReflexAgent.delay();
 			}
 		}
 	}
@@ -243,7 +246,7 @@ public class StandardMiner extends MiningStyle{
 				}
 				oreList.setItems(items);
 				oreList.getSelectionModel().clearSelection();
-				
+
 				populateOptions(settings);
 			}
 		});
@@ -287,7 +290,7 @@ public class StandardMiner extends MiningStyle{
 
 		return content;
 	}
-	
+
 	private void  populateOptions(FlowPane settings){
 		Node[] nodes = location.getSettingsNodes();
 		settings.getChildren().clear();
@@ -307,7 +310,7 @@ public class StandardMiner extends MiningStyle{
 					urnText.setDisable(!newValue);
 				}
 			});
-			
+
 			urnBox.setStyle("-fx-text-fill: -fx-text-input-text");
 			urnBox.setPadding(new Insets(10,5,0,5));
 			settings.getChildren().add(urnBox);
@@ -317,14 +320,14 @@ public class StandardMiner extends MiningStyle{
 			urnText.setMaxWidth(35.0f);
 			urnText.setPadding(new Insets(3,5,2,5));
 			settings.getChildren().add(urnText);
-			
+
 		}
-		
+
 		walkBox.setStyle("-fx-text-fill: -fx-text-input-text");
 		walkBox.setPadding(new Insets(10,10,0,5));
 		settings.getChildren().add(walkBox);
 	}
-	
+
 	@Override
 	public void loadSettings() {
 		location.loadSettings();

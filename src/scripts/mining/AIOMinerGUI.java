@@ -316,12 +316,12 @@ public class AIOMinerGUI extends Stage{
 		enableErrorCatching.setStyle("-fx-text-fill: -fx-text-input-text");
 		enableErrorCatching.setPadding(new Insets(3,3,3,3));
 		enableErrorCatching.setPrefWidth(165);
-		enableErrorCatching.setSelected(true);
+		enableErrorCatching.setSelected(false);
 		enableErrorCatching.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
 			catchErrors = new_val;
 		});
 		
-		settings.getChildren().addAll(enableErrorCatching, enableReflex, reflexLabel, reflexSeed);
+		settings.getChildren().addAll(/*enableErrorCatching,*/ enableReflex, reflexLabel, reflexSeed);
 
 		content.add(settings, 2, 1, 1, 2);
 		return content;
