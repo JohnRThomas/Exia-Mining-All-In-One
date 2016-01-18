@@ -70,7 +70,7 @@ public class ExiaMinerAIO extends LoopingScript {
 		try{
 			miner.loop();
 		}catch(Exception e){
-			if(catchErrors || e.getMessage().contains("Pitch must") || e.getMessage().contains("The delay length")){
+			if(catchErrors){
 				ErrorHandler.add(e);
 			}else{
 				throw e;
