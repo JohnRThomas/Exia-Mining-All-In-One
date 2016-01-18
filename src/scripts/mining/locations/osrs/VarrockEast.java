@@ -5,11 +5,14 @@ import java.util.regex.Pattern;
 import com.runemate.game.api.hybrid.Environment;
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
+import com.runemate.game.api.hybrid.entities.Npc;
 import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.hybrid.entities.definitions.GameObjectDefinition;
 import com.runemate.game.api.hybrid.local.Camera;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
+import com.runemate.game.api.hybrid.location.navigation.Path;
+import com.runemate.game.api.hybrid.location.navigation.basic.BresenhamPath;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Npcs;
@@ -75,7 +78,7 @@ public class VarrockEast extends OSRSLocation{
 		}
 		return outRocks;
 	}
-	
+
 	@Override
 	public boolean inMine() {
 		if(ore != Rock.ESSENCE){
@@ -88,7 +91,7 @@ public class VarrockEast extends OSRSLocation{
 			return true;
 		}else return false;
 	}
-	
+
 	@Override
 	public Pattern getBankInteract() {
 		if(treatAuburyAsBanker)	return Pattern.compile("Teleport");
@@ -136,7 +139,7 @@ public class VarrockEast extends OSRSLocation{
 			openBank();
 			//Remove Aubury from being the banker
 			treatAuburyAsBanker = false;
-			
+
 		}else{
 			//Walk to the shop
 			super.walkToMine(shop);
@@ -147,28 +150,63 @@ public class VarrockEast extends OSRSLocation{
 	@Override
 	public void walkToBank(boolean walk, Area... destL) {
 		if(ore != Rock.ESSENCE){
-			super.walkToMine(destL);
+			super.walkToBank(walk);
 			return;
 		}
 		
 		//This part will only run for Essence mining
-		LocatableEntityQueryResults<GameObject> doors = GameObjects.getLoaded("Door");
-		if(doors.size() > 0){
-			GameObject door = doors.nearestTo(new Coordinate(3033, 9772, 0));
-			if(door.getVisibility() <= 10){
-				Camera.turnTo(door);
+		LocatableEntityQueryResults<GameObject> portalObject = GameObjects.getLoaded("Portal");
+		//The portal can also be an NPC on some maps.
+		LocatableEntityQueryResults<Npc> portalNPC = Npcs.getLoaded("Portal");
+
+		if(portalObject.size() > 0){ //For when the portal is an object.
+			GameObject portal = portalObject.nearestTo(Players.getLocal());
+			if(portal.getVisibility() <= 70){
+				Camera.turnTo(portal);
+				Path portalPath = BresenhamPath.buildTo(portal);
+				portalPath.step();
 			}else{
-				door.click();
+				portal.interact("Exit");
+				portal.interact("Use");
 				if(Camera.getPitch() <= 0.3){
-					Camera.concurrentlyTurnTo(Random.nextDouble(0.4, 0.7));
+					if(Random.nextBoolean()){
+						Camera.concurrentlyTurnTo(Random.nextDouble(0.4, 0.7));
+					}else{
+						Camera.concurrentlyTurnTo(Random.nextInt(0, 360));
+					}
 				}
 
-				Timer timer = new Timer(Random.nextInt(3000,5000));
+				Timer timer = new Timer(Random.nextInt(2000,4000));
 				timer.start();
-				while(timer.getRemainingTime() > 0 && !inBank()){
+				while(timer.getRemainingTime() > 0 && !inMine()){
 					Execution.delay(10);
 				}
 			}
+		}else if(portalNPC.size() > 0){ //For when the portal is an NPC.
+			Npc portal = portalNPC.nearestTo(Players.getLocal());
+			if(portal.getVisibility() <= 70){
+				Camera.turnTo(portal);
+				Path portalPath = BresenhamPath.buildTo(portal);
+				portalPath.step();
+			}else{
+				portal.interact("Use");
+				portal.interact("Exit");
+				if(Camera.getPitch() <= 0.3){
+					if(Random.nextBoolean()){
+						Camera.concurrentlyTurnTo(Random.nextDouble(0.4, 0.7));
+					}else{
+						Camera.concurrentlyTurnTo(Random.nextInt(0, 360));
+					}
+				}
+
+				Timer timer = new Timer(Random.nextInt(2000,4000));
+				timer.start();
+				while(timer.getRemainingTime() > 0 && !inMine()){
+					Execution.delay(10);
+				}
+			}
+		}else{
+			super.walkToBank(walk);
 		}
 	}
 }
