@@ -10,6 +10,7 @@ import com.runemate.game.api.hybrid.entities.Player;
 import com.runemate.game.api.hybrid.entities.definitions.GameObjectDefinition;
 import com.runemate.game.api.hybrid.local.Camera;
 import com.runemate.game.api.hybrid.location.Area;
+import com.runemate.game.api.hybrid.location.Area.Polygonal;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.location.navigation.Path;
 import com.runemate.game.api.hybrid.location.navigation.basic.BresenhamPath;
@@ -27,8 +28,14 @@ import scripts.mining.Rock;
 
 public class VarrockEast extends OSRSLocation{
 
-	private Area shop = new Area.Rectangular(new Coordinate(3250, 3404), new Coordinate(3256, 3398));
-	
+	private Area shop = new Polygonal(
+			new Coordinate(3252, 3399), new Coordinate(3253, 3399),
+			new Coordinate(3255, 3401), new Coordinate(3255, 3401),
+			new Coordinate(3253, 3404), new Coordinate(3252, 3404),
+			new Coordinate(3252, 3403), new Coordinate(3251, 3402),
+			new Coordinate(3250, 3402), new Coordinate(3250, 3401));
+	private Area outside = new Area.Rectangular(new Coordinate(3249, 3400), new Coordinate(3256, 3396));
+
 	@Override
 	public void intialize(String ore){
 		mine = new Area.Rectangular(new Coordinate(3280,3360), new Coordinate(3291,3371));
@@ -72,16 +79,11 @@ public class VarrockEast extends OSRSLocation{
 
 		//Find all the essence and return their locations
 		LocatableEntityQueryResults<GameObject> essenceObjects = GameObjects.getLoaded("Rune Essence").sortByDistance();
-		LocatableEntityQueryResults<Npc> essenceNPCs = Npcs.getLoaded("Rune Essence").sortByDistance();
-		Coordinate[] outRocks = new Coordinate[essenceObjects.size() + essenceNPCs.size()];
+		Coordinate[] outRocks = new Coordinate[essenceObjects.size()];
 		int i = 0;
 		for(GameObject o : essenceObjects){
 			outRocks[i++] = o.getPosition();
 		}
-		for(Npc npc : essenceNPCs){
-			outRocks[i++] = npc.getPosition();
-		}
-		System.out.println(outRocks.length);
 		return outRocks;
 	}
 
@@ -97,7 +99,7 @@ public class VarrockEast extends OSRSLocation{
 			return true;
 		}else return false;
 	}
-	
+
 	@Override
 	public boolean validate(GameObject o) {
 		if(ore != Rock.ESSENCE){
@@ -112,7 +114,7 @@ public class VarrockEast extends OSRSLocation{
 			return name.contains("Rune Essence");
 		}
 	}
-	
+
 	@Override
 	public void walkToMine(Area... destL) { //works to walk to the Aubury and teleport.
 		if(ore != Rock.ESSENCE){
@@ -126,30 +128,57 @@ public class VarrockEast extends OSRSLocation{
 		if(shop.contains(me)){
 			//We are in the shop, so teleport on Aubury
 			minePath = null;
-			
+
 			LocatableEntityQueryResults<Npc> auburys = Npcs.getLoaded("Aubury");
 			if(auburys.size() > 0){
 				LocatableEntity aubury = auburys.nearest();
 				if(aubury.getVisibility() <= 10){
 					Camera.turnTo(aubury);
 				}else{
-					aubury.interact("Teleport");
+					boolean clicked = aubury.interact("Teleport");
 					if(Camera.getPitch() <= 0.3){
 						Camera.concurrentlyTurnTo(Random.nextDouble(0.4, 0.7));
 					}
-					
-					Timer timer = new Timer((int)(aubury.distanceTo(me) * ReflexAgent.getReactionTime() * 5));
+
+					Timer timer = new Timer((int)(aubury.distanceTo(me) * ReflexAgent.getReactionTime() * 7));
 					timer.start();
-					while(timer.getRemainingTime() > 0 && !inMine()){
+					while(clicked && timer.getRemainingTime() > 0 && !inMine()){
 						Execution.delay(10);
 					}
 				}
 			}
 
 		}else{
-			//Walk to the shop
-			super.walkToMine(shop);
-			//TODO Handle the door
+			if(outside.contains(me)){
+				//Paint.status = "Walking to mine: Opening door";
+				//open the door if it is closed
+				LocatableEntityQueryResults<GameObject> doors = GameObjects.getLoaded("Door");
+				if(doors.size() > 0){
+					GameObject door = doors.nearest();
+					if(door.getDefinition() != null && door.getDefinition().getActions().contains("Open")){
+						if(door.getVisibility() <= 10){
+							Camera.turnTo(door);
+						}else{
+							boolean clicked = door.interact("Open");
+							if(Camera.getPitch() <= 0.3){
+								Camera.concurrentlyTurnTo(Random.nextDouble(0.4, 0.7));
+							}
+
+							Timer timer = new Timer((int)(door.distanceTo(me) * ReflexAgent.getReactionTime() * 3));
+							timer.start();
+							while(clicked && timer.getRemainingTime() > 0 && door.isValid()){
+								Execution.delay(10);
+							}
+						}
+					}else{
+						Paint.status = "Walking to mine: walking to shop";
+						super.walkToMine(shop);
+					}
+				}
+			}else{
+				Paint.status = "Walking to mine: Walking to outside";
+				super.walkToMine(outside);
+			}
 		}
 	}
 
@@ -159,15 +188,17 @@ public class VarrockEast extends OSRSLocation{
 			super.walkToBank(walk);
 			return;
 		}
+
+		Player me = Players.getLocal();
 		
 		//This part will only run for Essence mining
 		LocatableEntityQueryResults<GameObject> portalObject = GameObjects.getLoaded("Portal").sortByDistance();
 		//The portal can also be an NPC on some maps.
 		LocatableEntityQueryResults<Npc> portalNPC = Npcs.getLoaded("Portal").sortByDistance();
-		
+
 		//Grab the proper portal
 		LocatableEntity portal = portalNPC.size() > 0 ? portalNPC.first() : (portalObject.size() > 0 ? portalObject.first() : null);
-		
+
 		if(portal != null){ //If we are in the mine, a portal will exist
 			Paint.status = "Walking to bank: Entering portal";
 			if(portal.getVisibility() <= 70){
@@ -175,7 +206,7 @@ public class VarrockEast extends OSRSLocation{
 				Path portalPath = BresenhamPath.buildTo(portal);
 				portalPath.step();
 			}else{
-				portal.interact(Pattern.compile("Exit|Use"));
+				portal.interact(Pattern.compile("Enter|Exit|Use"));
 				if(Camera.getPitch() <= 0.3){
 					if(Random.nextBoolean()){
 						Camera.concurrentlyTurnTo(Random.nextDouble(0.4, 0.7));
@@ -184,7 +215,6 @@ public class VarrockEast extends OSRSLocation{
 					}
 				}
 
-				Player me = Players.getLocal();
 				Timer timer = new Timer((int)(portal.distanceTo(me) * ReflexAgent.getReactionTime() * 3));
 				timer.start();
 				while(timer.getRemainingTime() > 0 && !inMine()){
@@ -192,7 +222,34 @@ public class VarrockEast extends OSRSLocation{
 				}
 			}
 		}else{//Otherwise, walk to the bank normally
-			super.walkToBank(walk, destL);
+			if(shop.contains(me)){
+				LocatableEntityQueryResults<GameObject> doors = GameObjects.getLoaded("Door");
+				if(doors.size() > 0){
+					GameObject door = doors.nearest();
+					if(door.getDefinition() != null && door.getDefinition().getActions().contains("Open")){
+						if(door.getVisibility() <= 10){
+							Camera.turnTo(door);
+						}else{
+							boolean clicked = door.interact("Open");
+							if(Camera.getPitch() <= 0.3){
+								Camera.concurrentlyTurnTo(Random.nextDouble(0.4, 0.7));
+							}
+
+							Timer timer = new Timer((int)(door.distanceTo(me) * ReflexAgent.getReactionTime() * 3));
+							timer.start();
+							while(clicked && timer.getRemainingTime() > 0 && door.isValid()){
+								Execution.delay(10);
+							}
+						}
+					}else{
+						Paint.status = "Walking to mine: walking to shop";
+						super.walkToBank(walk, destL);
+					}
+				}
+
+			}else{
+				super.walkToBank(walk, destL);
+			}
 		}
 	}
 }
