@@ -29,11 +29,11 @@ import scripts.mining.Rock;
 public class VarrockEast extends OSRSLocation{
 
 	private Area shop = new Polygonal(
-			new Coordinate(3252, 3399), new Coordinate(3253, 3399),
-			new Coordinate(3255, 3401), new Coordinate(3255, 3401),
-			new Coordinate(3253, 3404), new Coordinate(3252, 3404),
-			new Coordinate(3252, 3403), new Coordinate(3251, 3402),
-			new Coordinate(3250, 3402), new Coordinate(3250, 3401));
+			new Coordinate(3252,3405), new Coordinate(3254,3405),
+			new Coordinate(3256,3403), new Coordinate(3256,3400),
+			new Coordinate(3255,3399), new Coordinate(3252,3398),
+			new Coordinate(3251,3398), new Coordinate(3250,3399),
+			new Coordinate(3252,3402), new Coordinate(3252,3403));
 	private Area outside = new Area.Rectangular(new Coordinate(3249, 3400), new Coordinate(3256, 3396));
 
 	@Override
@@ -42,20 +42,20 @@ public class VarrockEast extends OSRSLocation{
 		bank = new Area.Rectangular(new Coordinate(3250,3418, 0), new Coordinate(3257,3423, 0));
 
 		switch(ore){
-		case "Essence":
-			rocks = new Coordinate[0];
-			break;
-		case "Tin":
-			rocks = new Coordinate[] {new Coordinate(3281,3363),new Coordinate(3282,3364)};
-			break;
-		case "Copper":
-			rocks = new Coordinate[] {new Coordinate(3282,3368),new Coordinate(3282,3369)};
-			break;
-		case "Iron":
-			rocks = new Coordinate[]{new Coordinate(3286,3369),new Coordinate(3285,3369),new Coordinate(3288,3370),new Coordinate(3285,3368)};
-			break;
-		default:
-			throw new RuntimeException(ore + " is not supported in " + getName());
+			case "Essence":
+				rocks = new Coordinate[0];
+				break;
+			case "Tin":
+				rocks = new Coordinate[] {new Coordinate(3281,3363),new Coordinate(3282,3364)};
+				break;
+			case "Copper":
+				rocks = new Coordinate[] {new Coordinate(3282,3368),new Coordinate(3282,3369)};
+				break;
+			case "Iron":
+				rocks = new Coordinate[]{new Coordinate(3286,3369),new Coordinate(3285,3369),new Coordinate(3288,3370),new Coordinate(3285,3368)};
+				break;
+			default:
+				throw new RuntimeException(ore + " is not supported in " + getName());
 		}
 		this.ore = Rock.getByName(ore);
 	}
@@ -84,17 +84,6 @@ public class VarrockEast extends OSRSLocation{
 		for(GameObject o : essenceObjects){
 			outRocks[i++] = o.getPosition();
 		}
-<<<<<<< HEAD
-<<<<<<< HEAD
-		System.out.println("outRocks.length: "+outRocks.length);
-=======
-		for(Npc npc : essenceNPCs){
-			outRocks[i++] = npc.getPosition();
-		}
-		System.out.println(outRocks.length);
->>>>>>> refs/remotes/origin/pr/6
-=======
->>>>>>> refs/remotes/origin/pr/7
 		return outRocks;
 	}
 
@@ -103,9 +92,7 @@ public class VarrockEast extends OSRSLocation{
 		if(ore != Rock.ESSENCE){
 			return super.inMine();
 		}
-		//Execution.delay(1000);
-		System.out.println("getRocks: "+getRocks());
-		System.out.println("getRocks.length: "+getRocks().length);
+
 		//Check if there are any rune essence objects loaded
 		if(this.getRocks().length > 0){
 			minePath = null;
@@ -155,15 +142,15 @@ public class VarrockEast extends OSRSLocation{
 
 					double distance = aubury.distanceTo(me);
 					distance = (distance <= 0 || distance > 40) ? 0 : distance;
+					Execution.delay((int)(distance * ReflexAgent.getReactionTime() * 7));/*
 					Timer timer = new Timer((int)(distance * ReflexAgent.getReactionTime() * 7));
 					timer.start();
 					while(clicked && timer.getRemainingTime() > 0 && !inMine()){
 						Execution.delay(10);
-					}
+					}*/
 				}
 			}
 
-			getRocks();
 		}else{
 			if(outside.contains(me)){
 				//Paint.status = "Walking to mine: Opening door";
@@ -179,15 +166,15 @@ public class VarrockEast extends OSRSLocation{
 							if(Camera.getPitch() <= 0.3){
 								Camera.concurrentlyTurnTo(Random.nextDouble(0.4, 0.7));
 							}
-
+							Execution.delay((int)(door.distanceTo(me) * ReflexAgent.getReactionTime() * 3));/*
 							Timer timer = new Timer((int)(door.distanceTo(me) * ReflexAgent.getReactionTime() * 3));
 							timer.start();
 							while(clicked && timer.getRemainingTime() > 0 && door.isValid()){
 								Execution.delay(10);
-							}
+							}*/
 						}
 					}else{
-						Paint.status = "Walking to mine: walking to shop";
+						Paint.status = "Walking to mine: Walking to shop";
 						super.walkToMine(shop);
 					}
 				}
@@ -206,7 +193,7 @@ public class VarrockEast extends OSRSLocation{
 		}
 
 		Player me = Players.getLocal();
-		
+
 		//This part will only run for Essence mining
 		LocatableEntityQueryResults<GameObject> portalObject = GameObjects.getLoaded("Portal").sortByDistance();
 		//The portal can also be an NPC on some maps.
@@ -233,10 +220,7 @@ public class VarrockEast extends OSRSLocation{
 
 				double distance = portal.distanceTo(me);
 				distance = (distance <= 0 || distance > 40) ? 0 : distance;
-				Timer timer = new Timer((int)(distance * ReflexAgent.getReactionTime() * 7));
-				while(timer.getRemainingTime() > 0 && !inMine()){
-					Execution.delay(10);
-				}
+				Execution.delay((int)(distance * ReflexAgent.getReactionTime() * 7));
 			}
 		}else{//Otherwise, walk to the bank normally
 			if(shop.contains(me)){
@@ -251,12 +235,12 @@ public class VarrockEast extends OSRSLocation{
 							if(Camera.getPitch() <= 0.3){
 								Camera.concurrentlyTurnTo(Random.nextDouble(0.4, 0.7));
 							}
-
+							Execution.delay((int)(door.distanceTo(me) * ReflexAgent.getReactionTime() * 3));/*
 							Timer timer = new Timer((int)(door.distanceTo(me) * ReflexAgent.getReactionTime() * 3));
 							timer.start();
 							while(clicked && timer.getRemainingTime() > 0 && door.isValid()){
 								Execution.delay(10);
-							}
+							}*/
 						}
 					}else{
 						Paint.status = "Walking to mine: walking to shop";
