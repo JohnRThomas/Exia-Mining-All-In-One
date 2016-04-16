@@ -1,5 +1,7 @@
 package scripts.mining.locations.osrs;
 
+import java.util.function.Predicate;
+
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
 import com.runemate.game.api.hybrid.entities.Player;
@@ -9,7 +11,6 @@ import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Players;
-import com.runemate.game.api.hybrid.util.Filter;
 import com.runemate.game.api.hybrid.util.Timer;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.Execution;
@@ -63,9 +64,9 @@ public class MiningGuild extends OSRSLocation{
 		if(ore == Rock.COAL){
 			LocatableEntityQueryResults<GameObject> rocksObjs = null;
 			try{
-				rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
+				rocksObjs = GameObjects.getLoaded(new Predicate<GameObject>(){
 					@Override
-					public boolean accepts(GameObject o) {
+					public boolean test(GameObject o) {
 						return validate(o) && !o.equals(currentRock);
 					}
 				}).sortByDistance();

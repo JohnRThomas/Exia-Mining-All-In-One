@@ -95,9 +95,8 @@ public abstract class MiningStyle {
 	}
 
 	protected boolean outOfRegion() {
-		Region baseRegion = Region.getLoaded();
 		for (Coordinate rock : getRockLocations()) {
-			if(baseRegion.getArea().contains(rock)) return false;
+			if(Region.getArea().contains(rock)) return false;
 		}
 		return getRockLocations().length != 0;
 	}
@@ -107,7 +106,7 @@ public abstract class MiningStyle {
 		GameObject next = rockPair == null ? null : rockWatcher.nextRock().object;
 		Paint.rock = next;
 		Player me = Players.getLocal();
-		if(next != null && next.distanceTo(me) > 1.0 && !me.isMoving()){
+		if(next != null && me != null && next.distanceTo(me) > 1.0 && !me.isMoving()){
 			if(next.distanceTo(me) > 2){
 				Paint.status = "Walking to rock";
 				walkTo(next);

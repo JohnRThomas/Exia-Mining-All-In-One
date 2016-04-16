@@ -11,7 +11,6 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 
 import com.runemate.game.api.client.ClientUI;
-import com.runemate.game.api.client.palette.Palettes;
 import com.runemate.game.api.hybrid.Environment;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.framework.AbstractScript;
@@ -75,9 +74,9 @@ public class AIOMinerGUI extends Stage{
 			public void run() {
 				TrayIcon icon = ClientUI.getTrayIcon();
 				getIcons().add(SwingFXUtils.toFXImage((BufferedImage)icon.getImage(), null));
-				Scene scene = ClientUI.getScene();
-				setX(scene.getX() + (scene.getWidth()/2) - 290);
-				setY(scene.getY() + (scene.getHeight()/2) - 176  + 40);
+				//Scene scene = ClientUI.getScene();
+				//setX(scene.getX() + (scene.getWidth()/2) - 290);
+				//setY(scene.getY() + (scene.getHeight()/2) - 176  + 40);
 				setScene(createScene());
 			}
 		});
@@ -92,7 +91,7 @@ public class AIOMinerGUI extends Stage{
 	private Scene createScene(){
 		Scene scene = new Scene(root);
 		scene.setFill(null);
-		scene.getStylesheets().add(Palettes.getCurrentStylesheet());
+		//scene.getStylesheets().add(Palettes.getCurrentStylesheet());
 		root.setMinWidth(580);
 		root.setMinHeight(349);
 		root.setStyle("-fx-background-color: -fx-background-dark");
@@ -316,12 +315,12 @@ public class AIOMinerGUI extends Stage{
 		enableErrorCatching.setStyle("-fx-text-fill: -fx-text-input-text");
 		enableErrorCatching.setPadding(new Insets(3,3,3,3));
 		enableErrorCatching.setPrefWidth(165);
-		enableErrorCatching.setSelected(false);
+		enableErrorCatching.setSelected(catchErrors);
 		enableErrorCatching.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
 			catchErrors = new_val;
 		});
 		
-		settings.getChildren().addAll(/*enableErrorCatching,*/ enableReflex, reflexLabel, reflexSeed);
+		settings.getChildren().addAll(enableErrorCatching, enableReflex, reflexLabel, reflexSeed);
 
 		content.add(settings, 2, 1, 1, 2);
 		return content;

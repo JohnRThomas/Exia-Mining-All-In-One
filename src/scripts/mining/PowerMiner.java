@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import com.runemate.game.api.hybrid.Environment;
 import com.runemate.game.api.hybrid.entities.GameObject;
@@ -13,6 +14,7 @@ import com.runemate.game.api.hybrid.entities.definitions.GameObjectDefinition;
 import com.runemate.game.api.hybrid.entities.definitions.ItemDefinition;
 import com.runemate.game.api.hybrid.input.Mouse;
 import com.runemate.game.api.hybrid.local.Camera;
+import com.runemate.game.api.hybrid.local.Screen;
 import com.runemate.game.api.hybrid.local.hud.InteractablePoint;
 import com.runemate.game.api.hybrid.local.hud.InteractableRectangle;
 import com.runemate.game.api.hybrid.local.hud.Menu;
@@ -26,14 +28,12 @@ import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
 import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Players;
-import com.runemate.game.api.hybrid.util.Filter;
 import com.runemate.game.api.hybrid.util.Timer;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.rs3.local.InterfaceMode;
 import com.runemate.game.api.rs3.local.hud.interfaces.eoc.ActionBar;
 import com.runemate.game.api.rs3.local.hud.interfaces.eoc.ActionBar.Slot;
 import com.runemate.game.api.rs3.local.hud.interfaces.eoc.ActionWindow;
-import com.runemate.game.api.rs3.local.hud.interfaces.eoc.SlotAction;
 import com.runemate.game.api.rs3.local.hud.interfaces.legacy.LegacyTab;
 import com.runemate.game.api.script.Execution;
 
@@ -275,9 +275,9 @@ public class PowerMiner extends MiningStyle{
 
 	private LocatableEntity getNextRock() {
 		LocatableEntityQueryResults<GameObject> rocksObjs = null;
-		rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
+		rocksObjs = GameObjects.getLoaded(new Predicate<GameObject>(){
 			@Override
-			public boolean accepts(GameObject o) {
+			public boolean test(GameObject o) {
 				GameObjectDefinition def = o.getDefinition();
 				String name = "";
 				if(def != null)name = def.getName();
@@ -291,20 +291,20 @@ public class PowerMiner extends MiningStyle{
 		return null;
 	}
 
-	Filter<SpriteItem> oreFilter = new Filter<SpriteItem>(){
+	Predicate<SpriteItem> orePredicate = new Predicate<SpriteItem>(){
 		@Override
-		public boolean accepts(SpriteItem i) {
+		public boolean test(SpriteItem i) {
 			ItemDefinition def = i.getDefinition();
 			String name = "";
 			if(def != null)name = def.getName();
 
-			return oreStringFilter.accepts(name);
+			return oreStringPredicate.test(name);
 		}
 	};
 
-	Filter<String> oreStringFilter = new Filter<String>(){
+	Predicate<String> oreStringPredicate = new Predicate<String>(){
 		@Override
-		public boolean accepts(String name) {
+		public boolean test(String name) {
 			if(name == null)return false;
 			
 			for(String s : ore.oreNames){
@@ -322,7 +322,7 @@ public class PowerMiner extends MiningStyle{
 	};
 
 	private boolean shouldDrop() {
-		SpriteItemQueryResults items = Inventory.getItems(oreFilter);
+		SpriteItemQueryResults items = Inventory.getItems(orePredicate);
 
 		return !items.isEmpty() && (mine1drop1 || (Inventory.isFull() || dropping)) && !ignoreItems;
 	}
@@ -330,7 +330,7 @@ public class PowerMiner extends MiningStyle{
 	private void drop() {
 		currentRock = null;
 		deselect();
-		SpriteItemQueryResults items = Inventory.getItems(oreFilter);
+		SpriteItemQueryResults items = Inventory.getItems(orePredicate);
 
 		if(items.isEmpty()){
 			//no need to keep dropping
@@ -342,22 +342,21 @@ public class PowerMiner extends MiningStyle{
 
 		if(actionBar){
 			//check if the action bar contains the ore we need to drop
-			for(Slot slot : ActionBar.Slot.values()){
-				if(slot.getAction() != null){
-					SlotAction action = slot.getAction();
-					if(action.getName() != null && oreStringFilter.accepts(action.getName())){
+			for(Slot slot : ActionBar.getFilledSlots()){
+				if(slot != null){
+					if(slot.getName() != null && oreStringPredicate.test(slot.getName())){
 						//drop each of that item
-						if(action.isActivatable()){
+						if(slot.isActivatable()){
 							if(forceKeys) 
-								action.activate(false);
+								slot.activate(false);
 							else{
-								action.activate();
+								slot.activate();
 							}
 
 							//If this player spams, then make them click twice
 							if(Random.nextInt(100) <= PlayerSense.getAsInteger(CustomPlayerSense.Key.ACTION_BAR_SPAM.playerSenseKey))
 								if(forceKeys) 
-									action.activate(false);
+									slot.activate(false);
 
 							ReflexAgent.delay();
 							return;
@@ -369,15 +368,14 @@ public class PowerMiner extends MiningStyle{
 			//at this point, we didn't find it, so drag it over
 			if(InterfaceWindows.getInventory().isOpen()){
 				//find the first open action slot
-				for(Slot slot : ActionBar.Slot.values()){
-					SlotAction action = slot.getAction();
+				for(Slot slot : ActionBar.getFilledSlots()){
 					//This indicates that this slot is not an ore dropping slot, so it's ok to overwrite it
-					if(action == null || !oreStringFilter.accepts(action.getName())){
-						Mouse.drag(items.first(), slot.getComponent());
+					if(slot == null || !oreStringPredicate.test(slot.getName())){
+						Mouse.drag(items.first(), slot.getBounds());
 						//Wait 2-4 seconds for the item to appear on the action bar
 						Timer timer = new Timer(Random.nextInt(2000,4000));
 						timer.start();
-						while(timer.getRemainingTime() > 0 && !oreStringFilter.accepts(slot.getAction() == null ? null : slot.getAction().getName())){
+						while(timer.getRemainingTime() > 0 && !oreStringPredicate.test(slot == null ? null : slot.getName())){
 							Execution.delay(10);
 						}
 						ReflexAgent.delay();
@@ -397,14 +395,21 @@ public class PowerMiner extends MiningStyle{
 					for(SpriteItem item : items){
 						deselect();
 						MenuItem mItem = null;
-						while(mItem == null){
-							Mouse.getPathGenerator().hop(item.getInteractionPoint());
+						while(mItem == null && item != null){
+							InteractablePoint interact = item.getInteractionPoint();
+							if(interact != null && Screen.getBounds().contains(interact)){
+								Mouse.getPathGenerator().hop(interact);
+								Mouse.click(Mouse.Button.LEFT);
+							}
 							Mouse.click(Mouse.Button.RIGHT);
 							Execution.delay(50,100);
 							mItem = Menu.getItem("Drop");
 						}
-						Mouse.getPathGenerator().hop(mItem.getInteractionPoint());
-						Mouse.click(Mouse.Button.LEFT);
+						InteractablePoint interact = mItem.getInteractionPoint();
+						if(interact != null && Screen.getBounds().contains(interact)){
+							Mouse.getPathGenerator().hop(interact);
+							Mouse.click(Mouse.Button.LEFT);
+						}
 					}
 				}else{
 					int offset = 0;

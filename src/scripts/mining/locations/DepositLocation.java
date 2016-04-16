@@ -36,7 +36,7 @@ public abstract class DepositLocation extends Location {
 	@Override
 	public void closeBank() {
 		if(!PlayerSense.getAsBoolean(PlayerSense.Key.USE_MISC_HOTKEYS)){
-			InterfaceComponent button = Interfaces.getLoadedAt(PARENT_NTERFACE).first().getComponent(CLOSE_BUTTON);
+			InterfaceComponent button = Interfaces.getAt(PARENT_NTERFACE, CLOSE_BUTTON);
 			if(button != null){
 				button.click();
 			}
@@ -49,13 +49,13 @@ public abstract class DepositLocation extends Location {
 	
 	@Override
 	public boolean isBankOpen() {
-		InterfaceComponent boxwindow = Interfaces.getLoaded(Interfaces.getContainerIndexFilter(PARENT_NTERFACE)).first();
+		InterfaceComponent boxwindow = Interfaces.getAt(PARENT_NTERFACE, CLOSE_BUTTON);
 		return boxwindow != null && boxwindow.isVisible();
 	}
 	
 	@Override
 	public void deposit(){
-		InterfaceComponent button = Interfaces.getLoadedAt(PARENT_NTERFACE, DEPOSIT_BUTTON).first();
+		InterfaceComponent button = Interfaces.getAt(PARENT_NTERFACE, DEPOSIT_BUTTON);
 		if(button != null){
 			button.click();
 

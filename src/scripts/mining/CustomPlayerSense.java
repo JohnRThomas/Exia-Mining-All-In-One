@@ -45,6 +45,8 @@ public class CustomPlayerSense{
 	}
 
 	private static int sumBytes(String string) {
+		if(string == null) return 0;
+		
 		int value = 0;
 		for(int i = 0; i < string.length(); i++){
 			value += string.charAt(i)*i;

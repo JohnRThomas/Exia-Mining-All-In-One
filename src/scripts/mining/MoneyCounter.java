@@ -25,9 +25,15 @@ public class MoneyCounter implements InventoryListener{
 	@Override
 	public void onItemAdded(ItemEvent event){
 		SpriteItem invItem = Inventory.getItemIn(event.getItem().getIndex());
-		ItemDefinition def = invItem.getDefinition();
+		ItemDefinition def = null;
 		String name = "";
-		if(def != null)name = def.getName();
+		int id = -1;
+		if(invItem != null) def = invItem.getDefinition();
+		if(def != null){
+			name = def.getName();
+			id = def.getId();
+
+		}
 
 		for(String o : ores){
 			if(name.equals(o)){
@@ -37,7 +43,6 @@ public class MoneyCounter implements InventoryListener{
 		}
 
 		if(!locked){
-			int id = event.getItem().getId();
 			long price = 0;
 			if(cache.containsKey(id)){
 				if(cache.get(id) != null){

@@ -1,6 +1,7 @@
 package scripts.mining.locations;
 
 import java.util.ArrayList;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import com.runemate.game.api.hybrid.entities.GameObject;
@@ -29,7 +30,6 @@ import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.region.Banks;
 import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Players;
-import com.runemate.game.api.hybrid.util.Filter;
 import com.runemate.game.api.hybrid.util.Timer;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.Execution;
@@ -105,9 +105,9 @@ public abstract class Location {
 	public LocatableEntity getNextRock(LocatableEntity currentRock) {
 		LocatableEntityQueryResults<GameObject> rocksObjs = null;
 		try{
-			rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
+			rocksObjs = GameObjects.getLoaded(new Predicate<GameObject>(){
 				@Override
-				public boolean accepts(GameObject o) {
+				public boolean test(GameObject o) {
 					if(o != null && validate(o)){
 						Coordinate pos = o.getPosition();
 						for (Coordinate rock : getRocks()) {
@@ -127,13 +127,13 @@ public abstract class Location {
 		int banktype = PlayerSense.getAsInteger(CustomPlayerSense.Key.BANKER_PREFERENCE.playerSenseKey);
 		if(banktype <= 33){
 			//Return the chests or the bankers
-			return Banks.getLoaded(new Filter<LocatableEntity>(){
+			return Banks.getLoaded(new Predicate<LocatableEntity>(){
 				@Override
-				public boolean accepts(LocatableEntity a) {
+				public boolean test(LocatableEntity a) {
 					if(a instanceof Npc){
-						return Banks.getBankerFilter().accepts((Npc) a); 
+						return Banks.getBankerPredicate().test((Npc) a); 
 					}else if(a instanceof GameObject){
-						return Banks.getBankChestFilter().accepts((GameObject) a);
+						return Banks.getBankChestPredicate().test((GameObject) a);
 					}else{
 						return false;
 					}
@@ -141,11 +141,11 @@ public abstract class Location {
 			});
 		}else if(banktype > 33 && banktype <= 66){
 			//return the chests or the bank booths
-			return Banks.getLoaded(new Filter<LocatableEntity>(){
+			return Banks.getLoaded(new Predicate<LocatableEntity>(){
 				@Override
-				public boolean accepts(LocatableEntity a) {
+				public boolean test(LocatableEntity a) {
 					if(a instanceof GameObject){
-						return Banks.getBankBoothFilter().accepts((GameObject) a) || Banks.getBankChestFilter().accepts((GameObject) a);
+						return Banks.getBankBoothPredicate().test((GameObject) a) || Banks.getBankChestPredicate().test((GameObject) a);
 					}else{
 						return false;
 					}
@@ -164,9 +164,9 @@ public abstract class Location {
 	public void deposit(){
 		ReflexAgent.delay();
 		try{
-			Bank.depositAllExcept(new Filter<SpriteItem>(){
+			Bank.depositAllExcept(new Predicate<SpriteItem>(){
 				@Override
-				public boolean accepts(SpriteItem i) {
+				public boolean test(SpriteItem i) {
 					ItemDefinition def = i.getDefinition();
 					String name = "";
 					if(def != null)name = def.getName();
@@ -225,8 +225,12 @@ public abstract class Location {
 			bankPath = pathBuilder.buildTo(dest);		
 		else if(!dest.contains(Traversal.getDestination())){
 			if(bankPath instanceof ViewportPath){
-				if(bankPath.getNext() != null && !bankPath.getNext().getArea().isVisible()){
-					Camera.concurrentlyTurnTo(bankPath.getNext());
+				Locatable next = bankPath.getNext();
+				if(next != null){
+					Area area = next.getArea();
+					if(area != null && !area.isVisible()){
+						Camera.concurrentlyTurnTo(bankPath.getNext());
+					}
 				}
 			}
 
@@ -257,8 +261,12 @@ public abstract class Location {
 			minePath = pathBuilder.buildTo(dest);
 		else if(!dest.contains(Traversal.getDestination())){
 			if(minePath instanceof ViewportPath){
-				if(minePath.getNext() != null && !minePath.getNext().getArea().isVisible()){
-					Camera.concurrentlyTurnTo(minePath.getNext());
+				Locatable next = minePath.getNext();
+				if(next != null){
+					Area area = next.getArea();
+					if(area != null && !area.isVisible()){
+						Camera.concurrentlyTurnTo(minePath.getNext());
+					}
 				}
 			}
 

@@ -106,7 +106,9 @@ public class StandardMiner extends MiningStyle{
 		}else{
 			if(location.inMine()){
 				mine();
-				if(Players.getLocal().getAnimationId() == -1)notMiningCount++;
+				if(Players.getLocal() != null){
+					if(Players.getLocal().getAnimationId() == -1)notMiningCount++;
+				}
 				else notMiningCount = 0;
 
 				if(notMiningCount >= 10){
@@ -151,7 +153,7 @@ public class StandardMiner extends MiningStyle{
 		}else{
 			Paint.status = "Mining";
 			if(currentRock != null && currentRock.getVisibility() < 80){
-				Camera.concurrentlyTurnTo((Camera.getYaw() + Random.nextInt(0, 360)) % 360);
+				Camera.concurrentlyTurnTo((int)(Camera.getYaw() + Random.nextInt(0, 360)) % 360);
 			}
 			hoverNext();
 		}

@@ -1,5 +1,6 @@
 package scripts.mining.locations.osrs;
 
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import com.runemate.game.api.hybrid.entities.GameObject;
@@ -9,7 +10,6 @@ import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.region.GameObjects;
-import com.runemate.game.api.hybrid.util.Filter;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -66,9 +66,9 @@ public class AlKharid extends OSRSLocation{
 		if(duelArena){
 			LocatableEntityQueryResults<? extends LocatableEntity> bankers = super.getBankers();
 			if(bankers.isEmpty()){
-				bankers = GameObjects.getLoaded(new Filter<GameObject>(){
+				bankers = GameObjects.getLoaded(new Predicate<GameObject>(){
 					@Override
-					public boolean accepts(GameObject o) {
+					public boolean test(GameObject o) {
 						GameObjectDefinition def = o.getDefinition();
 						String name = "";
 						if(def != null)name = def.getName();

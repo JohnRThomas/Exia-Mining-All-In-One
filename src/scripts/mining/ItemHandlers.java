@@ -1,21 +1,22 @@
 package scripts.mining;
 
+import java.util.function.Predicate;
+
 import com.runemate.game.api.hybrid.entities.definitions.ItemDefinition;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Bank;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Equipment;
 import com.runemate.game.api.hybrid.local.hud.interfaces.Inventory;
 import com.runemate.game.api.hybrid.local.hud.interfaces.SpriteItem;
 import com.runemate.game.api.hybrid.queries.results.SpriteItemQueryResults;
-import com.runemate.game.api.hybrid.util.Filter;
 import com.runemate.game.api.hybrid.util.Timer;
 import com.runemate.game.api.script.Execution;
 
 import scripts.mining.locations.Location;
 
 public class ItemHandlers {
-	private static Filter<SpriteItem> porterFilter = new Filter<SpriteItem>(){
+	private static Predicate<SpriteItem> porterPredicate = new Predicate<SpriteItem>(){
 		@Override
-		public boolean accepts(SpriteItem i) {
+		public boolean test(SpriteItem i) {
 			ItemDefinition def = i.getDefinition();
 			String name = "";
 			if(def != null)name = def.getName();
@@ -24,9 +25,9 @@ public class ItemHandlers {
 		}
 	};
 
-	private static Filter<SpriteItem> urnFilter = new Filter<SpriteItem>(){
+	private static Predicate<SpriteItem> urnPredicate = new Predicate<SpriteItem>(){
 		@Override
-		public boolean accepts(SpriteItem i) {
+		public boolean test(SpriteItem i) {
 			ItemDefinition def = i.getDefinition();
 			String name = "";
 			if(def != null)name = def.getName();
@@ -35,9 +36,9 @@ public class ItemHandlers {
 		}
 	};
 
-	private static Filter<SpriteItem> fullUrnFilter = new Filter<SpriteItem>(){
+	private static Predicate<SpriteItem> fullUrnPredicate = new Predicate<SpriteItem>(){
 		@Override
-		public boolean accepts(SpriteItem i) {
+		public boolean test(SpriteItem i) {
 			ItemDefinition def = i.getDefinition();
 			String name = "";
 			if(def != null)name = def.getName();
@@ -50,20 +51,20 @@ public class ItemHandlers {
 
 	public static void manageUrns(int urnAmount) {
 		if(Bank.isOpen() && !Inventory.isFull()){
-			if(!Inventory.contains(urnFilter)){
+			if(!Inventory.contains(urnPredicate)){
 				for(int i = urns.length-1; i >= 0; i--) {
 					String urnType = urns[i];
-					SpriteItemQueryResults items = Bank.getItems(new Filter<SpriteItem>(){
+					SpriteItemQueryResults items = Bank.getItems(new Predicate<SpriteItem>(){
 						@Override
-						public boolean accepts(SpriteItem i) {
+						public boolean test(SpriteItem i) {
 							ItemDefinition def = i.getDefinition();
 							String name = "";
 							if(def != null)name = def.getName();
 
 							if(urnType.equals("Normal"))
-								return urnFilter.accepts(i) && !name.contains(urns[0]) && !name.contains(urns[1]);
+								return urnPredicate.test(i) && !name.contains(urns[0]) && !name.contains(urns[1]);
 							else
-								return urnFilter.accepts(i) && name.contains(urnType);
+								return urnPredicate.test(i) && name.contains(urnType);
 						}
 					});
 					
@@ -74,12 +75,12 @@ public class ItemHandlers {
 				}
 			}
 		}else{
-			SpriteItemQueryResults urns = Inventory.getItems(fullUrnFilter);
+			SpriteItemQueryResults urns = Inventory.getItems(fullUrnPredicate);
 			if(urns.size() > 0){
 				urns.get(0).interact("Teleport urn");
 				Timer timer = new Timer(ReflexAgent.getReactionTime() * 5);
 				timer.start();
-				while(timer.getRemainingTime() > 0 && Inventory.getItems(fullUrnFilter).size() == urns.size()){
+				while(timer.getRemainingTime() > 0 && Inventory.getItems(fullUrnPredicate).size() == urns.size()){
 					Execution.delay(10);
 				}
 			}
@@ -89,53 +90,53 @@ public class ItemHandlers {
 	private final static String[] porters = new String[]{"I", "II", "III", "IV", " V", "VI", "Active"};
 
 	public static boolean managePorters() {
-		SpriteItemQueryResults inv_porters = Inventory.getItems(porterFilter);
+		SpriteItemQueryResults inv_porters = Inventory.getItems(porterPredicate);
 
 		if(Bank.isOpen()){
 			//Disable porters when we run out
-			if(Bank.getItems(porterFilter).size() == 0 && inv_porters.size() == 0)return false;
+			if(Bank.getItems(porterPredicate).size() == 0 && inv_porters.size() == 0)return false;
 			
 			if(inv_porters.size() == 0 && !Inventory.isFull()){
 				for(int i = porters.length-1; i >= 0; i--) {
 					String porterType = porters[i];
-					SpriteItemQueryResults items = Bank.getItems(new Filter<SpriteItem>(){
+					SpriteItemQueryResults items = Bank.getItems(new Predicate<SpriteItem>(){
 						@Override
-						public boolean accepts(SpriteItem i) {
+						public boolean test(SpriteItem i) {
 							ItemDefinition def = i.getDefinition();
 							String name = "";
 							if(def != null)name = def.getName();
 
-							return porterFilter.accepts(i) && name.contains(porterType);
+							return porterPredicate.test(i) && name.contains(porterType);
 						}
 					});
 					
 					if(items.size() > 0){
-						Bank.withdraw(items.get(0), Equipment.getItems(porterFilter).size() == 0 ? 28 : 28 - Inventory.getUsedSlots() - 1);
+						Bank.withdraw(items.get(0), Equipment.getItems(porterPredicate).size() == 0 ? 28 : 28 - Inventory.getUsedSlots() - 1);
 						break;
 					}
 				}
 			}else{
-				SpriteItemQueryResults porter = Equipment.getItems(porterFilter);
+				SpriteItemQueryResults porter = Equipment.getItems(porterPredicate);
 
 				if(porter.size() == 0 && inv_porters.size() > 0){
 					ReflexAgent.delay();
 					inv_porters.get(0).interact("Wear");
 					Timer timer = new Timer(ReflexAgent.getReactionTime() * 5);
 					timer.start();
-					while(timer.getRemainingTime() > 0 && Equipment.getItems(porterFilter).size() == 0){
+					while(timer.getRemainingTime() > 0 && Equipment.getItems(porterPredicate).size() == 0){
 						Execution.delay(10);
 					}
 				}
 			}
 		}else{
-			SpriteItemQueryResults porter = Equipment.getItems(porterFilter);
+			SpriteItemQueryResults porter = Equipment.getItems(porterPredicate);
 
 			if(porter.size() == 0 && inv_porters.size() > 0){
 				ReflexAgent.delay();
 				inv_porters.get(0).interact("Wear");
 				Timer timer = new Timer(ReflexAgent.getReactionTime() * 5);
 				timer.start();
-				while(timer.getRemainingTime() > 0 && Equipment.getItems(porterFilter).size() == 0){
+				while(timer.getRemainingTime() > 0 && Equipment.getItems(porterPredicate).size() == 0){
 					Execution.delay(10);
 				}
 			}	
@@ -144,7 +145,7 @@ public class ItemHandlers {
 	}
 
 	public static boolean shouldBank(boolean usePorters, Location location) {
-		return usePorters && location.inBank() && (Inventory.getItems(porterFilter).size() == 0 || Equipment.getItems(porterFilter).size() == 0);
+		return usePorters && location.inBank() && (Inventory.getItems(porterPredicate).size() == 0 || Equipment.getItems(porterPredicate).size() == 0);
 	}
 
 	public static void manageJujus() {

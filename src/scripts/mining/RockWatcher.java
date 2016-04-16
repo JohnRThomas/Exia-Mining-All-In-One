@@ -2,11 +2,11 @@ package scripts.mining;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.location.Coordinate;
 import com.runemate.game.api.hybrid.region.GameObjects;
-import com.runemate.game.api.hybrid.util.Filter;
 
 public class RockWatcher extends Thread{
 
@@ -40,9 +40,9 @@ public class RockWatcher extends Thread{
 	public void run() {
 		try{
 			while(true){
-				GameObjects.getLoaded(new Filter<GameObject>(){
+				GameObjects.getLoaded(new Predicate<GameObject>(){
 					@Override
-					public boolean accepts(GameObject o) {
+					public boolean test(GameObject o) {
 						Coordinate pos = o.getPosition();
 						synchronized(locations){
 							for (Pair<Coordinate, Long, GameObject> rock : locations) {

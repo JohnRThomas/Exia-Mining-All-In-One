@@ -1,5 +1,7 @@
 package scripts.mining.locations.rs3;
 
+import java.util.function.Predicate;
+
 import com.runemate.game.api.client.ClientUI;
 import com.runemate.game.api.hybrid.entities.GameObject;
 import com.runemate.game.api.hybrid.entities.LocatableEntity;
@@ -17,7 +19,6 @@ import com.runemate.game.api.hybrid.queries.results.LocatableEntityQueryResults;
 import com.runemate.game.api.hybrid.region.GameObjects;
 import com.runemate.game.api.hybrid.region.Npcs;
 import com.runemate.game.api.hybrid.region.Players;
-import com.runemate.game.api.hybrid.util.Filter;
 import com.runemate.game.api.hybrid.util.Timer;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.Execution;
@@ -89,9 +90,9 @@ public class LivingRockCavern extends DepositLocation{
 
 	@Override
 	public boolean shouldBank() {
-		return Inventory.isFull() || (Npcs.getLoaded(new Filter<Npc>(){
+		return Inventory.isFull() || (Npcs.getLoaded(new Predicate<Npc>(){
 			@Override
-			public boolean accepts(Npc npc) {
+			public boolean test(Npc npc) {
 				return Players.getLocal().equals(npc.getTarget());
 			}
 		}).size() > 0 && runFromCombat) || Players.getLocal().distanceTo(new Coordinate(3652, 5115)) > 80;
@@ -99,9 +100,9 @@ public class LivingRockCavern extends DepositLocation{
 
 	@Override
 	public LocatableEntity getNextRock(LocatableEntity currentRock){
-		LocatableEntityQueryResults<? extends LocatableEntity> rocksObjs = GameObjects.getLoaded(new Filter<GameObject>(){
+		LocatableEntityQueryResults<? extends LocatableEntity> rocksObjs = GameObjects.getLoaded(new Predicate<GameObject>(){
 			@Override
-			public boolean accepts(GameObject o) {
+			public boolean test(GameObject o) {
 				if(validate(o)){
 					Coordinate pos = o.getPosition();
 					for (Coordinate rock : getRocks()) {
@@ -115,10 +116,10 @@ public class LivingRockCavern extends DepositLocation{
 		if(rocksObjs.size() > 0) return rocksObjs.get(0);
 		else{
 			if(mineMinerals){
-				LocatableEntityQueryResults<? extends LocatableEntity> remains = Npcs.getLoaded(new Filter<Npc>(){
+				LocatableEntityQueryResults<? extends LocatableEntity> remains = Npcs.getLoaded(new Predicate<Npc>(){
 
 					@Override
-					public boolean accepts(Npc npc) {
+					public boolean test(Npc npc) {
 						return npc.getName() != null && npc.getName().equals("Living rock remains") && !npc.equals(currentRock);
 					}
 
@@ -174,9 +175,9 @@ public class LivingRockCavern extends DepositLocation{
 		}
 	}
 
-	Filter<InterfaceComponent> warningFilter = new Filter<InterfaceComponent>(){
+	Predicate<InterfaceComponent> warningPredicate = new Predicate<InterfaceComponent>(){
 		@Override
-		public boolean accepts(InterfaceComponent i) {
+		public boolean test(InterfaceComponent i) {
 			return i.getText() != null & i.getText().contains("Proceed regardless");
 		}
 	};
@@ -214,13 +215,13 @@ public class LivingRockCavern extends DepositLocation{
 			}else{
 				//distance to the rope
 				if(me.distanceTo(new Coordinate(3014, 9831)) <= 25){
-					InterfaceComponent warning = Interfaces.getLoaded(warningFilter).first();
+					InterfaceComponent warning = Interfaces.getLoaded(warningPredicate).first();
 					if(warning != null && warning.isValid() && warning.isVisible()){
 						//Click proceed
 						warning.click();
 						Timer timer = new Timer((int)(ReflexAgent.getReactionTime() * 4) + Random.nextInt(900, 1000));
 						timer.start();
-						while(timer.getRemainingTime() > 0 && Interfaces.getLoaded(warningFilter).first() != null && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
+						while(timer.getRemainingTime() > 0 && Interfaces.getLoaded(warningPredicate).first() != null && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
 							Execution.delay(10);
 						}	
 					}else{
@@ -235,7 +236,7 @@ public class LivingRockCavern extends DepositLocation{
 								Timer timer = new Timer((int)(rope.distanceTo(me) * ReflexAgent.getReactionTime()) + Random.nextInt(900, 1000));
 								timer.start();
 								while(timer.getRemainingTime() > 0 && Players.getLocal().distanceTo(new Coordinate(3014, 9831)) <= 25 &&
-										Interfaces.getLoaded(warningFilter).first() == null && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
+										Interfaces.getLoaded(warningPredicate).first() == null && Mouse.getCrosshairState() != Mouse.CrosshairState.YELLOW){
 									Execution.delay(10);
 								}
 							}
