@@ -225,7 +225,6 @@ public class StandardMiner extends MiningStyle{
 		oreList.setPrefWidth(167);
 
 		FlowPane settings = new FlowPane();
-		settings.setStyle("-fx-background-color: -fx-background-dark-hundred; -fx-border-color: -fx-flair; -fx-border-style: solid; -fx-border-width: 1;");
 		settings.setPrefWrapLength(165);
 
 		ObservableList<String> items = FXCollections.observableArrayList();
@@ -264,20 +263,15 @@ public class StandardMiner extends MiningStyle{
 			}
 		});
 
-		final String LABEL_STYLE = "-fx-text-fill: -fx-flair-text; -fx-font-size: 15px; -fx-background-color: -fx-flair;";
-
 		Label locLabel = new Label("Locations");
-		locLabel.setStyle(LABEL_STYLE);
 		locLabel.setAlignment(Pos.CENTER);
 		locLabel.setPrefWidth(167);
 
 		Label oreLabel = new Label("Ores");
-		oreLabel.setStyle(LABEL_STYLE);
 		oreLabel.setAlignment(Pos.CENTER);
 		oreLabel.setPrefWidth(167);
 
 		Label setLabel = new Label("Settings");
-		setLabel.setStyle(LABEL_STYLE);
 		setLabel.setAlignment(Pos.CENTER);
 		setLabel.setPrefWidth(167);
 
@@ -301,8 +295,7 @@ public class StandardMiner extends MiningStyle{
 			settings.getChildren().add(nodes[i]);
 		}
 
-		if(Environment.isRS3()){
-			porterBox.setStyle("-fx-text-fill: -fx-text-input-text");
+		if(ExiaMinerAIO.isRS3){
 			porterBox.setPadding(new Insets(10,50,0,5));
 			settings.getChildren().add(porterBox);
 
@@ -313,19 +306,16 @@ public class StandardMiner extends MiningStyle{
 				}
 			});
 
-			urnBox.setStyle("-fx-text-fill: -fx-text-input-text");
 			urnBox.setPadding(new Insets(10,5,0,5));
 			settings.getChildren().add(urnBox);
 
 			urnText.setDisable(!urnBox.isSelected());
-			urnText.setStyle("-fx-text-fill: -fx-text-input-text");
 			urnText.setMaxWidth(35.0f);
 			urnText.setPadding(new Insets(3,5,2,5));
 			settings.getChildren().add(urnText);
 
 		}
 
-		walkBox.setStyle("-fx-text-fill: -fx-text-input-text");
 		walkBox.setPadding(new Insets(10,10,0,5));
 		settings.getChildren().add(walkBox);
 	}
@@ -333,7 +323,7 @@ public class StandardMiner extends MiningStyle{
 	@Override
 	public void loadSettings() {
 		location.loadSettings();
-		if(Environment.isRS3()){
+		if(ExiaMinerAIO.isRS3){
 			useUrns = urnBox.isSelected();
 			usePorters = porterBox.isSelected();
 
@@ -363,7 +353,7 @@ public class StandardMiner extends MiningStyle{
 
 	private ArrayList<Location> getLocations() {
 		ArrayList<Location> locations = new ArrayList<Location>();
-		if(Environment.isRS3()){
+		if(ExiaMinerAIO.isRS3){
 			locations.add(new scripts.mining.locations.rs3.AlKharid());
 			locations.add(new scripts.mining.locations.rs3.BarbarianVillage());
 			if(Environment.isSDK())locations.add(new scripts.mining.locations.rs3.CoalTrucks());

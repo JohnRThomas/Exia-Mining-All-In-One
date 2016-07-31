@@ -101,12 +101,10 @@ public class AlKharid extends Location{
 
 	@Override
 	public Node[] getSettingsNodes(){
-		duelArenaBox.setStyle("-fx-text-fill: -fx-text-input-text");
 		duelArenaBox.setPadding(new Insets(10,0,0,5));
 		duelArenaBox.setPrefWidth(165);
 
 		if(ore == Rock.IRON){
-			ironArea.setStyle("-fx-text-fill: -fx-text-input-text");
 			ironArea.setPadding(new Insets(0,0,0,5));
 			ironArea.setPrefWidth(165);
 			return new Node[]{duelArenaBox, ironArea};

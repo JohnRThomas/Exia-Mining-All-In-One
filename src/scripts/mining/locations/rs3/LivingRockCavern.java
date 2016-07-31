@@ -277,40 +277,32 @@ public class LivingRockCavern extends DepositLocation{
 		ImageView warnImage = AIOMinerGUI.warnImage;
 
 		Label labela = new Label("WARNING!");
-		labela.setStyle("-fx-text-fill: -fx-text-input-text");
 		labela.setAlignment(Pos.CENTER);
 		labela.setPadding(new Insets(0,0,3,5));
 		labela.setGraphic(warnImage);
 
 		Label labelb = new Label("This area has not");
-		labelb.setStyle("-fx-text-fill: -fx-text-input-text");
 		labelb.setPadding(new Insets(0,0,3,5));
 
 		Label labelc = new Label("been tested and ");
-		labelc.setStyle("-fx-text-fill: -fx-text-input-text");
 		labelc.setPadding(new Insets(0,0,3,5));
 
 		Label labeld = new Label("it may be buggy!");
-		labeld.setStyle("-fx-text-fill: -fx-text-input-text");
 		labeld.setPadding(new Insets(0,0,3,5));
 
 		idle.setSelected(safeIdle);
-		idle.setStyle("-fx-text-fill: -fx-text-input-text");
 		idle.setPadding(new Insets(0,0,5,5));
 		idle.setPrefWidth(165);
 
 		box.setSelected(mineMinerals);
-		box.setStyle("-fx-text-fill: -fx-text-input-text");
 		box.setPadding(new Insets(0,0,5,5));
 		box.setPrefWidth(165);
 
 		death.setSelected(deathNotification);
-		death.setStyle("-fx-text-fill: -fx-text-input-text");
 		death.setPadding(new Insets(0,0,5,5));
 		death.setPrefWidth(165);
 
 		combat.setSelected(runFromCombat);
-		combat.setStyle("-fx-text-fill: -fx-text-input-text");
 		combat.setPadding(new Insets(5,0,0,5));
 		combat.setPrefWidth(165);
 
