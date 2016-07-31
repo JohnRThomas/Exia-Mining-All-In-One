@@ -1,167 +1,161 @@
 package scripts.mining;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.text.NumberFormat;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import javax.imageio.ImageIO;
-
-import com.runemate.game.api.client.ClientUI;
-import com.runemate.game.api.client.paint.PaintListener;
-import com.runemate.game.api.hybrid.Environment;
-import com.runemate.game.api.hybrid.entities.GameObject;
-import com.runemate.game.api.hybrid.input.Mouse;
-import com.runemate.game.api.hybrid.local.Skill;
 import com.runemate.game.api.hybrid.util.Time;
 
-import scripts.ExiaMinerAIO;
+import javafx.scene.Node;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
-public class Paint implements PaintListener{
-	public static int tempLevel = 0;
-	public static int levelsGained = 0;
-	public static boolean first = true;
-	public static boolean showGraph = true;
+public class Paint extends BorderPane{
+	private MiningStyle miner;
+	public int tempLevel = 0;
+	public long startTime = 0;
+	public int levelsGained = 0;
+	public int startEXP = 0;
+	public boolean showGraph = true;
+	public boolean stop = false;
+	public int currentEXP = 0;
+	public int nextLevelEXP = 0;
+	public int currentLevel = 0;
+	public int percentage = 0;
+
 	public static MoneyCounter profitCounter = null;
-	public static int startEXP = 0;
-	public static long startTime = 0;
 	public static String status = "";
-	public static BufferedImage mouseImage;
-	public static GameObject rock = null;
 	
+	// GUI elements
+    private LineChart<Number,Number> lineChart;
+    private ProgressBar pb;
+	private Label[] labels = new Label[11];
 	
-	@SuppressWarnings("unused")
-	private boolean RS3;
-	
-	public Paint(boolean RS3){
-		this.RS3 = RS3;
-		try{
-			mouseImage = ImageIO.read(new File(Environment.getStorageDirectory() + "/mouse.png"));
-		}catch(IOException e){
-			try {
-				BufferedImage saveAs = ImageIO.read(new URL("http://i.imgur.com/LOPBaa0.png").openStream());
-				ImageIO.write(saveAs, "png", new File(Environment.getStorageDirectory() + "/mouse.png"));
-				mouseImage = saveAs;
-			} catch (IOException ex) {
-				System.out.println("Failed to Read Files from web!");
-				ex.printStackTrace();
-			}
-		}
+	public Paint(MiningStyle miner){
+		super();
+		startTime = System.currentTimeMillis();
+		profitCounter = new MoneyCounter(miner.getOre().oreNames);
+		this.miner = miner;
+		createScene();
+		update();
+		
+		// Schedule this to update every second
+		Timer timer = new Timer("Paint Updater");
+		timer.schedule(new TimerTask(){ 
+			public void run(){
+				javafx.application.Platform.runLater(() -> {
+					update();
+					if(stop){
+						cancel();
+					}
+				});
+				}
+			}, 0, 700);
+	}
 
+	private void createScene(){
+		VBox left = new VBox();
+		VBox center = new VBox();
+		for(int i = 0; i < labels.length - 1; i++){
+			labels[i] = new Label();
+			left.getChildren().add(labels[i]);
+		}
+		HBox progress = new HBox();
+		pb = new ProgressBar(0f);
+        pb.prefWidthProperty().bind(left.widthProperty().subtract(30));
+		labels[labels.length - 1] = new Label();
+		labels[labels.length - 1].setMaxWidth(30);
+		progress.getChildren().addAll(labels[labels.length - 1], pb);
+		left.getChildren().add(progress);
+		left.setMinWidth(200);
+				
+        if(showGraph){
+            final NumberAxis xAxis = new NumberAxis();
+            final NumberAxis yAxis = new NumberAxis();
+            xAxis.setMinorTickVisible(false);
+            xAxis.setForceZeroInRange(false);
+            xAxis.setAutoRanging(false);
+            xAxis.setStyle("-fx-border-color: #333333 transparent transparent transparent;");
+
+            yAxis.setMinorTickVisible(false);
+            yAxis.setForceZeroInRange(false);
+            yAxis.setStyle("-fx-border-color: transparent #333333 transparent transparent;");
+            
+            lineChart = new LineChart<Number,Number>(xAxis,yAxis);
+            lineChart.setTitle("Reaction Time");
+            lineChart.setCreateSymbols(false);
+            lineChart.setLegendVisible(false);
+            lineChart.setMaxWidth(300);
+            lineChart.prefHeightProperty().bind(left.heightProperty());
+
+            Node styler = lineChart.lookup(".chart-vertical-grid-lines");
+            styler.setStyle("-fx-stroke: #333333;");
+            styler = lineChart.lookup(".chart-horizontal-grid-lines");
+            styler.setStyle("-fx-stroke: #333333;");
+            
+            styler = xAxis.lookup(".axis-tick-mark");
+            styler.setStyle("-fx-stroke: #333333;");
+            
+            styler = yAxis.lookup(".axis-tick-mark");
+            styler.setStyle("-fx-stroke: #333333;");
+            
+            updateGraph();
+
+            center.getChildren().add(lineChart);
+        }
+        
+		setLeft(left);
+    	setCenter(center);
+	}
+
+	public void update() {
+		int totalEXP = currentEXP - startEXP;
+		
+		long time = System.currentTimeMillis() - startTime;
+		long expPhr = time != 0 ? ((long)totalEXP*3600000)/time : 0;
+		long profPhr = time != 0 ? ((long)profitCounter.getProfit()*3600000) / time : 0;
+		long orePhr = time != 0 ? ((long)profitCounter.getOreCount()*3600000) / time : 0;
+		
+		labels[0].setText("Runtime: " + Time.format(time));
+		labels[1].setText("Location: " + miner.getLocationName() + " (" + miner.getOre().name + ")");
+		labels[2].setText("Status: "+ status);
+		labels[3].setText("Ores/Hour: " + formatBigNumber(orePhr));
+		labels[4].setText("Profit: " + formatBigNumber(profitCounter.getProfit()));
+		labels[5].setText("Profit/Hour: " + formatBigNumber(profPhr));
+		labels[6].setText("Experience: " + formatBigNumber(totalEXP));
+		labels[7].setText("Exp/Hour: " + formatBigNumber(expPhr));
+		labels[8].setText("Current Level: " + currentLevel + "(+" + levelsGained + ")");
+		if(totalEXP > 0){
+			long ttl = (long) ((time) * ((long)nextLevelEXP)/ totalEXP);
+			labels[9].setText("Next Level: " + Time.format(ttl));
+		}else{
+			labels[9].setText("Next Level: " + Time.format(0L));
+		}
+		labels[labels.length - 1].setText((int)percentage + "%");
+		pb.setProgress((double)percentage / 100.0);
 	}
 	
-	@Override
-	public void onPaint(Graphics2D g) {
-		if(mouseImage != null){
-			Point mspt = Mouse.getPosition();
-			g.drawImage(mouseImage, mspt.x, mspt.y-mouseImage.getHeight(), null);
+	public void updateGraph(){
+        XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
+        
+		for(double i = 0; i <= 7.875; i+=.125){
+			series.getData().add(new XYChart.Data<Number, Number>(i + (8*ReflexAgent.resets), ReflexAgent.applyPolynomial(i)));
 		}
 		
-		try{
-			if(first){
-				tempLevel = Skill.MINING.getCurrentLevel();
-				first = false;
-			}
-			long time = System.currentTimeMillis();
-			int totalEXP = Skill.MINING.getExperience() - startEXP;
-			long expPhr = ((long)totalEXP*3600000)/(time - startTime);
-			long profPhr = ((long)profitCounter.getProfit()*3600000)/(time - startTime);
-			long orePhr = ((long)profitCounter.getOreCount()*3600000)/(time - startTime);
-			int nextLevelEXP = Skill.MINING.getExperienceToNextLevel();
-			int currentLevel = Skill.MINING.getCurrentLevel();
-			int percentage = Skill.MINING.getExperienceAsPercent();
-			if(tempLevel < currentLevel){
-				ClientUI.sendTrayNotification("Congratulations! You have just advanced a Mining level! You now reached level " + currentLevel + ".");
-				levelsGained++;
-			}
-			tempLevel = currentLevel;
-			//g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g.setColor(new Color(0, 0, 0, 180));
-			int y = 27;
-			int x = 7; 
-			int width = 212;
-			int height = 193;
-			if(showGraph){
-				width = 424;
-			}
-			g.fillRect(x, y-20, width, height);
-			g.setColor(new Color(200,200,200,128));
-			g.drawRect(x, y-20, width, height);
-			g.setColor(new Color(247,246,242));
-			g.setFont(new Font("Lucida Bright", 0, 18));
-			g.drawString(ExiaMinerAIO.name + " v" + ExiaMinerAIO.version, x+6, y+1);
-			g.setFont(new Font("Dialog", 0, 12));
-			g.drawString("Runtime: " + Time.format(time - startTime), x+6, y+=20);
-			g.drawString("Location: " + ExiaMinerAIO.miner.getLocationName() + " (" + ExiaMinerAIO.miner.getOre().name + ")", x+6, y+=17);
-			g.drawString("Status: "+ status, x+6, y+=17);
-			g.drawString("Ores/Hour: " + formatBigNumber(orePhr), x+6, y+=17);
-			g.drawString("Profit: " + formatBigNumber(profitCounter.getProfit()), x+6, y+=17);
-			g.drawString("Profit/Hour: " + formatBigNumber(profPhr), x+6, y+=17);
-			g.drawString("Experience: " + formatBigNumber(totalEXP), x+6, y+=17);
-			g.drawString("Exp/Hour: " + formatBigNumber(expPhr), x+6, y+=17);
-
-			g.setColor(new Color(0, 0, 0, 180));
-			g.fill3DRect(x+5, y+=10, 210, 17, true);
-			g.setColor(new Color(255,215,0, 175));
-			g.fillRect(x+6, y+1, (int) (208 * (double)(percentage/100.0)), 15);
-			g.setColor(Color.WHITE);
-			if(totalEXP > 0){
-				long ttl = (long) ((time - startTime) * ((long)nextLevelEXP)/ totalEXP);
-				g.drawString(currentLevel + "(+" + levelsGained + ")|" + (int)(percentage) +"% to " + (currentLevel+1) + "|TTL: " + Time.format(ttl),x+8,y+=13);
-			}else{
-				g.drawString(currentLevel + "(+" + levelsGained + ")|" + (int)(percentage) +"% to " + (currentLevel+1) + "|TTL: " + Time.format(0L),x+8,y+=13);
-			}
-			if(showGraph){
-				y -= 10;
-				g.setColor(new Color(247,246,242));
-				g.drawString("Reaction Time", x+275, y-157);
-				g.drawLine(x+225, y, x+225, y-149);
-				g.drawLine(x+225, y, x+409, y);
-
-				double hours = ((time-startTime) / 3600000.0) - (7.875 * ReflexAgent.resets);
-				g.setColor(new Color(200,200,200,128));
-				g.drawLine(x+225 + (int)(hours*23), y, x+225 + (int)(hours*23), y-149);
-
-				g.setColor(new Color(247,246,242));
-				for(int i = 0; i <= 8; i++){
-					g.drawLine(x+225 + (int)(i*23), y+2, x+225 + (int)(i*23), y-2);
-				}
-
-				for(int i = 0; i <= 3; i++){
-					g.drawLine(x+223, y-(i*50), x+227, y-(i*50));
-				}
-
-				g.setStroke(new BasicStroke(2));
-				g.setColor(new Color(255,215,0));
-				double lastX = 0;
-				int lastY = ReflexAgent.applyPolynomial(0);
-				for(double i = .125; i <= 7.875; i+=.125){
-					double newX = i;
-					int newY = ReflexAgent.applyPolynomial(newX);
-					g.drawLine((int)(lastX*23) + x+225, y - (lastY / 2) + 50, (int)(newX * 23) + x+225, y - (newY / 2) + 50);
-					lastX = newX;
-					lastY = newY;
-				}
-			}
-			if(rock != null){
-				try{
-					g.setColor(Color.green);
-					Point pt = rock.getPosition().minimap().getInteractionPoint();
-					g.drawLine(pt.x, pt.y-2, pt.x, pt.y+2);
-					g.drawLine(pt.x-2, pt.y, pt.x+2, pt.y);
-				}catch(Exception e){}
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}		
+		lineChart.getData().clear();
+        lineChart.getData().add(series);
+        ((NumberAxis)(lineChart.getXAxis())).setLowerBound(ReflexAgent.resets * 8);
+        ((NumberAxis)(lineChart.getXAxis())).setUpperBound((ReflexAgent.resets * 8) + 8);
+        ((NumberAxis)(lineChart.getXAxis())).setTickUnit(1);
+        lineChart.getData().get(0).getNode().setStyle("-fx-stroke: #2DCC71");
 	}
-		
+	
 	private static String formatBigNumber(long number){
 		return NumberFormat.getInstance().format(number);
 	}

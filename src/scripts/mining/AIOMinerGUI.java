@@ -33,20 +33,21 @@ import javafx.util.Duration;
 import scripts.mining.locations.Location;
 
 public class AIOMinerGUI extends SimpleObjectProperty<Node>{
-
 	String style;
 	Location location;
 	public MiningStyle miner;
 	public boolean catchErrors = true;
 	public int dispose = 0;
 	public static ImageView warnImage = null;
-
+	public Paint paint;
+	
 	public AIOMinerGUI(){
 		super();
 		super.setValue(createScene());
 	}
 
 	BorderPane root = new BorderPane();
+	FlowPane leftPane = new FlowPane();
 	GridPane styleContent;
 	GridPane locationContent;
 
@@ -65,11 +66,10 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 
 	Button[] buttons;
 	private Node createLeftPane() {
-		FlowPane vbox = new FlowPane();
-		vbox.setPrefWrapLength(75);
-		vbox.setPadding(new Insets(25,0,25,0));
-		vbox.setMinWidth(75);
-		vbox.setMinHeight(349);
+		leftPane.setPrefWrapLength(100);
+		leftPane.setPadding(new Insets(0,0,25,0));
+		leftPane.setMinWidth(75);
+		leftPane.setMinHeight(349);
 
 		buttons = new Button[]{
 				new Button("Style"),
@@ -151,14 +151,13 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 		buttons[2].setDisable(true);
 
 		for (int i = 0; i < buttons.length; i++) {
-			//changeBackgroundOnHoverUsingEvents(buttons[i]);
-			buttons[i].setMinWidth(75);
+			buttons[i].setMinWidth(100);
 			buttons[i].setMinHeight(75);
 			buttons[i].setContentDisplay(ContentDisplay.TOP);
-			vbox.getChildren().add(buttons[i]);
+			leftPane.getChildren().add(buttons[i]);
 		}
 
-		return vbox;
+		return leftPane;
 	}
 
 	CheckBox enableReflex = new CheckBox("Dynamic Reflexes");
@@ -181,9 +180,9 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 			@Override
 			public void handle(ActionEvent event) {
 				miner = new StandardMiner();
-				//setSelected(1);
 				buttons[1].setDisable(false);
 				locationContent = miner.getContentPane(buttons[2]);
+				locationContent.setMaxHeight(leftPane.getHeight());
 				root.setCenter(locationContent);
 			}
 		});
@@ -192,9 +191,9 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 			@Override
 			public void handle(ActionEvent event) {
 				miner = new PowerMiner();
-				//setSelected(1);
 				buttons[1].setDisable(false);
 				locationContent = miner.getContentPane(buttons[2]);
+				locationContent.setMaxHeight(leftPane.getHeight());
 				root.setCenter(locationContent);
 			}
 		});
@@ -203,9 +202,9 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 				@Override
 				public void handle(ActionEvent event) {
 					miner = new SpecialMiner();
-					//setSelected(1);
 					buttons[1].setDisable(false);
 					locationContent = miner.getContentPane(buttons[2]);
+					locationContent.setMaxHeight(leftPane.getHeight());
 					root.setCenter(locationContent);
 				}
 			});
@@ -256,28 +255,16 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 		return content;
 	}
 
-	/*private void setSelected(int button){
-		for(Button node: buttons){
-			node.setStyle(STANDARD_BUTTON_STYLE);
-			node.getStyleClass().remove("selected");
-		}
-		buttons[button].setStyle(HOVERED_BUTTON_STYLE);
-		buttons[button].getStyleClass().add("selected");
-	}*/
-
 	private void selectStyle(){
-		//setSelected(0);
 		buttons[2].setDisable(true);
 		root.setCenter(styleContent);
 	}
 
 	private void selectLocation(ActionEvent event){
-		//setSelected(1);
 		root.setCenter(locationContent);
 	}
 
 	private void selectStart(ActionEvent event){
-		//setSelected(2);
 
 		FadeTransition ft = new FadeTransition(Duration.millis(500), root);
 		ft.setFromValue(1.0f);
@@ -288,13 +275,19 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 			public void handle(ActionEvent event) {
 				miner.loadSettings();
 				dispose = 1;
+
+				ReflexAgent.initialize(getReflexSeed());
+				
+				paint = new Paint(miner);
+				if(getReflexSeed() == -1){
+					paint.showGraph = false;
+				}
+				setValue(paint);
 			}
 		});
 	}
 
 	private void selectClose(){
-		//setSelected(3);
-
 		FadeTransition ft = new FadeTransition(Duration.millis(500), root);
 		ft.setFromValue(1.0f);
 		ft.setToValue(0.0f);
@@ -307,20 +300,6 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 		});
 	}
 
-	/*public void changeBackgroundOnHoverUsingEvents(final Node node) {
-		node.setOnMouseEntered(new EventHandler<MouseEvent>() {
-			@Override public void handle(MouseEvent mouseEvent) {
-				node.setStyle(HOVERED_BUTTON_STYLE);
-			}
-		});
-		node.setOnMouseExited(new EventHandler<MouseEvent>() {
-			@Override public void handle(MouseEvent mouseEvent) {
-				if(!node.getStyleClass().contains("selected")){
-					node.setStyle(STANDARD_BUTTON_STYLE);
-				}
-			}
-		});
-	}*/
 
 	public int getReflexSeed() {
 		if(enableReflex.isSelected()){

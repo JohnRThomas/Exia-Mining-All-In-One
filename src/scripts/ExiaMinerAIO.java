@@ -14,7 +14,6 @@ import scripts.mining.AIOMinerGUI;
 import scripts.mining.CustomPlayerSense;
 import scripts.mining.ErrorHandler;
 import scripts.mining.MiningStyle;
-import scripts.mining.MoneyCounter;
 import scripts.mining.Paint;
 import scripts.mining.ReflexAgent;
 
@@ -24,20 +23,20 @@ public class ExiaMinerAIO extends LoopingScript implements EmbeddableUI{
 	public static String name = "";
 	public static ExiaMinerAIO instance;
 	public static boolean isPaid = false;
-	private AIOMinerGUI gui;
-	private Paint paint = new Paint(Environment.isRS3());
+	private AIOMinerGUI gui = new AIOMinerGUI();
+	private Paint paint;
 	private boolean catchErrors = true;
 	public static boolean isRS3;
 	
 	@Override
 	public ObjectProperty<Node> botInterfaceProperty() {
-		if (gui == null) gui = new AIOMinerGUI();
 		return gui;
 	}
 	
 	@Override
 	public void onStart(String... args){
 		setEmbeddableUI(this);
+		
 		setLoopDelay(0);
 		isRS3 = Environment.isRS3();
 		version = getMetaData().getVersion();
@@ -50,27 +49,25 @@ public class ExiaMinerAIO extends LoopingScript implements EmbeddableUI{
 			stop();
 			return;
 		}
-		int reflexSeed = gui.getReflexSeed();
 
-		if(reflexSeed == -1){
-			Paint.showGraph = false;
-		}
-
-		ReflexAgent.initialize(reflexSeed);
+		paint = gui.paint;
+		paint.startEXP = Skill.MINING.getExperience();
 		CustomPlayerSense.intialize();
 
-		Paint.startTime = System.currentTimeMillis();
 		miner = gui.miner;
 		catchErrors = !Environment.isSDK() && gui.catchErrors;
-		gui = null;
-		Paint.startEXP = Skill.MINING.getExperience();
-		Paint.profitCounter = new MoneyCounter(miner.getOre().oreNames);
-		getEventDispatcher().addListener(paint);
+		
 		miner.onStart(args);
 	}
 
 	@Override
 	public void onLoop() {
+		// Update the paint variables
+		if(paint != null)paint.currentEXP = Skill.MINING.getExperience();
+		if(paint != null)paint.nextLevelEXP = Skill.MINING.getExperienceToNextLevel();
+		if(paint != null)paint.currentLevel = Skill.MINING.getCurrentLevel();
+		if(paint != null)paint.percentage = Skill.MINING.getExperienceAsPercent();
+
 		try{
 			miner.loop();
 		}catch(Exception e){
@@ -82,15 +79,20 @@ public class ExiaMinerAIO extends LoopingScript implements EmbeddableUI{
 		}
 
 		//At ~8 hours we need to generate a new line
-		if(System.currentTimeMillis() - Paint.startTime >=  3600000 * 7.875 * (1 + ReflexAgent.resets)){
+		if(System.currentTimeMillis() - paint.startTime >=  1000 * 7.875 * (1 + ReflexAgent.resets)){
 			Paint.status = "Regenerating reflex delay";
 			ReflexAgent.reinitialize(ReflexAgent.getReactionTime());
+			javafx.application.Platform.runLater(() -> {
+				paint.updateGraph();
+			});
 		}
 	}
 
 	@Override
 	public void onStop() {
 		if(miner != null)miner.onStop();
+		if(paint != null)paint.stop = true;
+		
 		System.gc();
 		if(ErrorHandler.hasErrors()){
 			ErrorHandler.throwAll(miner);

@@ -63,7 +63,7 @@ public class SpecialMiner extends MiningStyle{
 	public GridPane getContentPane(Button startButton) {
 		if(content != null)return content;
 		content = new GridPane();
-		content.setPadding(new Insets(25,3,25,3));
+		content.setPadding(new Insets(0,3,25,3));
 		content.setHgap(1.0);
 		content.setVgap(1.0);
 		ListView<String> locationList = new ListView<String>(); 

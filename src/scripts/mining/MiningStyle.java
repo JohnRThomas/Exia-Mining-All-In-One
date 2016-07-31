@@ -104,7 +104,6 @@ public abstract class MiningStyle {
 	protected void walkToNextEmpty(){
 		RockWatcher.Pair<Coordinate, Long, GameObject> rockPair = rockWatcher.nextRock();
 		GameObject next = rockPair == null ? null : rockWatcher.nextRock().object;
-		Paint.rock = next;
 		Player me = Players.getLocal();
 		if(next != null && me != null && next.distanceTo(me) > 1.0 && !me.isMoving()){
 			if(next.distanceTo(me) > 2){
