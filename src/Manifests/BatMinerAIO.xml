@@ -1,4 +1,4 @@
-<manifest>
+﻿<manifest>
 	<main-class>scripts.ExiaMinerAIO</main-class>
 	<name>Exia Miner AIO</name>
 	<tag-line>It’s honestly the best miner around</tag-line>
@@ -6,7 +6,6 @@
 	<version>1.5.0</version>
 	<compatibility>
 		<game>RS3</game>
-		<game>DARK</game>
 		<game>OSRS</game>
 	</compatibility>
 	<categories>
