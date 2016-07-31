@@ -79,7 +79,7 @@ public class ExiaMinerAIO extends LoopingScript implements EmbeddableUI{
 		}
 
 		//At ~8 hours we need to generate a new line
-		if(System.currentTimeMillis() - paint.startTime >=  1000 * 7.875 * (1 + ReflexAgent.resets)){
+		if(System.currentTimeMillis() - paint.startTime >=  3600000 * 7.875 * (1 + ReflexAgent.resets)){
 			Paint.status = "Regenerating reflex delay";
 			ReflexAgent.reinitialize(ReflexAgent.getReactionTime());
 			javafx.application.Platform.runLater(() -> {
