@@ -31,12 +31,12 @@ public class Paint extends BorderPane{
 
 	public static MoneyCounter profitCounter = null;
 	public static String status = "";
-	
+
 	// GUI elements
-    private LineChart<Number,Number> lineChart;
-    private ProgressBar pb;
+	private LineChart<Number,Number> lineChart;
+	private ProgressBar pb;
 	private Label[] labels = new Label[11];
-	
+
 	public Paint(MiningStyle miner){
 		super();
 		startTime = System.currentTimeMillis();
@@ -44,7 +44,7 @@ public class Paint extends BorderPane{
 		this.miner = miner;
 		createScene();
 		update();
-		
+
 		// Schedule this to update every second
 		Timer timer = new Timer("Paint Updater");
 		timer.schedule(new TimerTask(){ 
@@ -55,8 +55,8 @@ public class Paint extends BorderPane{
 						cancel();
 					}
 				});
-				}
-			}, 0, 700);
+			}
+		}, 0, 700);
 	}
 
 	private void createScene(){
@@ -68,60 +68,60 @@ public class Paint extends BorderPane{
 		}
 		HBox progress = new HBox();
 		pb = new ProgressBar(0f);
-        pb.prefWidthProperty().bind(left.widthProperty().subtract(30));
+		pb.prefWidthProperty().bind(left.widthProperty().subtract(30));
 		labels[labels.length - 1] = new Label();
 		labels[labels.length - 1].setMaxWidth(30);
 		progress.getChildren().addAll(labels[labels.length - 1], pb);
 		left.getChildren().add(progress);
 		left.setMinWidth(200);
-				
-        if(showGraph){
-            final NumberAxis xAxis = new NumberAxis();
-            final NumberAxis yAxis = new NumberAxis();
-            xAxis.setMinorTickVisible(false);
-            xAxis.setForceZeroInRange(false);
-            xAxis.setAutoRanging(false);
-            xAxis.setStyle("-fx-border-color: #333333 transparent transparent transparent;");
 
-            yAxis.setMinorTickVisible(false);
-            yAxis.setForceZeroInRange(false);
-            yAxis.setStyle("-fx-border-color: transparent #333333 transparent transparent;");
-            
-            lineChart = new LineChart<Number,Number>(xAxis,yAxis);
-            lineChart.setTitle("Reaction Time");
-            lineChart.setCreateSymbols(false);
-            lineChart.setLegendVisible(false);
-            lineChart.setMaxWidth(300);
-            lineChart.prefHeightProperty().bind(left.heightProperty());
+		if(showGraph){
+			final NumberAxis xAxis = new NumberAxis();
+			final NumberAxis yAxis = new NumberAxis();
+			xAxis.setMinorTickVisible(false);
+			xAxis.setForceZeroInRange(false);
+			xAxis.setAutoRanging(false);
+			xAxis.setStyle("-fx-border-color: #333333 transparent transparent transparent;");
 
-            Node styler = lineChart.lookup(".chart-vertical-grid-lines");
-            styler.setStyle("-fx-stroke: #333333;");
-            styler = lineChart.lookup(".chart-horizontal-grid-lines");
-            styler.setStyle("-fx-stroke: #333333;");
-            
-            styler = xAxis.lookup(".axis-tick-mark");
-            styler.setStyle("-fx-stroke: #333333;");
-            
-            styler = yAxis.lookup(".axis-tick-mark");
-            styler.setStyle("-fx-stroke: #333333;");
-            
-            updateGraph();
+			yAxis.setMinorTickVisible(false);
+			yAxis.setForceZeroInRange(false);
+			yAxis.setStyle("-fx-border-color: transparent #333333 transparent transparent;");
 
-            center.getChildren().add(lineChart);
-        }
-        
+			lineChart = new LineChart<Number,Number>(xAxis,yAxis);
+			lineChart.setTitle("Reaction Time");
+			lineChart.setCreateSymbols(false);
+			lineChart.setLegendVisible(false);
+			lineChart.setMaxWidth(300);
+			lineChart.prefHeightProperty().bind(left.heightProperty());
+
+			Node styler = lineChart.lookup(".chart-vertical-grid-lines");
+			styler.setStyle("-fx-stroke: #333333;");
+			styler = lineChart.lookup(".chart-horizontal-grid-lines");
+			styler.setStyle("-fx-stroke: #333333;");
+
+			styler = xAxis.lookup(".axis-tick-mark");
+			styler.setStyle("-fx-stroke: #333333;");
+
+			styler = yAxis.lookup(".axis-tick-mark");
+			styler.setStyle("-fx-stroke: #333333;");
+
+			updateGraph();
+
+			center.getChildren().add(lineChart);
+		}
+
 		setLeft(left);
-    	setCenter(center);
+		setCenter(center);
 	}
 
 	public void update() {
 		int totalEXP = currentEXP - startEXP;
-		
+
 		long time = System.currentTimeMillis() - startTime;
 		long expPhr = time != 0 ? ((long)totalEXP*3600000)/time : 0;
 		long profPhr = time != 0 ? ((long)profitCounter.getProfit()*3600000) / time : 0;
 		long orePhr = time != 0 ? ((long)profitCounter.getOreCount()*3600000) / time : 0;
-		
+
 		labels[0].setText("Runtime: " + Time.format(time));
 		labels[1].setText("Location: " + miner.getLocationName() + " (" + miner.getOre().name + ")");
 		labels[2].setText("Status: "+ status);
@@ -140,22 +140,24 @@ public class Paint extends BorderPane{
 		labels[labels.length - 1].setText((int)percentage + "%");
 		pb.setProgress((double)percentage / 100.0);
 	}
-	
+
 	public void updateGraph(){
-        XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
-        
-		for(double i = 0; i <= 7.875; i+=.125){
-			series.getData().add(new XYChart.Data<Number, Number>(i + (8*ReflexAgent.resets), ReflexAgent.applyPolynomial(i)));
+		if(showGraph){
+			XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
+
+			for(double i = 0; i <= 7.875; i+=.125){
+				series.getData().add(new XYChart.Data<Number, Number>(i + (8*ReflexAgent.resets), ReflexAgent.applyPolynomial(i)));
+			}
+
+			lineChart.getData().clear();
+			lineChart.getData().add(series);
+			((NumberAxis)(lineChart.getXAxis())).setLowerBound(ReflexAgent.resets * 8);
+			((NumberAxis)(lineChart.getXAxis())).setUpperBound((ReflexAgent.resets * 8) + 8);
+			((NumberAxis)(lineChart.getXAxis())).setTickUnit(1);
+			lineChart.getData().get(0).getNode().setStyle("-fx-stroke: #2DCC71");
 		}
-		
-		lineChart.getData().clear();
-        lineChart.getData().add(series);
-        ((NumberAxis)(lineChart.getXAxis())).setLowerBound(ReflexAgent.resets * 8);
-        ((NumberAxis)(lineChart.getXAxis())).setUpperBound((ReflexAgent.resets * 8) + 8);
-        ((NumberAxis)(lineChart.getXAxis())).setTickUnit(1);
-        lineChart.getData().get(0).getNode().setStyle("-fx-stroke: #2DCC71");
 	}
-	
+
 	private static String formatBigNumber(long number){
 		return NumberFormat.getInstance().format(number);
 	}
