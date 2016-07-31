@@ -49,23 +49,19 @@ public class LumbridgeWest extends Location{
 	public Node[] getSettingsNodes(){
 		ImageView warnImage = AIOMinerGUI.warnImage;
 		Label labela = new Label("WARNING!");
-		labela.setStyle("-fx-text-fill: -fx-text-input-text");
 		labela.setPadding(new Insets(0,0,3,5));
 		labela.setPrefWidth(165);
 		labela.setGraphic(warnImage);
 
 		Label labelb = new Label("This area may be");
-		labelb.setStyle("-fx-text-fill: -fx-text-input-text");
 		labelb.setPadding(new Insets(0,0,3,5));
 		labelb.setPrefWidth(165);
 		
 		Label labelc = new Label("buggy due to counter");
-		labelc.setStyle("-fx-text-fill: -fx-text-input-text");
 		labelc.setPadding(new Insets(0,0,3,5));
 		labelc.setPrefWidth(165);	
 		
 		Label labeld = new Label("measures by Jagex.");
-		labeld.setStyle("-fx-text-fill: -fx-text-input-text");
 		labeld.setPadding(new Insets(0,0,3,5));
 		labeld.setPrefWidth(165);
 		

@@ -65,6 +65,7 @@ public class PowerMiner extends MiningStyle{
 	private boolean useUrns = false;
 	private boolean useJujus = false;
 	private boolean dropGems = true;
+	private Coordinate playerStart;
 
 	int dropOffset = 0;
 	double radius = 10;
@@ -75,7 +76,9 @@ public class PowerMiner extends MiningStyle{
 
 	@Override
 	public void onStart(String... args) {
-		if(Environment.isRS3()){
+		playerStart = Players.getLocal().getPosition();
+		
+		if(ExiaMinerAIO.isRS3){
 			rockWatcher = new RockWatcher(new Validater(){
 				@Override
 				public boolean validate(GameObject o) {
@@ -488,7 +491,7 @@ public class PowerMiner extends MiningStyle{
 		try{
 			radius = radLabel.isSelected() ? Double.parseDouble(radText.getText()) : 1000;
 		}catch(NumberFormatException e){}
-		center = Players.getLocal().getPosition();
+		center = playerStart;
 	}
 
 	@Override
@@ -504,10 +507,9 @@ public class PowerMiner extends MiningStyle{
 		oreList.setPrefWidth(167);
 
 		FlowPane settings = new FlowPane();
-		settings.setStyle("-fx-background-color: -fx-background-dark-hundred; -fx-border-color: -fx-flair; -fx-border-style: solid; -fx-border-width: 1;");
 		settings.setPrefWrapLength(335);
 
-		oreList.setItems(Rock.getOres(Environment.isRS3()));
+		oreList.setItems(Rock.getOres(ExiaMinerAIO.isRS3));
 		oreList.getSelectionModel().clearSelection();
 
 		oreList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
@@ -528,11 +530,10 @@ public class PowerMiner extends MiningStyle{
 			}
 		});
 
-		mineOne.setStyle("-fx-text-fill: -fx-text-input-text");
 		mineOne.setPadding(new Insets(10,160,0,5));
 		settings.getChildren().add(mineOne);
 
-		if(Environment.isRS3()){
+		if(ExiaMinerAIO.isRS3){
 			hotkeys.selectedProperty().addListener(new ChangeListener<Boolean>() {
 				@Override
 				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -540,33 +541,26 @@ public class PowerMiner extends MiningStyle{
 				}
 			});
 
-			hotkeys.setStyle("-fx-text-fill: -fx-text-input-text");
 			hotkeys.setPadding(new Insets(10,160,0,5));
 			settings.getChildren().add(hotkeys);
 
 			forceNoClick.setDisable(!hotkeys.isSelected());
-			forceNoClick.setStyle("-fx-text-fill: -fx-text-input-text");
 			forceNoClick.setPadding(new Insets(10,100,0,5));
 			settings.getChildren().add(forceNoClick);
 
-			porterBox.setStyle("-fx-text-fill: -fx-text-input-text");
 			porterBox.setPadding(new Insets(10,160,0,5));
 			settings.getChildren().add(porterBox);
 
-			urnBox.setStyle("-fx-text-fill: -fx-text-input-text");
 			urnBox.setPadding(new Insets(10,160,0,5));
 			settings.getChildren().add(urnBox);
 
-			gemBox.setStyle("-fx-text-fill: -fx-text-input-text");
 			gemBox.setPadding(new Insets(10,160,0,5));
 			settings.getChildren().add(gemBox);
 
-			jujuBox.setStyle("-fx-text-fill: -fx-text-input-text");
 			jujuBox.setPadding(new Insets(10,160,0,5));
 			//settings.getChildren().add(jujuBox);
 }
 
-		power.setStyle("-fx-text-fill: -fx-text-input-text");
 		power.setPadding(new Insets(10,20,0,5));
 		settings.getChildren().add(power);
 
@@ -577,25 +571,20 @@ public class PowerMiner extends MiningStyle{
 			}
 		});
 
-		radLabel.setStyle("-fx-text-fill: -fx-text-input-text");
 		radLabel.setPadding(new Insets(0,5,0,5));
 		settings.getChildren().add(radLabel);
 
 		radText.setDisable(!radLabel.isSelected());
-		radText.setStyle("-fx-text-fill: -fx-text-input-text");
 		radText.setMaxWidth(35.0f);
 		radText.setPadding(new Insets(3,5,2,5));
 		settings.getChildren().add(radText);
 
-		final String LABEL_STYLE = "-fx-text-fill: -fx-flair-text; -fx-font-size: 15px; -fx-background-color: -fx-flair;";
 
 		Label oreLabel = new Label("Ores");
-		oreLabel.setStyle(LABEL_STYLE);
 		oreLabel.setAlignment(Pos.CENTER);
 		oreLabel.setPrefWidth(167);
 
 		Label setLabel = new Label("Settings");
-		setLabel.setStyle(LABEL_STYLE);
 		setLabel.setAlignment(Pos.CENTER);
 		setLabel.setPrefWidth(337);
 

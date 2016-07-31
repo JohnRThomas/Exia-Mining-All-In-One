@@ -188,7 +188,6 @@ public abstract class Location {
 
 	public Node[] getSettingsNodes(){
 		Label label = new Label("No location settings");
-		label.setStyle("-fx-text-fill: -fx-text-input-text");
 		label.setAlignment(Pos.CENTER);
 		label.setPadding(new Insets(3,3,3,3));
 		label.setPrefWidth(165);

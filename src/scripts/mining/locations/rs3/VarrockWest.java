@@ -61,7 +61,6 @@ public class VarrockWest extends Location{
 	@Override
 	public Node[] getSettingsNodes(){
 		if(ore == Rock.IRON || ore == Rock.CLAY){
-			box.setStyle("-fx-text-fill: -fx-text-input-text");
 			box.setPadding(new Insets(10,0,0,5));
 			box.setPrefWidth(165);
 			return new Node[]{box};

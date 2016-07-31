@@ -2,7 +2,6 @@ package scripts.mining;
 
 import java.util.ArrayList;
 
-import com.runemate.game.api.hybrid.Environment;
 import com.runemate.game.api.hybrid.location.Coordinate;
 
 import javafx.beans.value.ChangeListener;
@@ -16,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import scripts.ExiaMinerAIO;
 import scripts.mining.locations.Location;
 import scripts.mining.locations.special.SpecialLocation;
 
@@ -70,7 +70,6 @@ public class SpecialMiner extends MiningStyle{
 		locationList.setPrefWidth(167);
 		
 		FlowPane settings = new FlowPane();
-		settings.setStyle("-fx-background-color: -fx-background-dark-hundred; -fx-border-color: -fx-flair; -fx-border-style: solid; -fx-border-width: 1;");
 		settings.setPrefWrapLength(332);
 
 		ObservableList<String> items = FXCollections.observableArrayList();
@@ -95,15 +94,12 @@ public class SpecialMiner extends MiningStyle{
 			}
 		});
 		
-		final String LABEL_STYLE = "-fx-text-fill: -fx-flair-text; -fx-font-size: 15px; -fx-background-color: -fx-flair;";
 
 		Label locLabel = new Label("Locations");
-		locLabel.setStyle(LABEL_STYLE);
 		locLabel.setAlignment(Pos.CENTER);
 		locLabel.setPrefWidth(167);
 		
 		Label setLabel = new Label("Settings");
-		setLabel.setStyle(LABEL_STYLE);
 		setLabel.setAlignment(Pos.CENTER);
 		setLabel.setPrefWidth(332);
 
@@ -125,7 +121,7 @@ public class SpecialMiner extends MiningStyle{
 	
 	private ArrayList<SpecialLocation> getLocations() {
 		ArrayList<SpecialLocation> locations = new ArrayList<SpecialLocation>();
-		if(Environment.isRS3()){
+		if(ExiaMinerAIO.isRS3){
 			locations.add(new scripts.mining.locations.special.LavaFlow());
 		}else{
 			locations.add(new scripts.mining.locations.special.MotherLoad());
