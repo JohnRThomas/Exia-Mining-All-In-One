@@ -16,12 +16,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-public class Paint extends BorderPane{
-	private MiningStyle miner;
+public class Paint{
+	
+	public BorderPane root;
 	public int tempLevel = 0;
 	public long startTime = 0;
 	public int levelsGained = 0;
-	public int startEXP = 0;
+	public int startEXP = -1;
 	public boolean showGraph = true;
 	public boolean stop = false;
 	public int currentEXP = 0;
@@ -32,6 +33,8 @@ public class Paint extends BorderPane{
 	public static MoneyCounter profitCounter = null;
 	public static String status = "";
 
+	private MiningStyle miner;
+	
 	// GUI elements
 	private LineChart<Number,Number> lineChart;
 	private ProgressBar pb;
@@ -110,8 +113,8 @@ public class Paint extends BorderPane{
 			center.getChildren().add(lineChart);
 		}
 
-		setLeft(left);
-		setCenter(center);
+		root.setLeft(left);
+		root.setCenter(center);
 	}
 
 	public void update() {

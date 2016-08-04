@@ -282,7 +282,7 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 				if(getReflexSeed() == -1){
 					paint.showGraph = false;
 				}
-				setValue(paint);
+				setValue(paint.root);
 			}
 		});
 	}

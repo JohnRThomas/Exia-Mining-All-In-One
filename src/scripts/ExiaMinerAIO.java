@@ -51,7 +51,6 @@ public class ExiaMinerAIO extends LoopingScript implements EmbeddableUI{
 		}
 
 		paint = gui.paint;
-		paint.startEXP = Skill.MINING.getExperience();
 		CustomPlayerSense.intialize();
 
 		miner = gui.miner;
@@ -63,10 +62,11 @@ public class ExiaMinerAIO extends LoopingScript implements EmbeddableUI{
 	@Override
 	public void onLoop() {
 		// Update the paint variables
-		if(paint != null)paint.currentEXP = Skill.MINING.getExperience();
-		if(paint != null)paint.nextLevelEXP = Skill.MINING.getExperienceToNextLevel();
-		if(paint != null)paint.currentLevel = Skill.MINING.getCurrentLevel();
-		if(paint != null)paint.percentage = Skill.MINING.getExperienceAsPercent();
+		if(paint.startEXP == -1)paint.startEXP = Skill.MINING.getExperience();
+		paint.currentEXP = Skill.MINING.getExperience();
+		paint.nextLevelEXP = Skill.MINING.getExperienceToNextLevel();
+		paint.currentLevel = Skill.MINING.getCurrentLevel();
+		paint.percentage = Skill.MINING.getExperienceAsPercent();
 
 		try{
 			miner.loop();
@@ -91,7 +91,7 @@ public class ExiaMinerAIO extends LoopingScript implements EmbeddableUI{
 	@Override
 	public void onStop() {
 		if(miner != null)miner.onStop();
-		if(paint != null)paint.stop = true;
+		paint.stop = true;
 		
 		System.gc();
 		if(ErrorHandler.hasErrors()){
