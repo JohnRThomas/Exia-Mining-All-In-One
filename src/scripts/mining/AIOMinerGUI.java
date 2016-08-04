@@ -274,7 +274,6 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 			@Override
 			public void handle(ActionEvent event) {
 				miner.loadSettings();
-				dispose = 1;
 
 				ReflexAgent.initialize(getReflexSeed());
 				
@@ -283,6 +282,7 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 					paint.showGraph = false;
 				}
 				setValue(paint.root);
+				dispose = 1;
 			}
 		});
 	}
