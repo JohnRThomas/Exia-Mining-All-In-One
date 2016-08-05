@@ -112,7 +112,7 @@ public class Paint{
 
 			center.getChildren().add(lineChart);
 		}
-
+		root = new BorderPane();
 		root.setLeft(left);
 		root.setCenter(center);
 	}

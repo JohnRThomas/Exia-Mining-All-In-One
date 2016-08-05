@@ -74,9 +74,10 @@ public class PowerMiner extends MiningStyle{
 	private Rock ore;
 	boolean[] dropped = new boolean[28];
 
+	boolean first = true;
+	
 	@Override
 	public void onStart(String... args) {
-		playerStart = Players.getLocal().getPosition();
 		
 		if(ExiaMinerAIO.isRS3){
 			rockWatcher = new RockWatcher(new Validater(){
@@ -144,6 +145,12 @@ public class PowerMiner extends MiningStyle{
 
 	@Override
 	public void loop() {
+		Player player;
+		if(first && (player = Players.getLocal()) != null){
+			playerStart = player.getPosition();
+			first = false;
+		}
+		
 		if(useUrns){
 			ItemHandlers.manageUrns(0);
 		}
