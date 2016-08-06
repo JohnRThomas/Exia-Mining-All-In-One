@@ -29,10 +29,10 @@ public abstract class TreeScript extends LoopingScript {
 	public final void onLoop() {
 		
 		// Loop over all roots in order.
-		for(TreeTask t : tasks){
+		for(final TreeTask t : tasks){
 			TreeTask currentTask = t;
 			
-			// Traverse the tree starting at the root in this.
+			// Traverse the tree starting at the root in tasks.
 			while(currentTask != null){
 				// If the task validates, execute it and then move on
 				// to it's success task. Otherwise, move on to it's 
