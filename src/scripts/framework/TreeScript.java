@@ -1,7 +1,5 @@
 package scripts.framework;
 
-import java.util.LinkedList;
-
 import com.runemate.game.api.script.framework.LoopingScript;
 
 /**
@@ -15,73 +13,42 @@ import com.runemate.game.api.script.framework.LoopingScript;
  *
  */
 public abstract class TreeScript extends LoopingScript {
-	private LinkedList<TreeTask> tasks = new LinkedList<TreeTask>();
+	TreeTask root;
 	
 	/**
 	 * This is where the magic happens. Performs a sort of in-order
-	 * traversal of the Task tree based on the validator. Task Trees
-	 * will be executed in the order that they are in the list.
-	 * The order can be modified by adding to either the front or the
-	 * end of the list. ALL TREE ROOTS WILL BE TESTED FOR VALIDITY NO
-	 * MATTER WHAT HAPPENS TO THE ROOTS BEFORE THEM.
+	 * traversal of the Task tree based on the validator. When a leaf
+	 * node is reached, it will be executed instead of validated.
 	 */
 	@Override
 	public final void onLoop() {
+		if(root == null) throw new UnsupportedOperationException("Root of TaskTree was null.");
 		
-		// Loop over all roots in order.
-		for(final TreeTask t : tasks){
-			TreeTask currentTask = t;
-			
-			// Traverse the tree starting at the root in tasks.
-			while(currentTask != null){
-				// If the task validates, execute it and then move on
-				// to it's success task. Otherwise, move on to it's 
-				// failure task.
-				if(currentTask.validate()){
-					currentTask.execute();
-					currentTask = currentTask.successTask();
-				} else {
-					currentTask = currentTask.failureTask();
-				}
+		TreeTask currentTask = root;
+		
+		// Traverse the tree starting at the root in tasks.
+		while(!currentTask.isLeaf()){
+			// If the task validates, move on to its success task.
+			// Otherwise, move on to its failure task.
+			if(currentTask.validate()){
+				if(currentTask.successTask() == null) throw new UnsupportedOperationException("Branch had a null Success Task.");
+				else currentTask = currentTask.successTask();
+			} else {
+				if(currentTask.failureTask() == null) throw new UnsupportedOperationException("Branch had a null Failure Task.");
+				else currentTask = currentTask.failureTask();
 			}
 		}
-	}
-	
-	/**
-	 * Add a new task tree to the beginning of the execution queue.
-	 * 
-	 * @param task
-	 */
-	public void addLast(TreeTask task){
-		tasks.addLast(task);
-	}
-	
-	/**
-	 * Add a new task tree to the end of the execution queue.
-	 * 
-	 * @param task
-	 */
-	public void addFirst(TreeTask task){
-		tasks.addFirst(task);
 		
+		// When a leaf is reached, execute it.
+		currentTask.execute();
 	}
-	
+		
 	/**
 	 * Make this the only task tree in the queue.
 	 * 
 	 * @param task
 	 */
 	public void setRoot(TreeTask task){
-		tasks.clear();
-		tasks.add(task);
-	}
-	
-	/**
-	 * Removes the given task tree from the queue.
-	 * 
-	 * @param task
-	 */
-	public void remove(TreeTask task){
-		tasks.remove(task);
+		root = task;
 	}
 }
