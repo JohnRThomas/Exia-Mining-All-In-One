@@ -1,5 +1,5 @@
 ﻿<manifest>
-	<main-class>scripts.ExiaMinerAIO</main-class>
+	<main-class>exiabots.ExiaMinerAIO</main-class>
 	<name>Exia Miner AIO</name>
 	<tag-line>It’s honestly the best miner around</tag-line>
 	<description>Mine or power mine things all over Runescape.</description>
