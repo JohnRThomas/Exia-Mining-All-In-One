@@ -11,6 +11,7 @@ import com.runemate.game.api.script.framework.tree.TreeTask;
 
 import exiabots.mining.Rock;
 import exiabots.mining.locations.Location;
+import exiabots.newmining.GUI.ButtonBar;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -18,7 +19,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -64,11 +64,17 @@ public class StandardMiner extends MiningStyle {
 	private GridPane content = null;
 	CheckBox urnBox = new CheckBox("Use urns: ");
 	TextField urnText = new TextField("" + urnAmount);
-	CheckBox porterBox= new CheckBox("Use porters");
+	CheckBox porterBox = new CheckBox("Use porters");
 	CheckBox walkBox = new CheckBox("Walk when heavy");
-
+	
+	@Override
+	public void loadSettings() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	@Override 
-	public GridPane getContentPane(final Button startButton) {
+	public GridPane getContentPane(ButtonBar buttonBar, boolean isRS3, boolean fullVersion) {
 		if(content != null)return content;
 		content = new GridPane();
 		content.setPadding(new Insets(0,3,25,3));
@@ -86,7 +92,7 @@ public class StandardMiner extends MiningStyle {
 
 		ObservableList<String> items = FXCollections.observableArrayList();
 
-		ArrayList<Location> locations = getLocations();
+		ArrayList<Location> locations = getLocations(isRS3, fullVersion);
 		for (int i = 0; i < locations.size(); i++) {
 			items.add(locations.get(i).getName());
 		}
@@ -105,7 +111,7 @@ public class StandardMiner extends MiningStyle {
 				oreList.setItems(items);
 				oreList.getSelectionModel().clearSelection();
 
-				populateOptions(settings);
+				populateOptions(settings, isRS3);
 			}
 		});
 
@@ -113,9 +119,8 @@ public class StandardMiner extends MiningStyle {
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				if(newValue != null){
 					location.intialize(newValue);
-					startButton.setDisable(false);
-
-					populateOptions(settings);
+					buttonBar.setDisabled(1, false);
+					populateOptions(settings, isRS3);
 				}
 			}
 		});
@@ -144,7 +149,7 @@ public class StandardMiner extends MiningStyle {
 		return content;
 	}
 
-	private void  populateOptions(FlowPane settings){
+	private void  populateOptions(FlowPane settings, boolean isRS3){
 		Node[] nodes = location.getSettingsNodes();
 		settings.getChildren().clear();
 
@@ -152,7 +157,7 @@ public class StandardMiner extends MiningStyle {
 			settings.getChildren().add(nodes[i]);
 		}
 
-		if(Environment.isRS3()){
+		if(isRS3){
 			porterBox.setPadding(new Insets(10,50,0,5));
 			settings.getChildren().add(porterBox);
 
@@ -203,13 +208,13 @@ public class StandardMiner extends MiningStyle {
 		}
 	}
 
-	private ArrayList<Location> getLocations() {
+	private ArrayList<Location> getLocations(boolean isRS3, boolean fullVersion) {
 		ArrayList<Location> locations = new ArrayList<Location>();
-		if(Environment.isRS3()){
+		if(isRS3){
 			locations.add(new exiabots.mining.locations.rs3.AlKharid());
 			locations.add(new exiabots.mining.locations.rs3.BarbarianVillage());
-			if(Environment.isSDK())locations.add(new exiabots.mining.locations.rs3.CoalTrucks());
-			if(Environment.isSDK())locations.add(new exiabots.mining.locations.rs3.DesertQuarry());
+			if(fullVersion)locations.add(new exiabots.mining.locations.rs3.CoalTrucks());
+			if(fullVersion)locations.add(new exiabots.mining.locations.rs3.DesertQuarry());
 			locations.add(new exiabots.mining.locations.rs3.DwarvenMine());
 			locations.add(new exiabots.mining.locations.rs3.DwarvenResourceMine());
 			locations.add(new exiabots.mining.locations.rs3.LegendsGuild());
@@ -218,7 +223,7 @@ public class StandardMiner extends MiningStyle {
 			locations.add(new exiabots.mining.locations.rs3.LumbridgeWest());
 			//locations.add(new exiabots.mining.locations.rs3.MiningGuild(rockWatcher, this));
 			locations.add(new exiabots.mining.locations.rs3.Monastery());
-			if(Environment.isSDK())locations.add(new exiabots.mining.locations.rs3.PiratesHideout());
+			if(fullVersion)locations.add(new exiabots.mining.locations.rs3.PiratesHideout());
 			locations.add(new exiabots.mining.locations.rs3.Rimmington());
 			locations.add(new exiabots.mining.locations.rs3.ShiloVillage());
 			locations.add(new exiabots.mining.locations.rs3.VarrockEast());
@@ -227,13 +232,13 @@ public class StandardMiner extends MiningStyle {
 		}else{
 			locations.add(new exiabots.mining.locations.osrs.AlKharid());
 			locations.add(new exiabots.mining.locations.osrs.BarbarianVillage());
-			if(Environment.isSDK())locations.add(new exiabots.mining.locations.osrs.CoalTrucks());
+			if(fullVersion)locations.add(new exiabots.mining.locations.osrs.CoalTrucks());
 			locations.add(new exiabots.mining.locations.osrs.LegendsGuild());
 			locations.add(new exiabots.mining.locations.osrs.LumbridgeEast());
 			locations.add(new exiabots.mining.locations.osrs.LumbridgeWest());
 			//locations.add(new exiabots.mining.locations.osrs.MiningGuild(rockWatcher, this));
 			locations.add(new exiabots.mining.locations.osrs.Monastery());
-			if(Environment.isSDK())locations.add(new exiabots.mining.locations.osrs.PiratesHideout());
+			if(fullVersion)locations.add(new exiabots.mining.locations.osrs.PiratesHideout());
 			locations.add(new exiabots.mining.locations.osrs.Rimmington());
 			locations.add(new exiabots.mining.locations.osrs.VarrockEast());
 			locations.add(new exiabots.mining.locations.osrs.VarrockWest());
@@ -395,32 +400,6 @@ public class StandardMiner extends MiningStyle {
 			} else {
 				location.walkToMine();
 			}
-		}
-	}
-
-	private class MiningBranch extends BranchTask {
-		private TreeTask success;
-		private TreeTask failure;
-		Location location;
-		
-		public MiningBranch(Location location){
-			this.location = location;
-			failure = success = new WaitTask();	
-		}
-
-		@Override
-		public boolean validate() {
-			return true;
-		}
-		
-		@Override
-		public TreeTask failureTask() {
-			return success;
-		}
-
-		@Override
-		public TreeTask successTask() {
-			return failure;
 		}
 	}
 }

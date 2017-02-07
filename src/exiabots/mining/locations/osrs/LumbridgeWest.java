@@ -3,7 +3,7 @@ package exiabots.mining.locations.osrs;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 
-import exiabots.mining.GUI;
+import exiabots.newmining.GUI;
 import exiabots.mining.Rock;
 import javafx.geometry.Insets;
 import javafx.scene.Node;

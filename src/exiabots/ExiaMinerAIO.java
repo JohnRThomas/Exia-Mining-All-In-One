@@ -5,10 +5,12 @@ import com.runemate.game.api.script.framework.tree.TreeBot;
 import com.runemate.game.api.script.framework.tree.TreeTask;
 
 import exiabots.newmining.GUI;
+import exiabots.newmining.GUI.GUIState;
 import exiabots.newmining.GUITask;
 import exiabots.newmining.SwapTask;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.Node;
+import javafx.scene.layout.BorderPane;
 
 public class ExiaMinerAIO extends TreeBot implements EmbeddableUI {
 	
@@ -47,8 +49,9 @@ public class ExiaMinerAIO extends TreeBot implements EmbeddableUI {
 
 	@Override
 	public void onStop() {
-		if(gui.miner != null)gui.miner.onStop();
-		if(gui.paint != null)gui.paint.stop = true;
+		if(gui != null && gui.getState() != GUIState.PAINT) javafx.application.Platform.runLater(() -> { gui.setValue(new BorderPane()); });
+		if(gui != null && gui.miner != null) gui.miner.onStop();
+		if(gui != null && gui.paint != null) gui.paint.stop = true;
 		
 	}
 

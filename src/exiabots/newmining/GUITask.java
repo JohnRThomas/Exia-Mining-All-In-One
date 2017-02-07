@@ -12,6 +12,7 @@ import com.runemate.game.api.script.framework.tree.LeafTask;
 import com.runemate.game.api.script.framework.tree.TreeBot;
 import com.runemate.game.api.script.framework.tree.TreeTask;
 
+import exiabots.mining.CustomPlayerSense;
 import exiabots.newmining.GUI.GUIState;
 
 public class GUITask extends BranchTask {
@@ -58,8 +59,7 @@ public class GUITask extends BranchTask {
 
 		@Override
 		public boolean validate() {
-			return true;
-			//return gui.dispose == GUI.GUIState.OPEN;
+			return gui.getState() == GUI.GUIState.OPEN;
 		}
 		
 		@Override
@@ -79,8 +79,7 @@ public class GUITask extends BranchTask {
 
 		@Override
 		public boolean validate() {
-			return true;
-			//return gui.dispose == GUI.GUIState.CLOSED_CONTINUE;
+			return gui.getState() == GUI.GUIState.PAINT;
 		}
 		
 		@Override
@@ -100,17 +99,17 @@ public class GUITask extends BranchTask {
 		@Override
 		public void execute() {
 			// Setup the paint so it can update on it's own.
-			//setupTimers(gui.paint);
+			setupTimers(gui.paint);
 
 			// Get the tree from the 
-			TreeTask newTree = new WaitTask();//gui.miner.createRootTask();
+			TreeTask newTree = gui.miner.createRootTask();
 			
 			// Add a reflex agent updater to the front of the tree.
-			//if(gui.paint.showGraph) {
-			//	newTree = new ReflexUpdateBranch(newTree, gui.paint);
-			//}
+			if(gui.paint.showGraph) {
+				newTree = new ReflexUpdateBranch(newTree, gui.paint);
+			}
 
-			//CustomPlayerSense.intialize();
+			CustomPlayerSense.intialize();
 			
 			// Swap out the GUI tree for the new tree.
 			root.setTask(newTree);
