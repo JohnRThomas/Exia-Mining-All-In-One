@@ -5,7 +5,7 @@ import com.runemate.game.api.hybrid.entities.definitions.GameObjectDefinition;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 
-import exiabots.mining.AIOMinerGUI;
+import exiabots.mining.GUI;
 import exiabots.mining.Rock;
 import exiabots.mining.locations.Location;
 import javafx.geometry.Insets;
@@ -47,7 +47,7 @@ public class LumbridgeWest extends Location{
 
 	@Override
 	public Node[] getSettingsNodes(){
-		ImageView warnImage = AIOMinerGUI.warnImage;
+		ImageView warnImage = GUI.warnImage;
 		Label labela = new Label("WARNING!");
 		labela.setPadding(new Insets(0,0,3,5));
 		labela.setPrefWidth(165);

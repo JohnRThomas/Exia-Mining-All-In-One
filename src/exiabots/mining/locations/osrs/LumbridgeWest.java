@@ -3,7 +3,7 @@ package exiabots.mining.locations.osrs;
 import com.runemate.game.api.hybrid.location.Area;
 import com.runemate.game.api.hybrid.location.Coordinate;
 
-import exiabots.mining.AIOMinerGUI;
+import exiabots.mining.GUI;
 import exiabots.mining.Rock;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -44,7 +44,7 @@ public class LumbridgeWest extends OSRSLocation{
 
 	@Override
 	public Node[] getSettingsNodes(){
-		ImageView warnImage = AIOMinerGUI.warnImage;
+		ImageView warnImage = GUI.warnImage;
 		Label labela = new Label("WARNING!");
 		labela.setPadding(new Insets(0,0,3,5));
 		labela.setPrefWidth(165);

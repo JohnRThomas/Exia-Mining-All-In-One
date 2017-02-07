@@ -27,16 +27,16 @@ import exiabots.mining.Rock;
 public class VarrockEast extends OSRSLocation{
 
 	private Area shop = new Area.Polygonal(
-			new Coordinate(3252,3405), new Coordinate(3254,3405),
-			new Coordinate(3256,3403), new Coordinate(3256,3400),
-			new Coordinate(3255,3399), new Coordinate(3252,3398),
-			new Coordinate(3251,3398), new Coordinate(3250,3399),
-			new Coordinate(3252,3402), new Coordinate(3252,3403));
-	private Area outside = new Area.Rectangular(new Coordinate(3249, 3398), new Coordinate(3256, 3396));
+			new Coordinate(3252,3405, 0), new Coordinate(3254,3405, 0),
+			new Coordinate(3256,3403, 0), new Coordinate(3256,3400, 0),
+			new Coordinate(3255,3399, 0), new Coordinate(3252,3398, 0),
+			new Coordinate(3251,3398, 0), new Coordinate(3250,3399, 0),
+			new Coordinate(3252,3402, 0), new Coordinate(3252,3403, 0));
+	private Area outside = new Area.Rectangular(new Coordinate(3249, 3398, 0), new Coordinate(3256, 3396, 0));
 
 	@Override
 	public void intialize(String ore){
-		mine = new Area.Rectangular(new Coordinate(3280,3360), new Coordinate(3291,3371));
+		mine = new Area.Rectangular(new Coordinate(3280,3360, 0), new Coordinate(3291,3371, 0));
 		bank = new Area.Rectangular(new Coordinate(3250,3418, 0), new Coordinate(3257,3423, 0));
 
 		switch(ore){
@@ -44,13 +44,13 @@ public class VarrockEast extends OSRSLocation{
 				rocks = new Coordinate[0];
 				break;
 			case "Tin":
-				rocks = new Coordinate[] {new Coordinate(3281,3363),new Coordinate(3282,3364)};
+				rocks = new Coordinate[] {new Coordinate(3281,3363, 0),new Coordinate(3282,3364, 0)};
 				break;
 			case "Copper":
-				rocks = new Coordinate[] {new Coordinate(3282,3368),new Coordinate(3282,3369)};
+				rocks = new Coordinate[] {new Coordinate(3282,3368, 0),new Coordinate(3282,3369, 0)};
 				break;
 			case "Iron":
-				rocks = new Coordinate[]{new Coordinate(3286,3369),new Coordinate(3285,3369),new Coordinate(3288,3370),new Coordinate(3285,3368)};
+				rocks = new Coordinate[]{new Coordinate(3286,3369, 0),new Coordinate(3285,3369, 0),new Coordinate(3288,3370, 0),new Coordinate(3285,3368, 0)};
 				break;
 			default:
 				throw new RuntimeException(ore + " is not supported in " + getName());

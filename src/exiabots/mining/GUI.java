@@ -32,16 +32,16 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
 
-public class AIOMinerGUI extends SimpleObjectProperty<Node>{
+public class GUI extends SimpleObjectProperty<Node>{
 	String style;
 	Location location;
-	public MiningStyle miner;
+	public exiabots.newmining.MiningStyle miner;
 	public boolean catchErrors = true;
-	public int dispose = 0;
+	public GUIState dispose = GUIState.OPEN;
 	public static ImageView warnImage = null;
 	public Paint paint;
 	
-	public AIOMinerGUI(){
+	public GUI(){
 		super();
 		super.setValue(createScene());
 	}
@@ -179,7 +179,7 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 		localButtons[0].setOnAction(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle(ActionEvent event) {
-				miner = new StandardMiner();
+				miner = new exiabots.newmining.StandardMiner();
 				buttons[1].setDisable(false);
 				locationContent = miner.getContentPane(buttons[2]);
 				locationContent.setMaxHeight(leftPane.getHeight());
@@ -187,7 +187,10 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 			}
 		});
 
-		localButtons[1].setOnAction(new EventHandler<ActionEvent>(){
+		localButtons[1].setDisable(true);
+		localButtons[2].setDisable(true);
+		
+		/*localButtons[1].setOnAction(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle(ActionEvent event) {
 				miner = new PowerMiner();
@@ -196,8 +199,8 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 				locationContent.setMaxHeight(leftPane.getHeight());
 				root.setCenter(locationContent);
 			}
-		});
-		if(Environment.isSDK()){
+		});*/
+		/*if(Environment.isSDK()){
 			localButtons[2].setOnAction(new EventHandler<ActionEvent>(){
 				@Override
 				public void handle(ActionEvent event) {
@@ -210,7 +213,7 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 			});
 		}else{
 			localButtons[2].setDisable(true);
-		}
+		}*/
 
 		localButtons[3].setDisable(true);
 
@@ -273,16 +276,16 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 		ft.setOnFinished(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle(ActionEvent event) {
-				miner.loadSettings();
+				//miner.loadSettings();
 
 				ReflexAgent.initialize(getReflexSeed());
 				
-				paint = new Paint(miner);
+				//paint = new Paint(miner);
 				if(getReflexSeed() == -1){
 					paint.showGraph = false;
 				}
 				setValue(paint.root);
-				dispose = 1;
+				dispose = GUIState.CLOSED_CONTINUE;
 			}
 		});
 	}
@@ -295,7 +298,7 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 		ft.setOnFinished(new EventHandler<ActionEvent>(){
 			@Override
 			public void handle(ActionEvent event) {
-				dispose = 2;
+				dispose = GUIState.CLOSED_EXIT;
 			}
 		});
 	}
@@ -308,4 +311,11 @@ public class AIOMinerGUI extends SimpleObjectProperty<Node>{
 			return -1;
 		}
 	}
+	
+	public enum GUIState {
+		OPEN(),
+		CLOSED_CONTINUE(),
+		CLOSED_EXIT();
+	}
+
 }

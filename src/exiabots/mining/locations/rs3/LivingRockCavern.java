@@ -23,7 +23,7 @@ import com.runemate.game.api.hybrid.util.Timer;
 import com.runemate.game.api.hybrid.util.calculations.Random;
 import com.runemate.game.api.script.Execution;
 
-import exiabots.mining.AIOMinerGUI;
+import exiabots.mining.GUI;
 import exiabots.mining.MiningStyle;
 import exiabots.mining.Paint;
 import exiabots.mining.ReflexAgent;
@@ -274,7 +274,7 @@ public class LivingRockCavern extends DepositLocation{
 
 	@Override
 	public Node[] getSettingsNodes(){
-		ImageView warnImage = AIOMinerGUI.warnImage;
+		ImageView warnImage = GUI.warnImage;
 
 		Label labela = new Label("WARNING!");
 		labela.setAlignment(Pos.CENTER);

@@ -1,23 +1,53 @@
 package exiabots;
 
-import java.math.BigDecimal;
-
 import com.runemate.game.api.client.embeddable.EmbeddableUI;
-import com.runemate.game.api.hybrid.Environment;
-import com.runemate.game.api.hybrid.local.Skill;
-import com.runemate.game.api.script.Execution;
-import com.runemate.game.api.script.framework.LoopingScript;
+import com.runemate.game.api.script.framework.tree.TreeBot;
+import com.runemate.game.api.script.framework.tree.TreeTask;
 
-import exiabots.mining.AIOMinerGUI;
-import exiabots.mining.CustomPlayerSense;
-import exiabots.mining.ErrorHandler;
-import exiabots.mining.MiningStyle;
-import exiabots.mining.Paint;
-import exiabots.mining.ReflexAgent;
+import exiabots.newmining.GUI;
+import exiabots.newmining.GUITask;
+import exiabots.newmining.SwapTask;
 import javafx.beans.property.ObjectProperty;
 import javafx.scene.Node;
 
-public class ExiaMinerAIO extends LoopingScript implements EmbeddableUI{
+public class ExiaMinerAIO extends TreeBot implements EmbeddableUI {
+	
+	private GUI gui = new GUI();
+	
+	public ExiaMinerAIO(){
+		setEmbeddableUI(this);
+	}
+	
+	@Override
+	public void onStart(String... args){
+		setLoopDelay(0);
+	}
+	
+	@Override
+	public TreeTask createRootTask() {
+		// Set up a a swappable root so that the GUITask
+		// can be removed and replaced by a MiningTask
+		// when the script is started. This is to avoid
+		// continuously calling an IsGUIOpenTask that will
+		// ALWAYS return false. This also allows the Mining
+		// root task to be created at a later time when the
+		// GUI has received all of the necessary info from
+		// the user.
+		SwapTask rootTask = new SwapTask();
+		rootTask.setTask(new GUITask(this, rootTask, gui));
+		
+		// Return the the root task.
+		return rootTask;
+	}
+	
+	@Override
+	public ObjectProperty<? extends Node> botInterfaceProperty() {
+		return gui;
+	}
+
+
+}
+/*public class ExiaMinerAIO extends LoopingScript implements EmbeddableUI{
 	public static MiningStyle miner;
 	public static String version = "";
 	public static String name = "";
@@ -61,12 +91,6 @@ public class ExiaMinerAIO extends LoopingScript implements EmbeddableUI{
 
 	@Override
 	public void onLoop() {
-		// Update the paint variables
-		if(paint.startEXP == -1)paint.startEXP = Skill.MINING.getExperience();
-		paint.currentEXP = Skill.MINING.getExperience();
-		paint.nextLevelEXP = Skill.MINING.getExperienceToNextLevel();
-		paint.currentLevel = Skill.MINING.getCurrentLevel();
-		paint.percentage = Skill.MINING.getExperienceAsPercent();
 
 		try{
 			miner.loop();
@@ -77,25 +101,16 @@ public class ExiaMinerAIO extends LoopingScript implements EmbeddableUI{
 				throw e;
 			}
 		}
-
-		//At ~8 hours we need to generate a new line
-		if(System.currentTimeMillis() - paint.startTime >=  3600000 * 7.875 * (1 + ReflexAgent.resets)){
-			Paint.status = "Regenerating reflex delay";
-			ReflexAgent.reinitialize(ReflexAgent.getReactionTime());
-			javafx.application.Platform.runLater(() -> {
-				paint.updateGraph();
-			});
-		}
 	}
 
 	@Override
 	public void onStop() {
 		if(miner != null)miner.onStop();
-		paint.stop = true;
+		if(paint != null)paint.stop = true;
 		
 		System.gc();
 		if(ErrorHandler.hasErrors()){
 			ErrorHandler.throwAll(miner);
 		}
 	}
-}
+}*/

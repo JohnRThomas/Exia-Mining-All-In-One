@@ -1,14 +1,9 @@
-package exiabots.mining;
+package exiabots.newmining;
 
 import java.text.NumberFormat;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ExecutionException;
 
-import com.runemate.game.api.hybrid.local.Skill;
 import com.runemate.game.api.hybrid.util.Time;
 
-import exiabots.ExiaMinerAIO;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -33,7 +28,7 @@ public class Paint{
 	public int currentLevel = 0;
 	public int percentage = 0;
 
-	public static MoneyCounter profitCounter = null;
+	//public static MoneyCounter profitCounter = null;
 	public static String status = "";
 
 	private MiningStyle miner;
@@ -46,7 +41,7 @@ public class Paint{
 	public Paint(MiningStyle miner){
 		super();
 		startTime = System.currentTimeMillis();
-		profitCounter = new MoneyCounter(miner.getOre().oreNames);
+		//profitCounter = new MoneyCounter(miner.getOre().oreNames);
 		this.miner = miner;
 		createScene();
 		update();
@@ -112,15 +107,15 @@ public class Paint{
 
 		long time = System.currentTimeMillis() - startTime;
 		long expPhr = time != 0 ? ((long)totalEXP*3600000)/time : 0;
-		long profPhr = time != 0 ? ((long)profitCounter.getProfit()*3600000) / time : 0;
-		long orePhr = time != 0 ? ((long)profitCounter.getOreCount()*3600000) / time : 0;
+		//long profPhr = time != 0 ? ((long)profitCounter.getProfit()*3600000) / time : 0;
+		//long orePhr = time != 0 ? ((long)profitCounter.getOreCount()*3600000) / time : 0;
 
 		labels[0].setText("Runtime: " + Time.format(time));
 		labels[1].setText("Location: " + miner.getLocationName() + " (" + miner.getOre().name + ")");
 		labels[2].setText("Status: " + status);
-		labels[3].setText("Ores/Hour: " + formatBigNumber(orePhr));
-		labels[4].setText("Profit: " + formatBigNumber(profitCounter.getProfit()));
-		labels[5].setText("Profit/Hour: " + formatBigNumber(profPhr));
+		labels[3].setText("Ores/Hour: " + 0);// formatBigNumber(orePhr));
+		labels[4].setText("Profit: " + 0);// formatBigNumber(profitCounter.getProfit()));
+		labels[5].setText("Profit/Hour: " + 0);// formatBigNumber(profPhr));
 		labels[6].setText("Experience: " + formatBigNumber(totalEXP));
 		labels[7].setText("Exp/Hour: " + formatBigNumber(expPhr));
 		labels[8].setText("Current Level: " + currentLevel + "(+" + levelsGained + ")");

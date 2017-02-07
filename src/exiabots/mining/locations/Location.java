@@ -206,7 +206,8 @@ public abstract class Location {
 	}
 
 	public boolean inMine() {
-		if(mine.contains(Players.getLocal())){
+		Player player = Players.getLocal();
+		if(mine.contains(player)){
 			minePath = null;
 			return true;
 		}else return false;
