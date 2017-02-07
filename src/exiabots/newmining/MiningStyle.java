@@ -12,5 +12,6 @@ public abstract class MiningStyle extends TreeBot {
 	public abstract Rock getOre();
 	public abstract String getLocationName();
 	public abstract Coordinate[] getRockLocations();
+	public abstract void loadSettings();
 
 }

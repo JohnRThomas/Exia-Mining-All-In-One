@@ -12,6 +12,8 @@ import com.runemate.game.api.script.framework.tree.LeafTask;
 import com.runemate.game.api.script.framework.tree.TreeBot;
 import com.runemate.game.api.script.framework.tree.TreeTask;
 
+import exiabots.newmining.GUI.GUIState;
+
 public class GUITask extends BranchTask {
 	private TreeTask success = new OpenGUITask();
 	private TreeTask failure = new IsGUIOpenBranch();
@@ -28,7 +30,7 @@ public class GUITask extends BranchTask {
 	
 	@Override
 	public boolean validate() {
-		return !gui.loaded;
+		return gui.getState() == GUIState.WAITING;
 	}
 	
 	@Override
